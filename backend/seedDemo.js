@@ -55,6 +55,30 @@ const seedDemoUser = async () => {
     console.log(`Streak:   ${demoUser.streakDays} Days`);
     console.log('--------------------------------------------------');
 
+    // Generate 10 Random Orator Users for the Leaderboard
+    console.log('Generating 10 additional users for the leaderboard...');
+    
+    // Clear out any old auto-generated users
+    await User.deleteMany({ email: { $regex: /@bot\.com$/ } });
+    
+    const firstNames = ['Alex', 'Sam', 'Jordan', 'Taylor', 'Casey', 'Riley', 'Morgan', 'Jamie', 'Drew', 'Avery'];
+    
+    for (let i = 0; i < 10; i++) {
+      // Random XP between 3001 and 5000 for 'orator'
+      const randomXP = Math.floor(Math.random() * (5000 - 3001 + 1)) + 3001;
+      
+      await User.create({
+        displayName: firstNames[i],
+        email: `${firstNames[i].toLowerCase()}@bot.com`,
+        passwordHash: passwordHash, // reuse same hash for speed
+        xp: randomXP,
+        level: Math.floor(0.1 * Math.sqrt(randomXP)) + 1,
+        skillLevel: 'orator'
+      });
+    }
+
+    console.log('✅ Generated 10 leaderboard opponents!');
+
     process.exit(0);
   } catch (error) {
     console.error('❌ Seeding Error:', error);
