@@ -235,7 +235,7 @@ export default function HomeMainScreen({ navigation }) {
                             icon={isFlagNode ? '⚑' : undefined}
                             active={isFlagNode}
                             onPress={() =>
-                              navigation.navigate('Practice', {
+                              navigation.navigate('Learn', {
                                 screen: 'SessionPreflight',
                                 params: { trackId: selectedPath.trackId },
                               })
@@ -251,7 +251,7 @@ export default function HomeMainScreen({ navigation }) {
                       title={`Start ${selectedPath.label}`}
                       variant="orange"
                       onPress={() =>
-                        navigation.navigate('Practice', {
+                        navigation.navigate('Learn', {
                           screen: 'SessionPreflight',
                           params: { trackId: selectedPath.trackId },
                         })
