@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeMainScreen from '../screens/main/HomeMainScreen';
-import PracticeScreen from '../screens/main/PracticeScreen';
+import PracticeStack from './PracticeStack';
 import ProfileMainScreen from '../screens/main/ProfileMainScreen';
 import FloatingToolbar from '../components/FloatingToolbar';
 
@@ -16,7 +16,7 @@ export default function MainTabs() {
       }}
     >
       <Tab.Screen name="Home" component={HomeMainScreen} />
-      <Tab.Screen name="Practice" component={PracticeScreen} />
+      <Tab.Screen name="Practice" component={PracticeStack} />
       <Tab.Screen name="Profile" component={ProfileMainScreen} />
     </Tab.Navigator>
   );
