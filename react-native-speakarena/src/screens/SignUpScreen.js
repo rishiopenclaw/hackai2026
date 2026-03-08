@@ -3,16 +3,6 @@ import { SafeAreaView, View, Text, StyleSheet, Pressable, useWindowDimensions } 
 import { LinearGradient } from 'expo-linear-gradient';
 import HeroBackground from '../components/HeroBackground';
 
-function Mark() {
-  return (
-    <View style={styles.markWrap}>
-      <View style={[styles.markStroke, { transform: [{ skewX: '-22deg' }] }]} />
-      <View style={[styles.markStroke, styles.markStroke2, { transform: [{ skewX: '-22deg' }] }]} />
-      <View style={[styles.markCross, { transform: [{ rotate: '-26deg' }] }]} />
-    </View>
-  );
-}
-
 export default function SignUpScreen() {
   const { width, height } = useWindowDimensions();
   const shellWidth = Math.min(width - 20, 390);
@@ -28,8 +18,6 @@ export default function SignUpScreen() {
         </View>
 
         <View style={styles.bottomPane}>
-          <Mark />
-
           <Text style={styles.headline}>
             <Text style={styles.headlineMuted}>SpeechLab – </Text>
             <Text style={styles.headlineStrong}>AI voice</Text>{'\n'}
@@ -39,7 +27,7 @@ export default function SignUpScreen() {
 
           <Pressable style={({ pressed }) => [styles.ctaWrap, pressed && styles.pressed]}>
             <LinearGradient
-              colors={['#FF552D', '#FF8A36', '#FFE27A']}
+              colors={['#FF6A2D', '#FF9A36', '#FFE88A']}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={styles.cta}
@@ -83,78 +71,57 @@ const styles = StyleSheet.create({
   },
 
   bottomPane: {
-    backgroundColor: '#020204',
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    paddingBottom: 16,
-    gap: 12,
+    backgroundColor: '#010204',
+    paddingHorizontal: 22,
+    paddingTop: 18,
+    paddingBottom: 20,
+    gap: 14,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-  },
-
-  markWrap: { width: 34, height: 34, position: 'relative' },
-  markStroke: {
-    position: 'absolute',
-    left: 2,
-    top: 2,
-    width: 10,
-    height: 25,
-    borderRadius: 3,
-    backgroundColor: '#ECECF1',
-  },
-  markStroke2: { left: 14 },
-  markCross: {
-    position: 'absolute',
-    left: -1,
-    top: 11,
-    width: 29,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#ECECF1',
+    borderTopColor: 'rgba(255,255,255,0.04)',
   },
 
   headline: {
     color: '#fff',
-    fontSize: 46,
-    lineHeight: 52,
+    fontSize: 42,
+    lineHeight: 48,
     fontWeight: '400',
-    letterSpacing: -0.55,
+    letterSpacing: -0.45,
   },
-  headlineMuted: { color: '#7F808A', fontWeight: '400' },
+  headlineMuted: { color: '#70717A', fontWeight: '400' },
   headlineStrong: { color: '#FFFFFF', fontWeight: '700' },
 
   ctaWrap: {
     borderRadius: 999,
     overflow: 'hidden',
-    shadowColor: '#FF8D3A',
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 7 },
-    elevation: 7,
+    shadowColor: '#FFB347',
+    shadowOpacity: 0.30,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 9,
   },
   cta: {
-    minHeight: 48,
+    minHeight: 50,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 999,
   },
   ctaText: {
-    color: '#171311',
+    color: '#161310',
     fontSize: 22,
     fontWeight: '500',
   },
 
   secondary: {
-    minHeight: 48,
+    minHeight: 50,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: '#2A2C31',
+    borderColor: '#1F2229',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#06070A',
+    backgroundColor: '#05070B',
   },
   secondaryText: {
-    color: '#D4D6DC',
+    color: '#8E929D',
     fontSize: 16,
     fontWeight: '400',
   },
