@@ -5,32 +5,32 @@ import CleanCard from '../../components/CleanCard';
 import ActionRow from '../../components/ActionRow';
 import { palette, type } from '../../theme/design';
 
-export default function HomeMainScreen() {
+export default function HomeMainScreen({ navigation }) {
   return (
     <CleanShell>
       <Text style={styles.eyebrow}>TODAY</Text>
-      <Text style={styles.title}>Practice with intention.</Text>
-      <Text style={styles.sub}>One focused session can improve clarity faster than random repetition.</Text>
+      <Text style={styles.title}>Start a focused session.</Text>
+      <Text style={styles.sub}>One clear action now. One suggested follow-up after.</Text>
 
       <CleanCard style={{ marginTop: 14 }}>
-        <Text style={styles.cardTitle}>Warmup Echo</Text>
-        <Text style={styles.cardSub}>8-minute guided speaking loop. Prompt → Speak → Reflect → Retry.</Text>
+        <Text style={styles.cardTitle}>Resume: Speak Persuasive</Text>
+        <Text style={styles.cardSub}>Last stopped at reflection step. ~4 minutes remaining.</Text>
         <ActionRow
-          primaryTitle="Start"
-          onPrimary={() => {}}
-          secondaryTitle="Preview"
-          onSecondary={() => {}}
+          primaryTitle="Resume"
+          onPrimary={() => navigation.navigate('Practice', { screen: 'DebateArena' })}
+          secondaryTitle="Start fresh"
+          onSecondary={() => navigation.navigate('Practice', { screen: 'DebateArena' })}
         />
       </CleanCard>
 
       <CleanCard style={{ marginTop: 10 }}>
-        <Text style={styles.cardTitle}>Quick practice</Text>
-        <Text style={styles.cardSub}>3-minute check-in to sharpen your opening response.</Text>
+        <Text style={styles.cardTitle}>Suggested next: Think Fast</Text>
+        <Text style={styles.cardSub}>Short on-the-spot interview response drill.</Text>
         <ActionRow
-          primaryTitle="Try now"
-          onPrimary={() => {}}
-          secondaryTitle="Why this"
-          onSecondary={() => {}}
+          primaryTitle="Try"
+          onPrimary={() => navigation.navigate('Practice', { screen: 'HotSeatInterview' })}
+          secondaryTitle="Browse all"
+          onSecondary={() => navigation.navigate('Practice')}
         />
       </CleanCard>
     </CleanShell>

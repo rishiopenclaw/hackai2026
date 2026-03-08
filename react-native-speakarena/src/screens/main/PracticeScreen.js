@@ -16,7 +16,7 @@ export default function PracticeScreen({ navigation }) {
   return (
     <CleanShell>
       <Text style={styles.title}>Practice tracks</Text>
-      <Text style={styles.sub}>Choose one and run a focused learning loop.</Text>
+      <Text style={styles.sub}>Choose one. Then run Prompt → Speak → Reflect → Retry.</Text>
 
       <View style={{ marginTop: 14, gap: 9 }}>
         {TRACKS.map((t) => (
