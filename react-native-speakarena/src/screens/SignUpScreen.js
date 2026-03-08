@@ -19,29 +19,33 @@ export default function SignUpScreen() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <LinearGradient colors={['#24180F', '#0C0B0B']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#2A1A10', '#0D0B0B']} style={StyleSheet.absoluteFill} />
 
-      <View style={[styles.phoneShell, { width: shellWidth, height: shellHeight }]}> 
-        <LinearGradient colors={['#BA7228', '#76431B', '#1C1414']} style={styles.hero}>
+      <View style={[styles.phoneShell, { width: shellWidth, height: shellHeight }]}>
+        <LinearGradient colors={['#C07A2C', '#7A4519', '#1B1414']} style={styles.hero}>
           <LinearGradient
-            colors={['rgba(255,191,109,0.30)', 'rgba(255,131,36,0.14)', 'rgba(0,0,0,0)']}
+            colors={['rgba(255,196,110,0.28)', 'rgba(255,123,34,0.14)', 'rgba(0,0,0,0)']}
             start={{ x: 0.08, y: 0.02 }}
             end={{ x: 0.9, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
 
-          {/* reference-like intersecting rounded panels */}
-          <View style={styles.shapeA} />
-          <View style={styles.shapeB} />
-          <View style={styles.shapeC} />
+          {/* match screenshot 2: broad intersecting rounded slabs */}
+          <View style={styles.slabA} />
+          <View style={styles.slabB} />
+          <View style={styles.slabC} />
 
           <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.92)']}
-            start={{ x: 0.5, y: 0.50 }}
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.88)']}
+            start={{ x: 0.5, y: 0.52 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.heroFade}
           />
 
+          <View style={styles.statusRow}>
+            <Text style={styles.statusText}>9:41</Text>
+            <Text style={styles.statusIcons}>◔◔◔</Text>
+          </View>
         </LinearGradient>
 
         <View style={styles.bottomPane}>
@@ -103,77 +107,95 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 190,
+    height: 210,
   },
 
-  shapeA: {
+  slabA: {
     position: 'absolute',
-    top: -40,
-    left: -70,
-    width: 270,
-    height: 180,
-    borderRadius: 42,
-    backgroundColor: 'rgba(255, 210, 133, 0.14)',
-    transform: [{ rotate: '-18deg' }],
+    top: -34,
+    left: -110,
+    width: 360,
+    height: 126,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255, 208, 132, 0.15)',
+    transform: [{ rotate: '-20deg' }],
   },
-  shapeB: {
+  slabB: {
     position: 'absolute',
-    top: 70,
-    left: 70,
-    width: 250,
-    height: 210,
-    borderRadius: 46,
-    backgroundColor: 'rgba(26, 15, 11, 0.45)',
-    transform: [{ rotate: '-33deg' }],
+    top: 68,
+    left: 58,
+    width: 120,
+    height: 360,
+    borderRadius: 32,
+    backgroundColor: 'rgba(18, 10, 8, 0.42)',
+    transform: [{ rotate: '-24deg' }],
   },
-  shapeC: {
+  slabC: {
     position: 'absolute',
-    top: -4,
-    right: -54,
-    width: 220,
-    height: 250,
-    borderRadius: 46,
-    backgroundColor: 'rgba(0,0,0,0.28)',
-    transform: [{ rotate: '26deg' }],
+    top: 146,
+    right: -52,
+    width: 248,
+    height: 150,
+    borderRadius: 34,
+    backgroundColor: 'rgba(0,0,0,0.24)',
+    transform: [{ rotate: '-28deg' }],
+  },
+
+  statusRow: {
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  statusText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  statusIcons: {
+    color: '#fff',
+    fontSize: 11,
+    opacity: 0.9,
+    letterSpacing: 1.5,
   },
 
   bottomPane: {
     backgroundColor: '#020204',
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 18,
-    gap: 14,
+    paddingTop: 14,
+    paddingBottom: 16,
+    gap: 12,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.05)',
   },
 
-  markWrap: { width: 40, height: 40, position: 'relative' },
+  markWrap: { width: 34, height: 34, position: 'relative' },
   markStroke: {
     position: 'absolute',
     left: 2,
-    top: 3,
-    width: 12,
-    height: 30,
+    top: 2,
+    width: 10,
+    height: 25,
     borderRadius: 3,
     backgroundColor: '#ECECF1',
   },
-  markStroke2: { left: 16 },
+  markStroke2: { left: 14 },
   markCross: {
     position: 'absolute',
-    left: -2,
-    top: 13,
-    width: 34,
-    height: 8,
+    left: -1,
+    top: 11,
+    width: 29,
+    height: 7,
     borderRadius: 4,
     backgroundColor: '#ECECF1',
   },
 
   headline: {
     color: '#fff',
-    fontSize: 43,
-    lineHeight: 50,
+    fontSize: 46,
+    lineHeight: 52,
     fontWeight: '400',
-    letterSpacing: -0.35,
+    letterSpacing: -0.55,
   },
   headlineMuted: { color: '#7F808A', fontWeight: '400' },
   headlineStrong: { color: '#FFFFFF', fontWeight: '700' },
@@ -188,19 +210,19 @@ const styles = StyleSheet.create({
     elevation: 7,
   },
   cta: {
-    minHeight: 52,
+    minHeight: 48,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 999,
   },
   ctaText: {
     color: '#171311',
-    fontSize: 22,
+    fontSize: 30,
     fontWeight: '500',
   },
 
   secondary: {
-    minHeight: 52,
+    minHeight: 48,
     borderRadius: 999,
     borderWidth: 1,
     borderColor: '#2A2C31',
@@ -210,7 +232,7 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: '#D4D6DC',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: '400',
   },
 
