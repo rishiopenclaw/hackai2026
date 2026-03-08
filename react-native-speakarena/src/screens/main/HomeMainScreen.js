@@ -109,12 +109,17 @@ export default function HomeMainScreen({ navigation }) {
                     <View style={styles.streakCard}>
                       <View style={styles.streakTopRow}>
                         <Text style={styles.streakTitle}>Consecutive study days</Text>
-                        <View style={styles.giftStack}>
-                          <View style={styles.giftBadge}>
-                            <Gift size={15} color="#FFFFFF" />
-                          </View>
-                          <Text style={styles.giftLabel}>Present</Text>
+                      </View>
+
+                      <View style={styles.giftCenterWrap}>
+                        <View style={styles.giftBadgeLarge}>
+                          <View style={styles.giftRibbonVertical} />
+                          <View style={styles.giftRibbonHorizontal} />
+                          <View style={styles.giftBowLeft} />
+                          <View style={styles.giftBowRight} />
+                          <Gift size={16} color="#FFFFFF" />
                         </View>
+                        <Text style={styles.giftLabel}>Present</Text>
                       </View>
 
                       <View style={styles.weekRow}>
@@ -341,21 +346,63 @@ const styles = StyleSheet.create({
     elevation: 8,
     transform: [{ rotate: '-2deg' }],
   },
-  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  streakTopRow: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start' },
   streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1, paddingRight: 8 },
-  giftStack: { alignItems: 'center', gap: 4, minWidth: 54 },
-  giftBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    backgroundColor: '#F15B7A',
-    borderBottomWidth: 3,
-    borderBottomColor: '#D94765',
+  giftCenterWrap: { alignItems: 'center', marginTop: 8, marginBottom: 4 },
+  giftBadgeLarge: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    backgroundColor: '#EC4C7B',
+    borderBottomWidth: 6,
+    borderBottomColor: '#C93A63',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden',
   },
-  giftLabel: { color: '#8B91A5', fontWeight: '800', fontSize: 10 },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
+  giftRibbonVertical: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 12,
+    backgroundColor: '#F7B43A',
+  },
+  giftRibbonHorizontal: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: 12,
+    backgroundColor: '#F7B43A',
+  },
+  giftBowLeft: {
+    position: 'absolute',
+    top: -8,
+    left: 18,
+    width: 16,
+    height: 14,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+    backgroundColor: '#F7B43A',
+    transform: [{ rotate: '-20deg' }],
+  },
+  giftBowRight: {
+    position: 'absolute',
+    top: -8,
+    right: 18,
+    width: 16,
+    height: 14,
+    borderTopLeftRadius: 14,
+    borderTopRightRadius: 14,
+    borderBottomLeftRadius: 6,
+    borderBottomRightRadius: 6,
+    backgroundColor: '#F7B43A',
+    transform: [{ rotate: '20deg' }],
+  },
+  giftLabel: { color: '#8B91A5', fontWeight: '900', fontSize: 11, marginTop: 6 },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 },
   dayItem: { alignItems: 'center', gap: 6, width: 34 },
   dayLabel: { color: '#7F869E', fontWeight: '700', fontSize: 10 },
   dayLabelActive: { color: '#D28A00', fontWeight: '900' },
