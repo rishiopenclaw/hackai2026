@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import TopHeaderStats from '../../components/TopHeaderStats';
@@ -35,6 +35,7 @@ const generateSvgPath = (nodes) => {
 
 export default function HomeMainScreen({ navigation }) {
   const [open, setOpen] = useState(false);
+  const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 40; // same as map viewport width (marginHorizontal: 20)
 
   const nodes = useMemo(() => generatePathData(11, MAP_WIDTH), [MAP_WIDTH]);
@@ -48,9 +49,11 @@ export default function HomeMainScreen({ navigation }) {
       <Text style={styles.heading}>YOUR PATH</Text>
 
       <ScrollView
+        ref={mapScrollRef}
         style={styles.mapViewport}
         contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
         showsVerticalScrollIndicator={false}
+        onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
       >
         {/* Layer 1: Grass terrain + path */}
         <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
