@@ -1,33 +1,33 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Pressable } from 'react-native';
-import { Swords, BriefcaseBusiness, Siren, BookOpenText, ChevronRight } from 'lucide-react-native';
+import { AudioLines, Mic, MessageCircleQuestion, BookOpenText, ChevronRight } from 'lucide-react-native';
 import AppleCard from '../../components/AppleCard';
 
-const MODES = [
-  { key: 'DebateArena', title: 'Debate Arena', sub: 'Timed rounds + rebuttals', icon: Swords, color: '#FFB25B' },
-  { key: 'HotSeatInterview', title: 'Hot Seat Interview', sub: 'Adaptive follow-up questions', icon: BriefcaseBusiness, color: '#8FA2FF' },
-  { key: 'CrisisRoom', title: 'Crisis Room', sub: 'Live constraint changes', icon: Siren, color: '#FF6C6C' },
-  { key: 'StoryBuilder', title: 'Story Builder', sub: 'Hook, conflict, payoff', icon: BookOpenText, color: '#63D58A' },
+const TRACKS = [
+  { key: 'DebateArena', title: 'Speak Persuasive', sub: 'Build claims, rebut calmly, land your point.', icon: AudioLines, color: '#FFB25B' },
+  { key: 'HotSeatInterview', title: 'Think Fast', sub: 'Answer on-the-spot with structured clarity.', icon: MessageCircleQuestion, color: '#8FA2FF' },
+  { key: 'CrisisRoom', title: 'Stay Clear Under Pressure', sub: 'Adapt your response when constraints change.', icon: Mic, color: '#FF6C6C' },
+  { key: 'StoryBuilder', title: 'Speak Human', sub: 'Tell stories with hook, conflict, and payoff.', icon: BookOpenText, color: '#63D58A' },
 ];
 
 export default function PracticeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.root}>
       <View style={styles.content}>
-        <Text style={styles.title}>Practice Modes</Text>
-        <Text style={styles.sub}>Pick your training loop.</Text>
+        <Text style={styles.title}>Practice Tracks</Text>
+        <Text style={styles.sub}>Prompt → Speak → Reflect → Retry</Text>
 
         <View style={{ marginTop: 12, gap: 10 }}>
-          {MODES.map((m) => {
-            const Icon = m.icon;
+          {TRACKS.map((t) => {
+            const Icon = t.icon;
             return (
-              <Pressable key={m.key} onPress={() => navigation.navigate(m.key)}>
+              <Pressable key={t.key} onPress={() => navigation.navigate(t.key)}>
                 <AppleCard>
                   <View style={styles.row}>
-                    <View style={[styles.iconWrap, { backgroundColor: `${m.color}22` }]}><Icon size={18} color={m.color} /></View>
+                    <View style={[styles.iconWrap, { backgroundColor: `${t.color}22` }]}><Icon size={18} color={t.color} /></View>
                     <View style={{ flex: 1 }}>
-                      <Text style={styles.cardTitle}>{m.title}</Text>
-                      <Text style={styles.cardSub}>{m.sub}</Text>
+                      <Text style={styles.cardTitle}>{t.title}</Text>
+                      <Text style={styles.cardSub}>{t.sub}</Text>
                     </View>
                     <ChevronRight size={18} color="#7E879A" />
                   </View>
