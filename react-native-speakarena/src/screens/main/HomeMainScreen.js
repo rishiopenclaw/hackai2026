@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Play, Plus, CircleHelp, Flame, Gift } from 'lucide-react-native';
+import { Play, Plus, CircleHelp, Check, Gift } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -109,8 +109,11 @@ export default function HomeMainScreen({ navigation }) {
                     <View style={styles.streakCard}>
                       <View style={styles.streakTopRow}>
                         <Text style={styles.streakTitle}>Consecutive study days</Text>
-                        <View style={styles.giftBadge}>
-                          <Gift size={15} color="#FFFFFF" />
+                        <View style={styles.giftStack}>
+                          <View style={styles.giftBadge}>
+                            <Gift size={15} color="#FFFFFF" />
+                          </View>
+                          <Text style={styles.giftLabel}>Present</Text>
                         </View>
                       </View>
 
@@ -126,9 +129,7 @@ export default function HomeMainScreen({ navigation }) {
                         ].map((d) => (
                           <View key={d.day} style={styles.dayItem}>
                             <View style={[styles.dayDot, d.done ? styles.dayDotDone : styles.dayDotIdle, d.active && styles.dayDotActive]}>
-                              {d.done ? (
-                                <Flame size={11} color="#FFFFFF" fill="#FFFFFF" />
-                              ) : null}
+                              {d.done ? <Check size={12} color="#FFFFFF" strokeWidth={3} /> : null}
                             </View>
                             <Text style={[styles.dayLabel, d.active && styles.dayLabelActive]}>{d.day}</Text>
                           </View>
@@ -340,8 +341,9 @@ const styles = StyleSheet.create({
     elevation: 8,
     transform: [{ rotate: '-2deg' }],
   },
-  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1 },
+  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1, paddingRight: 8 },
+  giftStack: { alignItems: 'center', gap: 4, minWidth: 54 },
   giftBadge: {
     width: 36,
     height: 36,
@@ -351,8 +353,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#D94765',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 8,
   },
+  giftLabel: { color: '#8B91A5', fontWeight: '800', fontSize: 10 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   dayItem: { alignItems: 'center', gap: 6, width: 34 },
   dayLabel: { color: '#7F869E', fontWeight: '700', fontSize: 10 },
