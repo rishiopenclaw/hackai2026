@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Plus, Flame, Sparkles, X } from 'lucide-react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
@@ -199,7 +200,7 @@ function FreezeStreakCard() {
   );
 }
 
-function StudyStreakCard() {
+function StudyStreakCard({ streakDays = 0 }) {
   return (
     <View style={[styles.card, styles.studyCard]}>
       <View style={styles.studyHeader}>
@@ -210,7 +211,7 @@ function StudyStreakCard() {
           <Text style={styles.inlineTitle}>Consecutive study days</Text>
         </View>
         <View style={styles.studyPill}>
-          <Text style={styles.studyPillText}>4 day run</Text>
+          <Text style={styles.studyPillText}>{streakDays} day run</Text>
         </View>
       </View>
 
@@ -357,6 +358,25 @@ function ProgressCard() {
 }
 
 export default function CardsShowcaseScreen() {
+  const [streakDays, setStreakDays] = useState(0);
+
+  useEffect(() => {
+    const fetchStreak = async () => {
+      try {
+        const userDataStr = await AsyncStorage.getItem('userData');
+        if (userDataStr) {
+          const userData = JSON.parse(userDataStr);
+          if (userData.streakDays !== undefined) {
+            setStreakDays(userData.streakDays);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load streak data", e);
+      }
+    };
+    fetchStreak();
+  }, []);
+
   return (
     <SafeAreaView style={styles.root}>
       <ScrollView
@@ -368,7 +388,7 @@ export default function CardsShowcaseScreen() {
         <PageHeader />
 
         <FreezeStreakCard />
-        <StudyStreakCard />
+        <StudyStreakCard streakDays={streakDays} />
         <View style={styles.row}>
           <CourseCard />
           <LibraryCard />

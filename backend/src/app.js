@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import moduleRoutes from './routes/moduleRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(morgan('dev'));
 
 app.get('/health', (req, res) => res.json({ ok: true, service: 'speakarena-backend' }));
 app.use('/api/modules', moduleRoutes);
+app.use('/api/auth', authRoutes);
 
 app.use(errorHandler);
 
