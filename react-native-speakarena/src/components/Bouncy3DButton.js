@@ -37,6 +37,7 @@ export default function Bouncy3DButton({ title, variant = 'green', onPress, styl
             borderBottomWidth: isFlatPathCircle ? 0 : lip,
             transform: [{ translateY: press.interpolate({ inputRange: [0, 1], outputRange: [0, 4] }) }],
           },
+          isFlatPathCircle && styles.flatCircleShadow,
         ]}
       >
         {!isFlatPathCircle && <View style={styles.gloss} />}
@@ -67,5 +68,12 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '900',
     letterSpacing: 0.3,
+  },
+  flatCircleShadow: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.24,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
   },
 });
