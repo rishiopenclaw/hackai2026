@@ -343,7 +343,6 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
     shadowOffset: { width: 0, height: 10 },
     elevation: 8,
-    transform: [{ rotate: '-2deg' }],
   },
   streakTopRow: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start' },
   streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1, paddingRight: 8 },
