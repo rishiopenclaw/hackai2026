@@ -1,163 +1,109 @@
-import React, { useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
+import React, { useMemo, useState } from 'react';
+import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 import TopHeaderStats from '../../components/TopHeaderStats';
 import LearningPathNode from '../../components/LearningPathNode';
 import GamifiedModal from '../../components/GamifiedModal';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
-function MapArtwork({ height }) {
-  return (
-    <Svg style={StyleSheet.absoluteFill} viewBox={`0 0 360 ${height}`} preserveAspectRatio="none">
-      <Defs>
-        <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0%" stopColor="#BDEA8D" />
-          <Stop offset="100%" stopColor="#9FD86A" />
-        </LinearGradient>
-        <LinearGradient id="hillShade" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#A8DE77" />
-          <Stop offset="100%" stopColor="#8FC857" />
-        </LinearGradient>
-        <LinearGradient id="trailFill" x1="0" y1="0" x2="1" y2="1">
-          <Stop offset="0%" stopColor="#FFF7DD" />
-          <Stop offset="100%" stopColor="#F2E3B9" />
-        </LinearGradient>
-      </Defs>
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const NODE_SIZE = 70;
+const Y_SPACING = 130;
+const X_AMPLITUDE = 60;
 
-      <Path d={`M0 0 H360 V${height} H0 Z`} fill="url(#grassBase)" />
+const generatePathData = (numNodes = 10) =>
+  Array.from({ length: numNodes }).map((_, i) => {
+    const xOffset = Math.sin(i * 0.8) * X_AMPLITUDE;
+    return {
+      id: i + 1,
+      centerX: SCREEN_WIDTH / 2 + xOffset,
+      centerY: (i + 1) * Y_SPACING,
+    };
+  });
 
-      <Path d="M-40 60 C60 -10, 180 40, 390 110 V-20 H-40 Z" fill="url(#hillShade)" opacity="0.65" />
-      <Path d="M-30 390 C80 330, 170 400, 390 360 V260 H-30 Z" fill="#94CE5E" opacity="0.55" />
-      <Path d={`M-40 ${height - 230} C70 ${height - 280}, 160 ${height - 210}, 390 ${height - 230} V${height} H-40 Z`} fill="#87C650" opacity="0.58" />
+const generateSvgPath = (nodes) => {
+  if (!nodes.length) return '';
+  let path = `M ${nodes[0].centerX} ${nodes[0].centerY}`;
 
-      <Circle cx="50" cy="170" r="8" fill="#7FC345" />
-      <Circle cx="62" cy="178" r="6" fill="#8BCF52" />
-      <Circle cx="295" cy="500" r="7" fill="#7FC345" />
-      <Circle cx="306" cy="507" r="5" fill="#8BCF52" />
-      <Circle cx="92" cy="980" r="8" fill="#7FC345" />
-      <Circle cx="104" cy="988" r="6" fill="#8BCF52" />
+  for (let i = 1; i < nodes.length; i += 1) {
+    const prev = nodes[i - 1];
+    const curr = nodes[i];
+    const cp1Y = prev.centerY + (curr.centerY - prev.centerY) / 2;
+    path += ` C ${prev.centerX} ${cp1Y}, ${curr.centerX} ${cp1Y}, ${curr.centerX} ${curr.centerY}`;
+  }
 
-      {/* Long winding trail (top = end, bottom = start) */}
-      <Path
-        d={`M258 90
-            C188 132, 102 196, 84 282
-            C70 348, 112 414, 194 472
-            C250 512, 262 582, 214 650
-            C170 712, 108 772, 106 840
-            C104 916, 162 982, 244 1040
-            C278 1064, 300 1100, 300 1140`}
-        stroke="#D9C894"
-        strokeWidth="42"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.55"
-        fill="none"
-      />
-      <Path
-        d={`M258 90
-            C188 132, 102 196, 84 282
-            C70 348, 112 414, 194 472
-            C250 512, 262 582, 214 650
-            C170 712, 108 772, 106 840
-            C104 916, 162 982, 244 1040
-            C278 1064, 300 1100, 300 1140`}
-        stroke="url(#trailFill)"
-        strokeWidth="38"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      <Path
-        d={`M266 88
-            C196 130, 112 192, 94 276
-            C80 340, 122 406, 202 462
-            C256 500, 270 572, 224 638
-            C180 700, 118 760, 116 830
-            C114 904, 170 968, 252 1028
-            C286 1052, 308 1088, 308 1128`}
-        stroke="rgba(255,255,255,0.42)"
-        strokeWidth="9"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </Svg>
-  );
-}
+  return path;
+};
 
 export default function HomeMainScreen({ navigation }) {
   const [open, setOpen] = useState(false);
-  const mapScrollRef = useRef(null);
-  const MAP_HEIGHT = 1240;
+
+  const nodes = useMemo(() => generatePathData(10), []);
+  const svgPathString = useMemo(() => generateSvgPath(nodes), [nodes]);
+  const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
 
   return (
     <View style={styles.root}>
       <TopHeaderStats />
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.heading}>YOUR PATH</Text>
+      <Text style={styles.heading}>YOUR PATH</Text>
 
-        {/* Fixed viewport box; map scrolls inside this box only */}
-        <View style={styles.terrainWrap}>
-          <ScrollView
-            ref={mapScrollRef}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ height: MAP_HEIGHT }}
-            onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
+      <ScrollView
+        style={styles.mapViewport}
+        contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Layer 1: path from same math source as nodes */}
+        <Svg style={StyleSheet.absoluteFillObject}>
+          <Path
+            d={svgPathString}
+            stroke="#E5C07B"
+            strokeWidth={44}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <Path
+            d={svgPathString}
+            stroke="#FFF1C1"
+            strokeWidth={32}
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </Svg>
+
+        {/* Layer 2: nodes from exact same coordinate array */}
+        {nodes.map((node, idx) => (
+          <View
+            key={node.id}
+            style={[
+              styles.nodeContainer,
+              {
+                left: node.centerX - NODE_SIZE / 2,
+                top: node.centerY - NODE_SIZE / 2,
+                width: NODE_SIZE,
+                height: NODE_SIZE,
+              },
+            ]}
           >
-            <View style={{ height: MAP_HEIGHT }}>
-              <MapArtwork height={MAP_HEIGHT} />
-
-              {/* 10 nodes placed on the trail centerline */}
-              <View style={[styles.nodePos, { top: 62, left: 226 }]}>
-                <LearningPathNode
-                  active
-                  icon="⚑"
-                  onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
-                />
-              </View>
-
-              <View style={[styles.nodePos, { top: 184, left: 154 }]}>
-                <LearningPathNode number={9} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 268, left: 78 }]}>
-                <LearningPathNode number={8} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 352, left: 116 }]}>
-                <LearningPathNode number={7} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'human' } })} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 440, left: 186 }]}>
-                <LearningPathNode number={6} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 532, left: 208 }]}>
-                <LearningPathNode number={5} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 632, left: 136 }]}>
-                <LearningPathNode number={4} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 734, left: 102 }]}>
-                <LearningPathNode number={3} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 874, left: 164 }]}>
-                <LearningPathNode number={2} />
-              </View>
-
-              <View style={[styles.nodePos, { top: 1184, left: 281 }]}>
-                <LearningPathNode number={1} />
-              </View>
-            </View>
-          </ScrollView>
-        </View>
-
-        <Bouncy3DButton title="Try challenge" variant="orange" onPress={() => setOpen(true)} style={{ marginTop: 16 }} />
+            <LearningPathNode
+              number={node.id}
+              active={idx === nodes.length - 1}
+              onPress={() =>
+                navigation.navigate('Practice', {
+                  screen: 'SessionPreflight',
+                  params: { trackId: 'persuasive' },
+                })
+              }
+            />
+          </View>
+        ))}
       </ScrollView>
+
+      <View style={styles.bottomCta}>
+        <Bouncy3DButton title="Try challenge" variant="orange" onPress={() => setOpen(true)} />
+      </View>
 
       <GamifiedModal
         visible={open}
@@ -176,15 +122,34 @@ export default function HomeMainScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F4F9F6' },
-  content: { paddingHorizontal: 20, paddingTop: 6, paddingBottom: 24 },
-  heading: { color: '#4B4B4B', fontSize: 15, fontWeight: '900', letterSpacing: 1, marginBottom: 10 },
-  terrainWrap: {
-    height: 650,
+  heading: {
+    color: '#4B4B4B',
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 10,
+    paddingHorizontal: 20,
+    marginTop: 6,
+  },
+  mapViewport: {
+    flex: 1,
+    marginHorizontal: 20,
     borderRadius: 26,
     overflow: 'hidden',
-    backgroundColor: '#BDEB92',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: '#89E256',
   },
-  nodePos: { position: 'absolute' },
+  mapContent: {
+    backgroundColor: '#89E256',
+  },
+  nodeContainer: {
+    position: 'absolute',
+  },
+  bottomCta: {
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    paddingTop: 10,
+    backgroundColor: '#F4F9F6',
+  },
 });
