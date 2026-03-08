@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg, { Defs, LinearGradient as SvgLinearGradient, Stop, Rect, G } from 'react-native-svg';
+import Svg, { Defs, RadialGradient, LinearGradient as SvgLinearGradient, Stop, Rect, G } from 'react-native-svg';
 import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 
 export default function HeroBackground() {
@@ -8,62 +8,81 @@ export default function HeroBackground() {
     <View style={styles.container}>
       <Svg style={StyleSheet.absoluteFillObject} viewBox="0 0 400 800">
         <Defs>
-          <SvgLinearGradient id="masterGlow" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#FFE2B7" stopOpacity="0.88" />
-            <Stop offset="18%" stopColor="#FF8612" stopOpacity="0.82" />
-            <Stop offset="50%" stopColor="#9A3D00" stopOpacity="0.78" />
-            <Stop offset="90%" stopColor="#120C0A" stopOpacity="0.70" />
+          {/* Ambient cinematic base */}
+          <SvgLinearGradient id="base" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#2A0F07" />
+            <Stop offset="35%" stopColor="#1A0F16" />
+            <Stop offset="100%" stopColor="#07080D" />
           </SvgLinearGradient>
 
-          <SvgLinearGradient id="glassSurface" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.09" />
-            <Stop offset="30%" stopColor="#FFFFFF" stopOpacity="0.012" />
+          {/* Warm orb */}
+          <RadialGradient id="warmOrb" cx="18%" cy="8%" r="78%">
+            <Stop offset="0%" stopColor="#FFD19A" stopOpacity="0.78" />
+            <Stop offset="28%" stopColor="#FF8A2A" stopOpacity="0.52" />
+            <Stop offset="72%" stopColor="#A33C14" stopOpacity="0.18" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0" />
+          </RadialGradient>
+
+          {/* Cool contrast orb */}
+          <RadialGradient id="coolOrb" cx="92%" cy="18%" r="65%">
+            <Stop offset="0%" stopColor="#6E66FF" stopOpacity="0.20" />
+            <Stop offset="45%" stopColor="#3F45B8" stopOpacity="0.10" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0" />
+          </RadialGradient>
+
+          {/* Glass card sheen */}
+          <SvgLinearGradient id="sheen" x1="0%" y1="0%" x2="100%" y2="100%">
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.13" />
+            <Stop offset="25%" stopColor="#FFFFFF" stopOpacity="0.03" />
             <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </SvgLinearGradient>
 
-          <SvgLinearGradient id="glassEdge" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+          {/* Joint edge */}
+          <SvgLinearGradient id="edge" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.20" />
-            <Stop offset="28%" stopColor="#000000" stopOpacity="0.50" />
-            <Stop offset="100%" stopColor="#000000" stopOpacity="0.64" />
+            <Stop offset="35%" stopColor="#000000" stopOpacity="0.40" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0.62" />
           </SvgLinearGradient>
         </Defs>
 
-        <G rotation="-18" origin="150, 300">
-          <Rect x="-200" y="-200" width="294" height="344" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="-200" width="294" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+        <Rect width="400" height="800" fill="url(#base)" />
+        <Rect width="400" height="800" fill="url(#warmOrb)" />
+        <Rect width="400" height="800" fill="url(#coolOrb)" />
 
-          <Rect x="100" y="-200" width="350" height="344" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="-200" width="350" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+        {/* New geometric composition: elegant asymmetry */}
+        <G rotation="-16" origin="190, 290">
+          <Rect x="-190" y="-210" width="310" height="360" rx="26" fill="url(#warmOrb)" />
+          <Rect x="-190" y="-210" width="310" height="360" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
 
-          <Rect x="-200" y="150" width="294" height="244" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="150" width="294" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="126" y="-210" width="360" height="300" rx="26" fill="url(#warmOrb)" />
+          <Rect x="126" y="-210" width="360" height="300" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
 
-          <Rect x="100" y="150" width="350" height="244" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="150" width="350" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="-190" y="156" width="310" height="280" rx="26" fill="url(#warmOrb)" />
+          <Rect x="-190" y="156" width="310" height="280" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
 
-          <Rect x="-200" y="400" width="294" height="400" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="400" width="294" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="126" y="96" width="360" height="430" rx="26" fill="url(#warmOrb)" />
+          <Rect x="126" y="96" width="360" height="430" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
 
-          <Rect x="100" y="400" width="350" height="400" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="400" width="350" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="-190" y="442" width="310" height="430" rx="26" fill="url(#warmOrb)" />
+          <Rect x="-190" y="442" width="310" height="430" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
+
+          <Rect x="126" y="532" width="360" height="340" rx="26" fill="url(#warmOrb)" />
+          <Rect x="126" y="532" width="360" height="340" rx="26" fill="url(#sheen)" stroke="url(#edge)" strokeWidth="1.4" />
         </G>
       </Svg>
 
-      {/* top haze to mimic faded look */}
+      {/* Atmospheric haze */}
       <ExpoLinearGradient
         colors={['rgba(255,255,255,0.16)', 'rgba(255,255,255,0.05)', 'transparent']}
-        locations={[0, 0.26, 0.5]}
+        locations={[0, 0.22, 0.48]}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
 
-      {/* gentle global wash to reduce harsh saturation */}
-      <View style={styles.globalWash} pointerEvents="none" />
-
-      {/* bottom dark fade */}
+      {/* Bottom readability mask */}
       <ExpoLinearGradient
-        colors={['transparent', 'rgba(9,9,11,0.18)', 'rgba(9,9,11,0.74)', '#09090B']}
-        locations={[0.56, 0.78, 0.94, 1]}
+        colors={['transparent', 'rgba(8,10,14,0.30)', 'rgba(8,10,14,0.85)', '#05060B']}
+        locations={[0.58, 0.78, 0.94, 1]}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
@@ -74,10 +93,6 @@ export default function HeroBackground() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#09090B',
-  },
-  globalWash: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(20,16,14,0.16)',
+    backgroundColor: '#07080D',
   },
 });
