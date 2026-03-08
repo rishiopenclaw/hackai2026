@@ -25,9 +25,30 @@ const Y_SPACING = 130;
 const X_AMPLITUDE = 84;
 
 const PATHS = [
-  { id: 'everyday', label: 'Everyday', trackId: 'human' },
-  { id: 'clarify', label: 'Clarify', trackId: 'pressure' },
-  { id: 'persuade', label: 'Persuade', trackId: 'persuasive' },
+  {
+    id: 'everyday',
+    label: 'Everyday',
+    trackId: 'human',
+    subtitle: 'Casual conversations + confidence',
+    cardColor: '#FFD13B',
+    ctaColor: '#00D15E',
+  },
+  {
+    id: 'clarify',
+    label: 'Clarify',
+    trackId: 'pressure',
+    subtitle: 'Questions + active listening',
+    cardColor: '#7ED6FF',
+    ctaColor: '#3A93FF',
+  },
+  {
+    id: 'persuade',
+    label: 'Persuade',
+    trackId: 'persuasive',
+    subtitle: 'Pitches + structured influence',
+    cardColor: '#FFB7D8',
+    ctaColor: '#EC4C7B',
+  },
 ];
 
 const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
@@ -55,7 +76,7 @@ const generateSvgPath = (nodes) => {
 export default function HomeMainScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('club');
   const [activeBottom, setActiveBottom] = useState('home');
-  const [selectedPathId, setSelectedPathId] = useState('everyday');
+  const [selectedPathId, setSelectedPathId] = useState(null);
 
   const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 32;
@@ -88,93 +109,112 @@ export default function HomeMainScreen({ navigation }) {
 
           {activeTab === 'practice' ? (
             <>
-              <Text style={styles.practiceHeader}>YOUR PATH</Text>
+              {!selectedPathId ? (
+                <>
+                  <Text style={styles.practiceHeader}>PRACTICE PATHS</Text>
+                  <Text style={styles.practiceSub}>Pick a path card to open the full node map.</Text>
 
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pathRow}>
-                {PATHS.map((path) => (
-                  <TouchableOpacity
-                    key={path.id}
-                    style={[styles.pathChip, selectedPathId === path.id && styles.pathChipActive]}
-                    onPress={() => setSelectedPathId(path.id)}
+                  <View style={styles.pathCardsStack}>
+                    {PATHS.map((path) => (
+                      <TouchableOpacity
+                        key={path.id}
+                        style={[styles.pathCard, { backgroundColor: path.cardColor }]}
+                        onPress={() => setSelectedPathId(path.id)}
+                        activeOpacity={0.92}
+                      >
+                        <Text style={styles.pathCardTitle}>{path.label}</Text>
+                        <Text style={styles.pathCardSub}>{path.subtitle}</Text>
+                        <View style={[styles.pathCardCta, { backgroundColor: path.ctaColor }]}>
+                          <Text style={styles.pathCardCtaText}>Open Path</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <>
+                  <View style={styles.practiceTopRow}>
+                    <Text style={styles.practiceHeader}>{selectedPath.label.toUpperCase()} PATH</Text>
+                    <TouchableOpacity onPress={() => setSelectedPathId(null)} style={styles.backToCardsBtn}>
+                      <Text style={styles.backToCardsText}>All Paths</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <ScrollView
+                    ref={mapScrollRef}
+                    style={styles.mapViewport}
+                    contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
+                    showsVerticalScrollIndicator={false}
+                    onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
                   >
-                    <Text style={[styles.pathChipText, selectedPathId === path.id && styles.pathChipTextActive]}>{path.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+                    <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
+                      <Defs>
+                        <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
+                          <Stop offset="0%" stopColor="#9AE15D" />
+                          <Stop offset="100%" stopColor="#84D64A" />
+                        </LinearGradient>
+                        <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
+                          <Stop offset="0%" stopColor="#FFF7DD" />
+                          <Stop offset="100%" stopColor="#F1E0B2" />
+                        </LinearGradient>
+                      </Defs>
 
-              <ScrollView
-                ref={mapScrollRef}
-                style={styles.mapViewport}
-                contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
-                showsVerticalScrollIndicator={false}
-                onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
-              >
-                <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
-                  <Defs>
-                    <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
-                      <Stop offset="0%" stopColor="#9AE15D" />
-                      <Stop offset="100%" stopColor="#84D64A" />
-                    </LinearGradient>
-                    <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
-                      <Stop offset="0%" stopColor="#FFF7DD" />
-                      <Stop offset="100%" stopColor="#F1E0B2" />
-                    </LinearGradient>
-                  </Defs>
+                      <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
+                      <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+                      <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
-                  <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
-                  <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
-                  <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                      {nodes.map((n) => (
+                        <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
+                      ))}
+                    </Svg>
 
-                  {nodes.map((n) => (
-                    <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
-                  ))}
-                </Svg>
+                    {nodes.map((node, idx) => {
+                      const isFlagNode = idx === 0;
+                      const numberFromBottom = nodes.length - idx;
+                      const shownNumber = isFlagNode ? undefined : numberFromBottom;
 
-                {nodes.map((node, idx) => {
-                  const isFlagNode = idx === 0;
-                  const numberFromBottom = nodes.length - idx;
-                  const shownNumber = isFlagNode ? undefined : numberFromBottom;
+                      return (
+                        <View
+                          key={node.id}
+                          style={{
+                            position: 'absolute',
+                            left: node.centerX - NODE_SIZE / 2,
+                            top: node.centerY - NODE_SIZE / 2,
+                            width: NODE_SIZE,
+                            height: NODE_SIZE,
+                          }}
+                        >
+                          <LearningPathNode
+                            number={shownNumber}
+                            icon={isFlagNode ? '⚑' : undefined}
+                            active={isFlagNode}
+                            onPress={() =>
+                              navigation.navigate('Practice', {
+                                screen: 'SessionPreflight',
+                                params: { trackId: selectedPath.trackId },
+                              })
+                            }
+                          />
+                        </View>
+                      );
+                    })}
+                  </ScrollView>
 
-                  return (
-                    <View
-                      key={node.id}
-                      style={{
-                        position: 'absolute',
-                        left: node.centerX - NODE_SIZE / 2,
-                        top: node.centerY - NODE_SIZE / 2,
-                        width: NODE_SIZE,
-                        height: NODE_SIZE,
-                      }}
-                    >
-                      <LearningPathNode
-                        number={shownNumber}
-                        icon={isFlagNode ? '⚑' : undefined}
-                        active={isFlagNode}
-                        onPress={() =>
-                          navigation.navigate('Practice', {
-                            screen: 'SessionPreflight',
-                            params: { trackId: selectedPath.trackId },
-                          })
-                        }
-                      />
-                    </View>
-                  );
-                })}
-              </ScrollView>
-
-              <View style={styles.bottomCtaArea}>
-                <Bouncy3DButton
-                  title={`Start ${selectedPath.label}`}
-                  variant="orange"
-                  onPress={() =>
-                    navigation.navigate('Practice', {
-                      screen: 'SessionPreflight',
-                      params: { trackId: selectedPath.trackId },
-                    })
-                  }
-                />
-              </View>
+                  <View style={styles.bottomCtaArea}>
+                    <Bouncy3DButton
+                      title={`Start ${selectedPath.label}`}
+                      variant="orange"
+                      onPress={() =>
+                        navigation.navigate('Practice', {
+                          screen: 'SessionPreflight',
+                          params: { trackId: selectedPath.trackId },
+                        })
+                      }
+                    />
+                  </View>
+                </>
+              )}
             </>
           ) : (
             <>
@@ -277,12 +317,41 @@ const styles = StyleSheet.create({
   segmentInactive: { backgroundColor: '#37C25E', borderBottomWidth: 4, borderBottomColor: '#1C7A35' },
   segmentText: { color: '#FFF', fontWeight: '900', fontSize: 16 },
 
-  practiceHeader: { color: '#FFF', fontWeight: '900', fontSize: 15, marginBottom: 8, letterSpacing: 1 },
-  pathRow: { gap: 8, paddingBottom: 10 },
-  pathChip: { backgroundColor: '#E8EDF7', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
-  pathChipActive: { backgroundColor: '#DCD9FF' },
-  pathChipText: { fontWeight: '700', color: '#687193' },
-  pathChipTextActive: { color: '#433DD3' },
+  practiceHeader: { color: '#FFF', fontWeight: '900', fontSize: 16, marginBottom: 8, letterSpacing: 1 },
+  practiceSub: { color: 'rgba(255,255,255,0.9)', fontWeight: '700', marginBottom: 12 },
+  pathCardsStack: { gap: 12 },
+  pathCard: {
+    borderRadius: 24,
+    padding: 16,
+    minHeight: 126,
+    shadowColor: '#000',
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  pathCardTitle: { color: '#1D1D1D', fontWeight: '900', fontSize: 24 },
+  pathCardSub: { color: '#5D5D5D', fontWeight: '700', marginTop: 4 },
+  pathCardCta: {
+    alignSelf: 'flex-start',
+    marginTop: 12,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(0,0,0,0.2)',
+  },
+  pathCardCtaText: { color: '#FFF', fontWeight: '900' },
+  practiceTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  backToCardsBtn: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderBottomWidth: 3,
+    borderBottomColor: '#DFDFDF',
+  },
+  backToCardsText: { color: '#1C7A35', fontWeight: '900' },
   mapViewport: {
     flex: 1,
     borderRadius: 26,
@@ -290,7 +359,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
     backgroundColor: '#89E256',
-    minHeight: 420,
+    minHeight: 500,
   },
   mapContent: { backgroundColor: '#89E256' },
   svgLayer: { position: 'absolute', top: 0, left: 0 },
