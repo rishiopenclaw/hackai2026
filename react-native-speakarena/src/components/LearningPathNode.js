@@ -1,90 +1,48 @@
-import React, { useRef } from 'react';
-import { StyleSheet, View, Text, Pressable, Animated } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import Bouncy3DButton from './Bouncy3DButton';
 
-const COLORS = {
-  green: { face: '#58CC02', shadow: '#58A700', text: '#FFFFFF' },
-  blue: { face: '#1CB0F6', shadow: '#1899D6', text: '#FFFFFF' },
-  grey: { face: '#E5E5E5', shadow: '#CECECE', text: '#4B4B4B' },
-};
-
-export default function LearningPathNode({ active, locked, number, icon, onPress }) {
-  const translateY = useRef(new Animated.Value(0)).current;
-  const palette = locked ? COLORS.grey : active ? COLORS.green : COLORS.blue;
-
-  const handlePressIn = () => {
-    Animated.spring(translateY, {
-      toValue: 6,
-      useNativeDriver: true,
-      speed: 50,
-      bounciness: 0,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(translateY, {
-      toValue: 0,
-      useNativeDriver: true,
-      speed: 50,
-      bounciness: 8,
-    }).start();
-  };
-
-  const label = icon || (number ? String(number) : '•');
-  const isIcon = Boolean(icon);
+export default function LearningPathNode({ active, locked, icon, number, onPress }) {
+  const variant = locked ? 'grey' : active ? 'green' : 'blue';
 
   return (
-    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut} style={styles.container}>
-      {/* LAYER 1: Static shadow/lip */}
-      <View style={[styles.shadowCircle, { backgroundColor: palette.shadow }]} />
-
-      {/* LAYER 2: Moving face */}
-      <Animated.View style={[styles.faceCircle, { backgroundColor: palette.face, transform: [{ translateY }] }]}>
-        <View style={styles.glossHighlight} />
-        <Text style={[styles.numberText, { color: palette.text }, isIcon && styles.iconText]}>{label}</Text>
-      </Animated.View>
-    </Pressable>
+    <View style={styles.wrap}>
+      <Bouncy3DButton
+        title={icon || (number ? String(number) : '•')}
+        variant={variant}
+        onPress={onPress}
+        style={styles.nodeBtn}
+        circle
+        size={68}
+        textStyle={icon ? styles.iconText : styles.numberText}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    width: 70,
-    height: 76, // 70 circle + 6 shadow drop
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+  wrap: { alignItems: 'center', width: 68, height: 68, justifyContent: 'center' },
+  nodeBtn: { width: 68 },
+  tipWrap: { position: 'absolute', alignItems: 'center', top: -42, zIndex: 4 },
+  tip: {
+    borderRadius: 14,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.08)',
   },
-  shadowCircle: {
-    position: 'absolute',
-    bottom: 0,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+  tipText: { color: '#4B4B4B', fontSize: 12, fontWeight: '900', letterSpacing: 0.3 },
+  tipArrow: {
+    width: 10,
+    height: 10,
+    backgroundColor: '#FFFFFF',
+    transform: [{ rotate: '45deg' }],
+    marginTop: -2,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'rgba(0,0,0,0.08)',
   },
-  faceCircle: {
-    position: 'absolute',
-    top: 0,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  glossHighlight: {
-    position: 'absolute',
-    top: 2,
-    width: 44,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255,255,255,0.25)',
-  },
-  numberText: {
-    fontSize: 28,
-    fontWeight: '900',
-    marginTop: 4,
-  },
-  iconText: {
-    fontSize: 30,
-    marginTop: 2,
-  },
+  numberText: { fontSize: 22, fontWeight: '900' },
+  iconText: { fontSize: 30, fontWeight: '900', lineHeight: 30 },
 });
