@@ -84,9 +84,11 @@ export default function HomeMainScreen({ navigation }) {
     <View style={styles.root}>
       <TopHeaderStats />
 
-      <View style={styles.switcher}>
-        <TopPill active={topMode === 'practice'} label="Practice" onPress={() => setTopMode('practice')} />
-        <TopPill active={topMode === 'club'} label="Club" onPress={() => setTopMode('club')} />
+      <View style={styles.switcherShell}>
+        <View style={styles.switcher}>
+          <TopPill active={topMode === 'practice'} label="Practise" onPress={() => setTopMode('practice')} />
+          <TopPill active={topMode === 'club'} label="Club" onPress={() => setTopMode('club')} />
+        </View>
       </View>
 
       {topMode === 'practice' ? (
@@ -234,19 +236,43 @@ function TopPill({ active, label, onPress }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F4F9F6' },
+  switcherShell: {
+    marginHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 10,
+    borderRadius: 18,
+    backgroundColor: '#1E8D53',
+    padding: 3,
+    shadowColor: '#11683A',
+    shadowOpacity: 0.24,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
   switcher: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginTop: 6,
-    marginBottom: 8,
-    padding: 4,
-    borderRadius: 16,
-    backgroundColor: '#E8EDF7',
+    gap: 4,
   },
-  topPill: { flex: 1, borderRadius: 12, paddingVertical: 10, alignItems: 'center' },
-  topPillActive: { backgroundColor: '#5E54FF' },
-  topPillText: { fontWeight: '800', color: '#697395' },
-  topPillTextActive: { color: '#fff' },
+  topPill: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: 8,
+    alignItems: 'center',
+    backgroundColor: '#2FB56F',
+    borderWidth: 1,
+    borderColor: '#249E5F',
+  },
+  topPillActive: {
+    backgroundColor: '#239F5E',
+    borderColor: '#19864E',
+    shadowColor: '#0F6E3E',
+    shadowOpacity: 0.22,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
+  },
+  topPillText: { fontWeight: '800', color: '#DDF7E9', fontSize: 15 },
+  topPillTextActive: { color: '#FFFFFF' },
   heading: {
     color: '#4B4B4B',
     fontSize: 15,
