@@ -30,24 +30,18 @@ const PATHS = [
     label: 'Everyday',
     trackId: 'human',
     subtitle: 'Casual conversations + confidence',
-    cardColor: '#FFD13B',
-    ctaColor: '#00D15E',
   },
   {
     id: 'clarify',
     label: 'Clarify',
     trackId: 'pressure',
     subtitle: 'Questions + active listening',
-    cardColor: '#7ED6FF',
-    ctaColor: '#3A93FF',
   },
   {
     id: 'persuade',
     label: 'Persuade',
     trackId: 'persuasive',
     subtitle: 'Pitches + structured influence',
-    cardColor: '#FFB7D8',
-    ctaColor: '#EC4C7B',
   },
 ];
 
@@ -160,13 +154,13 @@ export default function HomeMainScreen({ navigation }) {
                     {PATHS.map((path) => (
                       <TouchableOpacity
                         key={path.id}
-                        style={[styles.pathCard, { backgroundColor: path.cardColor }]}
+                        style={styles.pathCard}
                         onPress={() => setSelectedPathId(path.id)}
                         activeOpacity={0.92}
                       >
                         <Text style={styles.pathCardTitle}>{path.label}</Text>
                         <Text style={styles.pathCardSub}>{path.subtitle}</Text>
-                        <View style={[styles.pathCardCta, { backgroundColor: path.ctaColor }]}>
+                        <View style={styles.pathCardCta}>
                           <Text style={styles.pathCardCtaText}>Open Path</Text>
                         </View>
                       </TouchableOpacity>
@@ -431,26 +425,30 @@ const styles = StyleSheet.create({
   pathCardsStack: { gap: 12 },
   pathCard: {
     borderRadius: 24,
-    padding: 16,
-    minHeight: 126,
-    shadowColor: '#000',
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
+    padding: 18,
+    minHeight: 132,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E8F0E9',
+    shadowColor: '#0E5D2E',
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },
-  pathCardTitle: { color: '#1D1D1D', fontWeight: '900', fontSize: 24 },
-  pathCardSub: { color: '#5D5D5D', fontWeight: '700', marginTop: 4 },
+  pathCardTitle: { color: '#182026', fontWeight: '900', fontSize: 20 },
+  pathCardSub: { color: '#55616B', fontWeight: '700', marginTop: 4, fontSize: 12 },
   pathCardCta: {
     alignSelf: 'flex-start',
-    marginTop: 12,
+    marginTop: 14,
     borderRadius: 999,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    backgroundColor: '#00C95A',
     borderBottomWidth: 4,
-    borderBottomColor: 'rgba(0,0,0,0.2)',
+    borderBottomColor: '#009E47',
   },
-  pathCardCtaText: { color: '#FFF', fontWeight: '900' },
+  pathCardCtaText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
   practiceTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   backToCardsBtn: {
     backgroundColor: '#FFFFFF',
