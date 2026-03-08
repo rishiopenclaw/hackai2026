@@ -110,6 +110,7 @@ export default function HomeMainScreen({ navigation }) {
     persuade_pitch: { passed: 0, unlocked: 1, mastered: false },
   });
   const [clubRooms, setClubRooms] = useState(INITIAL_ROOMS);
+  const [myLobbyRoom, setMyLobbyRoom] = useState(null);
 
   const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 32;
@@ -149,6 +150,7 @@ export default function HomeMainScreen({ navigation }) {
   const randomTopic = () => DEBATE_TOPICS[Math.floor(Math.random() * DEBATE_TOPICS.length)];
 
   const createClubRoom = () => {
+    if (myLobbyRoom) return;
     const topic = randomTopic();
     const roomNum = Math.floor(1000 + Math.random() * 9000);
     const room = {
@@ -156,13 +158,13 @@ export default function HomeMainScreen({ navigation }) {
       status: 'Waiting',
       statusColor: '#8C6BFF',
       title: `Room ${roomNum}`,
-      subtitle: '1/6 players • Waiting for opponents',
+      subtitle: '1/2 players • Lobby open',
       topic,
     };
-    setClubRooms((prev) => [room, ...prev]);
+    setMyLobbyRoom(room);
   };
 
-  const joinDebateRoom = (room) => {
+  const joinDebateRoom = (room, localFriend = false) => {
     navigation.navigate('Learn', {
       screen: 'SessionLive',
       params: {
@@ -170,8 +172,24 @@ export default function HomeMainScreen({ navigation }) {
         roomId: room.id,
         roomTitle: room.title,
         topic: room.topic,
+        localFriend,
       },
     });
+  };
+
+  const startWithFriend = () => {
+    if (!myLobbyRoom) return;
+    joinDebateRoom(
+      {
+        ...myLobbyRoom,
+        subtitle: '2/2 players • Ready',
+      },
+      true,
+    );
+  };
+
+  const closeLobbyRoom = () => {
+    setMyLobbyRoom(null);
   };
 
 
@@ -387,11 +405,33 @@ export default function HomeMainScreen({ navigation }) {
 
               <View style={styles.exploreRow}>
                 <Text style={styles.exploreTitle}>Explore</Text>
-                <TouchableOpacity style={styles.createBtn} activeOpacity={0.9} onPress={createClubRoom}>
+                <TouchableOpacity
+                  style={[styles.createBtn, myLobbyRoom && styles.createBtnDisabled]}
+                  activeOpacity={0.9}
+                  onPress={createClubRoom}
+                >
                   <Plus size={14} color="#27A14C" />
-                  <Text style={styles.createBtnText}>Create Room</Text>
+                  <Text style={styles.createBtnText}>{myLobbyRoom ? 'Room Active' : 'Create Room'}</Text>
                 </TouchableOpacity>
               </View>
+
+              {!!myLobbyRoom && (
+                <View style={styles.lobbyCard}>
+                  <View style={styles.lobbyTop}>
+                    <Text style={styles.lobbyTitle}>Your Lobby • {myLobbyRoom.title}</Text>
+                    <Text style={styles.lobbyState}>Waiting for player...</Text>
+                  </View>
+                  <Text style={styles.lobbyTopic}>{myLobbyRoom.topic}</Text>
+                  <View style={styles.lobbyActions}>
+                    <TouchableOpacity style={styles.lobbyPrimaryBtn} onPress={startWithFriend}>
+                      <Text style={styles.lobbyPrimaryText}>Play with Friend Nearby</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.lobbyGhostBtn} onPress={closeLobbyRoom}>
+                      <Text style={styles.lobbyGhostText}>Close Room</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
 
               <View style={styles.listWrap}>
                 {clubRooms.map((room) => (
@@ -651,6 +691,42 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
   },
   createBtnText: { color: '#27A14C', fontWeight: '900', fontSize: 13 },
+  createBtnDisabled: { opacity: 0.72 },
+
+  lobbyCard: {
+    marginTop: 4,
+    marginBottom: 10,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E8F0E9',
+    padding: 14,
+  },
+  lobbyTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+  lobbyTitle: { color: '#1E2644', fontWeight: '900', fontSize: 14, flex: 1 },
+  lobbyState: { color: '#8C6BFF', fontWeight: '800', fontSize: 12 },
+  lobbyTopic: { marginTop: 8, color: '#344063', fontWeight: '700', lineHeight: 18 },
+  lobbyActions: { marginTop: 12, flexDirection: 'row', gap: 8 },
+  lobbyPrimaryBtn: {
+    flex: 1,
+    borderRadius: 12,
+    backgroundColor: '#27A14C',
+    borderBottomWidth: 3,
+    borderBottomColor: '#1C7A35',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+  },
+  lobbyPrimaryText: { color: '#FFFFFF', fontWeight: '900', fontSize: 12 },
+  lobbyGhostBtn: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#D9DFED',
+    backgroundColor: '#F7F9FF',
+  },
+  lobbyGhostText: { color: '#5A668A', fontWeight: '800', fontSize: 12 },
 
   listWrap: { paddingTop: 4 },
   roomOuter: { marginTop: 20, position: 'relative' },

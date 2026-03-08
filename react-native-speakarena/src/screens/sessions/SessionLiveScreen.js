@@ -7,6 +7,7 @@ export default function SessionLiveScreen({ route, navigation }) {
   const mode = route.params?.mode;
   const topic = route.params?.topic;
   const roomTitle = route.params?.roomTitle;
+  const localFriend = route.params?.localFriend;
   const pulse = useMemo(() => new Animated.Value(1), []);
 
   React.useEffect(() => {
@@ -28,7 +29,7 @@ export default function SessionLiveScreen({ route, navigation }) {
         {mode === 'club-debate' && (
           <View style={styles.topicWrap}>
             <Text style={styles.roomName}>{roomTitle || 'Debate Room'}</Text>
-            <Text style={styles.topicLabel}>Topic</Text>
+            <Text style={styles.topicLabel}>{localFriend ? 'Mode: Friend Nearby' : 'Mode: Online Lobby'}</Text>
             <Text style={styles.topicText}>{topic}</Text>
           </View>
         )}
