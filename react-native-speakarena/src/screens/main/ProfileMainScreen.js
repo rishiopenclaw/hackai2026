@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
-import { palette } from '../../theme/design';
+import { palette, type } from '../../theme/design';
 
 export default function ProfileMainScreen() {
   return (
@@ -30,8 +30,8 @@ export default function ProfileMainScreen() {
 }
 
 const styles = StyleSheet.create({
-  title: { color: palette.text, fontSize: 34, lineHeight: 38, fontWeight: '800', letterSpacing: -0.5 },
-  sub: { color: palette.subtext, marginTop: 6, fontSize: 14, lineHeight: 20, maxWidth: 340 },
+  title: { color: palette.text, ...type.display },
+  sub: { color: palette.subtext, marginTop: 6, ...type.body, maxWidth: 340 },
   cardTitle: { color: palette.text, fontWeight: '700', fontSize: 18 },
   cardSub: { color: palette.subtext, marginTop: 5, lineHeight: 19 },
   grid: { flexDirection: 'row', gap: 8, marginTop: 10 },

@@ -16,3 +16,16 @@ export const radius = {
   md: 18,
   sm: 14,
 };
+
+export const type = {
+  display: { fontSize: 34, lineHeight: 38, fontWeight: '800', letterSpacing: -0.5 },
+  heading: { fontSize: 18, lineHeight: 22, fontWeight: '700' },
+  body: { fontSize: 14, lineHeight: 20, fontWeight: '400' },
+  label: { fontSize: 12, lineHeight: 16, fontWeight: '600' },
+};
+
+export const motion = {
+  fast: 160,
+  base: 240,
+  slow: 320,
+};

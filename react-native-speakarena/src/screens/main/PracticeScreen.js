@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
-import { palette } from '../../theme/design';
+import { palette, type } from '../../theme/design';
 
 const TRACKS = [
   { key: 'DebateArena', title: 'Speak Persuasive', sub: 'Build claims and rebut calmly.' },
@@ -36,8 +36,8 @@ export default function PracticeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  title: { color: palette.text, fontSize: 34, lineHeight: 38, fontWeight: '800', letterSpacing: -0.5 },
-  sub: { color: palette.subtext, marginTop: 6, fontSize: 14, lineHeight: 20, maxWidth: 340 },
+  title: { color: palette.text, ...type.display },
+  sub: { color: palette.subtext, marginTop: 6, ...type.body, maxWidth: 340 },
   rowCard: { flexDirection: 'row', alignItems: 'center' },
   cardTitle: { color: palette.text, fontSize: 16, fontWeight: '700' },
   cardSub: { color: palette.subtext, marginTop: 3, fontSize: 13 },

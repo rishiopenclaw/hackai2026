@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
 import ActionRow from '../../components/ActionRow';
-import { palette } from '../../theme/design';
+import { palette, type } from '../../theme/design';
 
 export default function HomeMainScreen() {
   return (
@@ -39,8 +39,8 @@ export default function HomeMainScreen() {
 
 const styles = StyleSheet.create({
   eyebrow: { color: '#8E97AC', fontSize: 11, letterSpacing: 1.6, fontWeight: '700', marginTop: 2 },
-  title: { color: palette.text, fontSize: 34, lineHeight: 38, fontWeight: '800', letterSpacing: -0.5, marginTop: 4 },
-  sub: { color: palette.subtext, marginTop: 6, fontSize: 14, lineHeight: 20, maxWidth: 340 },
+  title: { color: palette.text, ...type.display, marginTop: 4 },
+  sub: { color: palette.subtext, marginTop: 6, ...type.body, maxWidth: 340 },
   cardTitle: { color: palette.text, fontSize: 18, fontWeight: '700' },
   cardSub: { color: palette.subtext, marginTop: 5, lineHeight: 19 },
 });
