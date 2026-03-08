@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Plus, Users, Search, Flame, Gem, Heart } from 'lucide-react-native';
+import { Plus, Users, Search } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -81,18 +81,6 @@ export default function HomeMainScreen({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <View style={styles.richTopBar}>
-        <View style={styles.flagChip}>
-          <Text style={styles.flagText}>🇺🇸</Text>
-        </View>
-
-        <View style={styles.statsRow}>
-          <StatPill icon={<Flame size={14} color="#FF6B00" />} value="12" />
-          <StatPill icon={<Gem size={14} color="#3AB2FF" />} value="240" />
-          <StatPill icon={<Heart size={14} color="#FF4A61" />} value="5" />
-        </View>
-      </View>
-
       <View style={styles.switcherShell}>
         <View style={styles.switcher}>
           <TopPill active={topMode === 'practice'} label="Practise" onPress={() => setTopMode('practice')} />
@@ -243,57 +231,8 @@ function TopPill({ active, label, onPress }) {
   );
 }
 
-function StatPill({ icon, value }) {
-  return (
-    <View style={styles.statPill}>
-      {icon}
-      <Text style={styles.statPillText}>{value}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F4F9F6' },
-  richTopBar: {
-    marginHorizontal: 20,
-    marginTop: 8,
-    marginBottom: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  flagChip: {
-    height: 42,
-    width: 42,
-    borderRadius: 21,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#DCE2EE',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#63709A',
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  flagText: { fontSize: 18 },
-  statsRow: { flexDirection: 'row', gap: 8 },
-  statPill: {
-    height: 40,
-    minWidth: 74,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#DCE2EE',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-  },
-  statPillText: { fontWeight: '900', color: '#4A557A', fontSize: 15 },
-
   switcherShell: {
     marginHorizontal: 20,
     marginBottom: 12,
