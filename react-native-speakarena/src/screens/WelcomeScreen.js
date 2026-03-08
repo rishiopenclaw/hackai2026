@@ -1,29 +1,11 @@
-import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { MessageCircleHeart } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { PrimaryPill, TextAction } from '../components/CleanCTA';
+import { PrimaryPill } from '../components/CleanCTA';
 import { palette, type } from '../theme/design';
 
 export default function WelcomeScreen({ navigation }) {
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (token) {
-          navigation.replace('MainTabs');
-        }
-      } catch (e) {
-        console.error("Failed to check auth status", e);
-      }
-    };
-    
-    // Add small delay to let splash screen transition smoothly if needed
-    const timeout = setTimeout(checkLoginStatus, 100);
-    return () => clearTimeout(timeout);
-  }, [navigation]);
-
   return (
     <SafeAreaView style={styles.root}>
       <LinearGradient colors={[palette.bg, palette.bg2]} style={StyleSheet.absoluteFill} />
@@ -33,8 +15,7 @@ export default function WelcomeScreen({ navigation }) {
         <Text style={styles.title}>Learn to speak{`\n`}with confidence.</Text>
         <Text style={styles.sub}>Daily speaking practice with clear feedback and real-world scenarios.</Text>
 
-        <PrimaryPill title="Create account" onPress={() => navigation.navigate('OnboardingQuiz')} style={{ marginTop: 16 }} />
-        <TextAction title="I already have an account" onPress={() => navigation.navigate('Login')} style={{ marginTop: 8 }} />
+        <PrimaryPill title="Continue" onPress={() => navigation.navigate('OnboardingQuiz')} style={{ marginTop: 16 }} />
       </View>
     </SafeAreaView>
   );
