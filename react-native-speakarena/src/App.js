@@ -16,12 +16,12 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <StatusBar style="dark" />
+        <StatusBar style="light" />
         <Tab.Navigator
           tabBar={(props) => <CustomTabBar {...props} />}
           screenOptions={{
             headerShown: false,
-            sceneStyle: { backgroundColor: colors.bg },
+            sceneStyle: { backgroundColor: colors.bgBottom },
           }}
         >
           <Tab.Screen name="Path" component={HomeScreen} />

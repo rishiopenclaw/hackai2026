@@ -1,20 +1,24 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, Text, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import MobileFrame from '../components/MobileFrame';
 import { colors } from '../theme/colors';
-import ChirpMascot from '../components/ChirpMascot';
 
 export default function DrillsScreen() {
   return (
-    <View style={styles.container}>
-      <ChirpMascot size={100} />
-      <Text style={styles.title}>Articulation Drills</Text>
-      <Text style={styles.sub}>Shadowing, pacing, and filler-word drills are ready for wiring.</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bgBottom }}>
+      <MobileFrame>
+        <LinearGradient colors={[colors.bgTop, '#0B0D13', colors.bgBottom]} style={styles.container}>
+          <Text style={styles.title}>Drills</Text>
+          <Text style={styles.sub}>Articulation and shadowing modules land here.</Text>
+        </LinearGradient>
+      </MobileFrame>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', gap: 12, padding: 20 },
-  title: { fontSize: 24, fontWeight: '900', color: colors.text },
-  sub: { textAlign: 'center', color: colors.subtext, fontWeight: '600' },
+  container: { flex: 1, padding: 16 },
+  title: { color: '#fff', fontSize: 30, fontWeight: '900' },
+  sub: { color: '#A1A1AA', marginTop: 8 },
 });

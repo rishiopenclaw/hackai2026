@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';
 
-export default function ProgressBar({ progress = 0, fill = colors.orange }) {
+export default function ProgressBar({ progress = 0, fill = colors.sunset[2] }) {
   const clamped = Math.max(0, Math.min(progress, 1));
   return (
     <View style={styles.wrap}>
