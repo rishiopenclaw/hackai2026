@@ -1,13 +1,15 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import HeroBackground from '../components/HeroBackground';
 import AppleButton from '../components/AppleButton';
 import AppleCard from '../components/AppleCard';
+import FluidHero from '../components/FluidHero';
 
 export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.hero}><HeroBackground /></View>
+      <View style={styles.heroWrap}>
+        <FluidHero />
+      </View>
       <View style={styles.bottom}>
         <Text style={styles.title}>Welcome back</Text>
         <AppleCard>
@@ -24,9 +26,19 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#09090C' },
-  hero: { flex: 0.62 },
-  bottom: { flex: 0.38, paddingHorizontal: 22, paddingTop: 14, backgroundColor: '#07080D' },
-  title: { color: '#fff', fontSize: 34, fontWeight: '700', marginBottom: 12 },
+  heroWrap: {
+    flex: 0.56,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  bottom: {
+    flex: 0.44,
+    paddingHorizontal: 22,
+    paddingTop: 12,
+    backgroundColor: '#07080D',
+  },
+  title: { color: '#fff', fontSize: 34, fontWeight: '700', marginBottom: 12, letterSpacing: -0.25 },
   input: { color: '#fff', fontSize: 16, paddingVertical: 10 },
   sep: { height: 1, backgroundColor: 'rgba(255,255,255,0.08)' },
 });
