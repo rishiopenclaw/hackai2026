@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "SpeakArena",
+    "slug": "speakarena",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#F5FAFF"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F5FAFF"
+      }
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
