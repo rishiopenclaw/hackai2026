@@ -107,10 +107,6 @@ export default function HomeMainScreen({ navigation }) {
                   <View style={styles.streakCardWrap}>
                     <View style={styles.streakCardGlow} />
                     <View style={styles.streakCard}>
-                      <View style={styles.streakTopRow}>
-                        <Text style={styles.streakTitle}>Consecutive study days</Text>
-                      </View>
-
                       <View style={styles.giftCenterWrap}>
                         <View style={styles.giftBadgeLarge}>
                           <View style={styles.giftRibbonVertical} />
@@ -119,7 +115,10 @@ export default function HomeMainScreen({ navigation }) {
                           <View style={styles.giftBowRight} />
                           <Gift size={16} color="#FFFFFF" />
                         </View>
-                        <Text style={styles.giftLabel}>Present</Text>
+                      </View>
+
+                      <View style={styles.streakTopRow}>
+                        <Text style={styles.streakTitle}>Consecutive study days</Text>
                       </View>
 
                       <View style={styles.weekRow}>
@@ -348,7 +347,7 @@ const styles = StyleSheet.create({
   },
   streakTopRow: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-start' },
   streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1, paddingRight: 8 },
-  giftCenterWrap: { alignItems: 'center', marginTop: 8, marginBottom: 4 },
+  giftCenterWrap: { alignItems: 'center', marginTop: 2, marginBottom: 8 },
   giftBadgeLarge: {
     width: 72,
     height: 72,
@@ -401,7 +400,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7B43A',
     transform: [{ rotate: '20deg' }],
   },
-  giftLabel: { color: '#8B91A5', fontWeight: '900', fontSize: 11, marginTop: 6 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 },
   dayItem: { alignItems: 'center', gap: 6, width: 34 },
   dayLabel: { color: '#7F869E', fontWeight: '700', fontSize: 10 },
