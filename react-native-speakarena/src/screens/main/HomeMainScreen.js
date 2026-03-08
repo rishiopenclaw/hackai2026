@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,8 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Dimensions,
 } from 'react-native';
+import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import { Play, Plus, House, Trophy, GraduationCap, UserCircle2, CircleHelp } from 'lucide-react-native';
+import LearningPathNode from '../../components/LearningPathNode';
+import Bouncy3DButton from '../../components/Bouncy3DButton';
 
 const rooms = [
   { id: '1', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 18', subtitle: 'Duet: Guess the word' },
@@ -15,9 +19,50 @@ const rooms = [
   { id: '3', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 77', subtitle: 'Debate: AI in schools' },
 ];
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const NODE_SIZE = 70;
+const Y_SPACING = 130;
+const X_AMPLITUDE = 84;
+
+const PATHS = [
+  { id: 'everyday', label: 'Everyday', trackId: 'human' },
+  { id: 'clarify', label: 'Clarify', trackId: 'pressure' },
+  { id: 'persuade', label: 'Persuade', trackId: 'persuasive' },
+];
+
+const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
+  Array.from({ length: numNodes }).map((_, i) => {
+    const xOffset = Math.sin(i * 1.02) * X_AMPLITUDE;
+    return {
+      id: i + 1,
+      centerX: viewportWidth / 2 + xOffset,
+      centerY: (i + 1) * Y_SPACING,
+    };
+  });
+
+const generateSvgPath = (nodes) => {
+  if (!nodes.length) return '';
+  let d = `M ${nodes[0].centerX} ${nodes[0].centerY}`;
+  for (let i = 1; i < nodes.length; i += 1) {
+    const prev = nodes[i - 1];
+    const curr = nodes[i];
+    const cpY = prev.centerY + (curr.centerY - prev.centerY) / 2;
+    d += ` C ${prev.centerX} ${cpY}, ${curr.centerX} ${cpY}, ${curr.centerX} ${curr.centerY}`;
+  }
+  return d;
+};
+
 export default function HomeMainScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('club');
   const [activeBottom, setActiveBottom] = useState('home');
+  const [selectedPathId, setSelectedPathId] = useState('everyday');
+
+  const mapScrollRef = useRef(null);
+  const MAP_WIDTH = SCREEN_WIDTH - 32;
+  const nodes = useMemo(() => generatePathData(11, MAP_WIDTH), [MAP_WIDTH]);
+  const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
+  const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
+  const selectedPath = PATHS.find((p) => p.id === selectedPathId) || PATHS[0];
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -26,10 +71,7 @@ export default function HomeMainScreen({ navigation }) {
           <View style={styles.segmentWrap}>
             <TouchableOpacity
               style={[styles.segmentBtn, activeTab === 'practice' ? styles.segmentActive : styles.segmentInactive]}
-              onPress={() => {
-                setActiveTab('practice');
-                navigation.navigate('Practice');
-              }}
+              onPress={() => setActiveTab('practice')}
               activeOpacity={0.9}
             >
               <Text style={styles.segmentText}>Practise</Text>
@@ -44,73 +86,163 @@ export default function HomeMainScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.heroCard}>
-            <View style={styles.liveTag}>
-              <Text style={styles.liveTagText}>• LIVE</Text>
-            </View>
+          {activeTab === 'practice' ? (
+            <>
+              <Text style={styles.practiceHeader}>YOUR PATH</Text>
 
-            <Text style={styles.heroTitle}>Room 4450</Text>
-            <Text style={styles.heroSub}>Competition{"\n"}Top users</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pathRow}>
+                {PATHS.map((path) => (
+                  <TouchableOpacity
+                    key={path.id}
+                    style={[styles.pathChip, selectedPathId === path.id && styles.pathChipActive]}
+                    onPress={() => setSelectedPathId(path.id)}
+                  >
+                    <Text style={[styles.pathChipText, selectedPathId === path.id && styles.pathChipTextActive]}>{path.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
 
-            <TouchableOpacity style={styles.watchGreenBtn} activeOpacity={0.9}>
-              <Play size={14} color="#FFF" fill="#FFF" />
-              <Text style={styles.watchGreenText}>Watch</Text>
-            </TouchableOpacity>
+              <ScrollView
+                ref={mapScrollRef}
+                style={styles.mapViewport}
+                contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
+                showsVerticalScrollIndicator={false}
+                onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
+              >
+                <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
+                  <Defs>
+                    <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
+                      <Stop offset="0%" stopColor="#9AE15D" />
+                      <Stop offset="100%" stopColor="#84D64A" />
+                    </LinearGradient>
+                    <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
+                      <Stop offset="0%" stopColor="#FFF7DD" />
+                      <Stop offset="100%" stopColor="#F1E0B2" />
+                    </LinearGradient>
+                  </Defs>
 
-            <View style={styles.heroMascotPlaceholder} />
-          </View>
+                  <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
+                  <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+                  <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
-          <View style={styles.exploreRow}>
-            <Text style={styles.exploreTitle}>Explore</Text>
-            <TouchableOpacity style={styles.createBtn} activeOpacity={0.9}>
-              <Plus size={14} color="#27A14C" />
-              <Text style={styles.createBtnText}>Create Room</Text>
-            </TouchableOpacity>
-          </View>
+                  {nodes.map((n) => (
+                    <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
+                  ))}
+                </Svg>
 
-          <View style={styles.listWrap}>
-            {rooms.map((room) => (
-              <View key={room.id} style={styles.roomOuter}>
-                <View style={[styles.overlapTag, { backgroundColor: room.statusColor }]}>
-                  <Text style={styles.overlapTagText}>{room.status}</Text>
-                </View>
+                {nodes.map((node, idx) => {
+                  const isFlagNode = idx === 0;
+                  const numberFromBottom = nodes.length - idx;
+                  const shownNumber = isFlagNode ? undefined : numberFromBottom;
 
-                <View style={styles.roomCard}>
-                  <View style={styles.roomLeft}>
-                    <Text style={styles.roomTitle}>{room.title}</Text>
-                    <Text style={styles.roomSub}>{room.subtitle}</Text>
-                  </View>
+                  return (
+                    <View
+                      key={node.id}
+                      style={{
+                        position: 'absolute',
+                        left: node.centerX - NODE_SIZE / 2,
+                        top: node.centerY - NODE_SIZE / 2,
+                        width: NODE_SIZE,
+                        height: NODE_SIZE,
+                      }}
+                    >
+                      <LearningPathNode
+                        number={shownNumber}
+                        icon={isFlagNode ? '⚑' : undefined}
+                        active={isFlagNode}
+                        onPress={() =>
+                          navigation.navigate('Practice', {
+                            screen: 'SessionPreflight',
+                            params: { trackId: selectedPath.trackId },
+                          })
+                        }
+                      />
+                    </View>
+                  );
+                })}
+              </ScrollView>
 
-                  <View style={styles.roomRight}>
-                    <CircleHelp size={24} color="#8C6BFF" />
-                    <TouchableOpacity style={styles.watchOrangeBtn} activeOpacity={0.9}>
-                      <Text style={styles.watchOrangeText}>Watch</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+              <View style={styles.bottomCtaArea}>
+                <Bouncy3DButton
+                  title={`Start ${selectedPath.label}`}
+                  variant="orange"
+                  onPress={() =>
+                    navigation.navigate('Practice', {
+                      screen: 'SessionPreflight',
+                      params: { trackId: selectedPath.trackId },
+                    })
+                  }
+                />
               </View>
-            ))}
-          </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.heroCard}>
+                <View style={styles.liveTag}>
+                  <Text style={styles.liveTagText}>• LIVE</Text>
+                </View>
+
+                <Text style={styles.heroTitle}>Room 4450</Text>
+                <Text style={styles.heroSub}>Competition{"\n"}Top users</Text>
+
+                <TouchableOpacity style={styles.watchGreenBtn} activeOpacity={0.9}>
+                  <Play size={14} color="#FFF" fill="#FFF" />
+                  <Text style={styles.watchGreenText}>Watch</Text>
+                </TouchableOpacity>
+
+                <View style={styles.heroMascotPlaceholder} />
+              </View>
+
+              <View style={styles.exploreRow}>
+                <Text style={styles.exploreTitle}>Explore</Text>
+                <TouchableOpacity style={styles.createBtn} activeOpacity={0.9}>
+                  <Plus size={14} color="#27A14C" />
+                  <Text style={styles.createBtnText}>Create Room</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.listWrap}>
+                {rooms.map((room) => (
+                  <View key={room.id} style={styles.roomOuter}>
+                    <View style={[styles.overlapTag, { backgroundColor: room.statusColor }]}>
+                      <Text style={styles.overlapTagText}>{room.status}</Text>
+                    </View>
+
+                    <View style={styles.roomCard}>
+                      <View style={styles.roomLeft}>
+                        <Text style={styles.roomTitle}>{room.title}</Text>
+                        <Text style={styles.roomSub}>{room.subtitle}</Text>
+                      </View>
+
+                      <View style={styles.roomRight}>
+                        <CircleHelp size={24} color="#8C6BFF" />
+                        <TouchableOpacity style={styles.watchOrangeBtn} activeOpacity={0.9}>
+                          <Text style={styles.watchOrangeText}>Watch</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
         </ScrollView>
 
         <View style={styles.bottomNav}>
           <BottomItem
-            active={activeBottom === 'home'}
             onPress={() => setActiveBottom('home')}
             icon={<House size={22} color={activeBottom === 'home' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
           />
           <BottomItem
-            active={activeBottom === 'club'}
             onPress={() => setActiveBottom('club')}
             icon={<Trophy size={22} color={activeBottom === 'club' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
           />
           <BottomItem
-            active={activeBottom === 'learn'}
             onPress={() => setActiveBottom('learn')}
             icon={<GraduationCap size={22} color={activeBottom === 'learn' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
           />
           <BottomItem
-            active={activeBottom === 'me'}
             onPress={() => setActiveBottom('me')}
             icon={<UserCircle2 size={22} color={activeBottom === 'me' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
           />
@@ -131,11 +263,7 @@ function BottomItem({ icon, onPress }) {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#27A14C' },
   screen: { flex: 1, backgroundColor: '#27A14C' },
-  content: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 120,
-  },
+  content: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 120 },
 
   segmentWrap: {
     backgroundColor: '#1C7A35',
@@ -144,27 +272,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 16,
   },
-  segmentBtn: {
+  segmentBtn: { flex: 1, borderRadius: 16, alignItems: 'center', paddingVertical: 10 },
+  segmentActive: { backgroundColor: '#27A14C', borderBottomWidth: 0, transform: [{ translateY: 2 }] },
+  segmentInactive: { backgroundColor: '#37C25E', borderBottomWidth: 4, borderBottomColor: '#1C7A35' },
+  segmentText: { color: '#FFF', fontWeight: '900', fontSize: 16 },
+
+  practiceHeader: { color: '#FFF', fontWeight: '900', fontSize: 15, marginBottom: 8, letterSpacing: 1 },
+  pathRow: { gap: 8, paddingBottom: 10 },
+  pathChip: { backgroundColor: '#E8EDF7', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
+  pathChipActive: { backgroundColor: '#DCD9FF' },
+  pathChipText: { fontWeight: '700', color: '#687193' },
+  pathChipTextActive: { color: '#433DD3' },
+  mapViewport: {
     flex: 1,
-    borderRadius: 16,
-    alignItems: 'center',
-    paddingVertical: 10,
+    borderRadius: 26,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: '#89E256',
+    minHeight: 420,
   },
-  segmentActive: {
-    backgroundColor: '#27A14C',
-    borderBottomWidth: 0,
-    transform: [{ translateY: 2 }],
-  },
-  segmentInactive: {
-    backgroundColor: '#37C25E',
-    borderBottomWidth: 4,
-    borderBottomColor: '#1C7A35',
-  },
-  segmentText: {
-    color: '#FFF',
-    fontWeight: '900',
-    fontSize: 16,
-  },
+  mapContent: { backgroundColor: '#89E256' },
+  svgLayer: { position: 'absolute', top: 0, left: 0 },
+  bottomCtaArea: { paddingTop: 10 },
 
   heroCard: {
     height: 180,
@@ -214,17 +344,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(128, 78, 255, 0.15)',
   },
 
-  exploreRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  exploreTitle: {
-    color: '#FFF',
-    fontSize: 22,
-    fontWeight: '900',
-  },
+  exploreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  exploreTitle: { color: '#FFF', fontSize: 22, fontWeight: '900' },
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -236,17 +357,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 7,
   },
-  createBtnText: {
-    color: '#27A14C',
-    fontWeight: '900',
-    fontSize: 13,
-  },
+  createBtnText: { color: '#27A14C', fontWeight: '900', fontSize: 13 },
 
   listWrap: { paddingTop: 4 },
-  roomOuter: {
-    marginTop: 20,
-    position: 'relative',
-  },
+  roomOuter: { marginTop: 20, position: 'relative' },
   overlapTag: {
     position: 'absolute',
     top: -16,
@@ -258,11 +372,7 @@ const styles = StyleSheet.create({
     zIndex: 20,
     elevation: 10,
   },
-  overlapTagText: {
-    color: '#FFF',
-    fontWeight: '900',
-    fontSize: 12,
-  },
+  overlapTagText: { color: '#FFF', fontWeight: '900', fontSize: 12 },
   roomCard: {
     backgroundColor: '#FFF',
     borderRadius: 24,
@@ -281,7 +391,6 @@ const styles = StyleSheet.create({
   roomLeft: { flex: 1, paddingRight: 10 },
   roomTitle: { color: '#1E1E1E', fontSize: 24, fontWeight: '900' },
   roomSub: { color: '#949494', fontSize: 12, fontWeight: '700', marginTop: 2 },
-
   roomRight: { alignItems: 'flex-end', gap: 8 },
   watchOrangeBtn: {
     backgroundColor: '#F7A928',
@@ -311,10 +420,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -4 },
     elevation: 10,
   },
-  bottomItem: {
-    width: 52,
-    height: 42,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  bottomItem: { width: 52, height: 42, alignItems: 'center', justifyContent: 'center' },
 });
