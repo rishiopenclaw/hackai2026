@@ -86,7 +86,11 @@ export default function HomeMainScreen({ navigation }) {
 
         {/* Layer 2: Nodes aligned to same coordinates */}
         {nodes.map((node, idx) => {
-          const isFlagNode = idx === nodes.length - 1;
+          // Top node is the end-flag. Bottom node is 1.
+          const isFlagNode = idx === 0;
+          const numberFromBottom = nodes.length - idx; // for 11 nodes: bottom=1, top=11
+          const shownNumber = isFlagNode ? undefined : numberFromBottom;
+
           return (
             <View
               key={node.id}
@@ -99,7 +103,7 @@ export default function HomeMainScreen({ navigation }) {
               }}
             >
               <LearningPathNode
-                number={isFlagNode ? undefined : node.id}
+                number={shownNumber}
                 icon={isFlagNode ? '⚑' : undefined}
                 active={isFlagNode}
                 onPress={() =>
