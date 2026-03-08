@@ -117,12 +117,12 @@ export default function ProgressMainScreen({ navigation }) {
         if (!token) return;
 
         // Fetch User and Stats
-        const meRes = await fetch('http://localhost:4000/api/auth/me', {
+        const meRes = await fetch('http://localhost:3000/api/auth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         
         // Fetch Leaderboard
-        const leadRes = await fetch('http://localhost:4000/api/auth/leaderboard', {
+        const leadRes = await fetch('http://localhost:3000/api/auth/leaderboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
