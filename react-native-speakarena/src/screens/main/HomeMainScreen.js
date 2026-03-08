@@ -9,11 +9,11 @@ import Bouncy3DButton from '../../components/Bouncy3DButton';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const NODE_SIZE = 70;
 const Y_SPACING = 130;
-const X_AMPLITUDE = 60;
+const X_AMPLITUDE = 84;
 
 const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
   Array.from({ length: numNodes }).map((_, i) => {
-    const xOffset = Math.sin(i * 0.8) * X_AMPLITUDE;
+    const xOffset = Math.sin(i * 1.02) * X_AMPLITUDE;
     return {
       id: i + 1,
       centerX: viewportWidth / 2 + xOffset,
