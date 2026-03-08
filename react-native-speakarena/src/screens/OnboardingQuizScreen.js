@@ -24,7 +24,7 @@ export default function OnboardingQuizScreen({ navigation }) {
           ))}
         </View>
 
-        <PrimaryPill title="Continue" onPress={() => navigation.navigate('SignUp')} style={{ marginTop: 16 }} />
+        <PrimaryPill title="Continue" onPress={() => navigation.replace('MainTabs')} style={{ marginTop: 16 }} />
       </View>
     </SafeAreaView>
   );
