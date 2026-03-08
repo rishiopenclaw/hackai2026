@@ -13,28 +13,31 @@ function Mark() {
 }
 
 export default function SignUpScreen() {
-  const { width } = useWindowDimensions();
-  const mobileMode = width <= 430;
-  const shellWidth = mobileMode ? width : Math.min(width - 28, 390);
+  const { width, height } = useWindowDimensions();
+  const shellWidth = Math.min(width - 20, 390);
+  const shellHeight = Math.min(height - 28, 844);
 
   return (
     <SafeAreaView style={styles.root}>
-      <View style={[styles.phoneShell, mobileMode ? styles.phoneShellMobile : styles.phoneShellDesktop, { width: shellWidth }]}>
-        <LinearGradient colors={['#B56D24', '#7A4318', '#2B1A12']} style={styles.hero}>
+      <LinearGradient colors={['#24180F', '#0C0B0B']} style={StyleSheet.absoluteFill} />
+
+      <View style={[styles.phoneShell, { width: shellWidth, height: shellHeight }]}> 
+        <LinearGradient colors={['#BA7228', '#76431B', '#1C1414']} style={styles.hero}>
           <LinearGradient
-            colors={['rgba(255,176,92,0.35)', 'rgba(255,120,40,0.16)', 'rgba(0,0,0,0)']}
-            start={{ x: 0.05, y: 0 }}
+            colors={['rgba(255,191,109,0.30)', 'rgba(255,131,36,0.14)', 'rgba(0,0,0,0)']}
+            start={{ x: 0.08, y: 0.02 }}
             end={{ x: 0.9, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
 
-          <View style={styles.geoA} />
-          <View style={styles.geoB} />
-          <View style={styles.geoC} />
+          {/* reference-like intersecting rounded panels */}
+          <View style={styles.shapeA} />
+          <View style={styles.shapeB} />
+          <View style={styles.shapeC} />
 
           <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.86)']}
-            start={{ x: 0.5, y: 0.55 }}
+            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.92)']}
+            start={{ x: 0.5, y: 0.50 }}
             end={{ x: 0.5, y: 1 }}
             style={styles.heroFade}
           />
@@ -56,7 +59,7 @@ export default function SignUpScreen() {
 
           <Pressable style={({ pressed }) => [styles.ctaWrap, pressed && styles.pressed]}>
             <LinearGradient
-              colors={['#FF552D', '#FF7E35', '#FFE27C']}
+              colors={['#FF552D', '#FF8A36', '#FFE27A']}
               start={{ x: 0, y: 0.5 }}
               end={{ x: 1, y: 0.5 }}
               style={styles.cta}
@@ -77,24 +80,21 @@ export default function SignUpScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#0A0909',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 10,
   },
   phoneShell: {
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#34363D',
     overflow: 'hidden',
     backgroundColor: '#000',
-  },
-  phoneShellDesktop: {
-    height: '92%',
-    borderRadius: 42,
-    borderWidth: 2,
-    borderColor: '#2A2D33',
-  },
-  phoneShellMobile: {
-    flex: 1,
-    borderRadius: 0,
-    borderWidth: 0,
+    shadowColor: '#C78633',
+    shadowOpacity: 0.22,
+    shadowRadius: 28,
+    shadowOffset: { width: 0, height: 14 },
+    elevation: 10,
   },
 
   hero: {
@@ -106,38 +106,40 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: 170,
+    height: 190,
   },
-  geoA: {
+
+  shapeA: {
     position: 'absolute',
-    top: -28,
-    left: -44,
+    top: -40,
+    left: -70,
+    width: 270,
+    height: 180,
+    borderRadius: 42,
+    backgroundColor: 'rgba(255, 210, 133, 0.14)',
+    transform: [{ rotate: '-18deg' }],
+  },
+  shapeB: {
+    position: 'absolute',
+    top: 70,
+    left: 70,
     width: 250,
-    height: 170,
-    borderRadius: 34,
-    backgroundColor: 'rgba(255, 198, 110, 0.18)',
-    transform: [{ rotate: '-16deg' }],
-  },
-  geoB: {
-    position: 'absolute',
-    top: 86,
-    left: 88,
-    width: 230,
     height: 210,
-    borderRadius: 36,
-    backgroundColor: 'rgba(18, 10, 8, 0.42)',
-    transform: [{ rotate: '-30deg' }],
+    borderRadius: 46,
+    backgroundColor: 'rgba(26, 15, 11, 0.45)',
+    transform: [{ rotate: '-33deg' }],
   },
-  geoC: {
+  shapeC: {
     position: 'absolute',
-    top: 18,
-    right: -40,
-    width: 190,
-    height: 240,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0,0,0,0.30)',
-    transform: [{ rotate: '21deg' }],
+    top: -4,
+    right: -54,
+    width: 220,
+    height: 250,
+    borderRadius: 46,
+    backgroundColor: 'rgba(0,0,0,0.28)',
+    transform: [{ rotate: '26deg' }],
   },
+
   statusRow: {
     paddingHorizontal: 22,
     paddingTop: 8,
@@ -151,9 +153,9 @@ const styles = StyleSheet.create({
   bottomPane: {
     backgroundColor: '#020204',
     paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 20,
-    gap: 16,
+    paddingTop: 16,
+    paddingBottom: 18,
+    gap: 14,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.05)',
   },
@@ -182,9 +184,9 @@ const styles = StyleSheet.create({
   headline: {
     color: '#fff',
     fontSize: 43,
-    lineHeight: 52,
+    lineHeight: 50,
     fontWeight: '400',
-    letterSpacing: -0.4,
+    letterSpacing: -0.35,
   },
   headlineMuted: { color: '#7F808A', fontWeight: '400' },
   headlineStrong: { color: '#FFFFFF', fontWeight: '700' },
@@ -192,11 +194,11 @@ const styles = StyleSheet.create({
   ctaWrap: {
     borderRadius: 999,
     overflow: 'hidden',
-    shadowColor: '#FF8A38',
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 9,
+    shadowColor: '#FF8D3A',
+    shadowOpacity: 0.24,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 7,
   },
   cta: {
     minHeight: 52,
