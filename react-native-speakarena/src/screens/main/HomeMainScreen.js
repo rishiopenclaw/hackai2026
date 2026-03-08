@@ -1,317 +1,317 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
-import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Plus, Users, Search } from 'lucide-react-native';
-import LearningPathNode from '../../components/LearningPathNode';
-import Bouncy3DButton from '../../components/Bouncy3DButton';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
+import { Play, Plus, House, Trophy, GraduationCap, UserCircle2, CircleHelp } from 'lucide-react-native';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const NODE_SIZE = 70;
-const Y_SPACING = 130;
-const X_AMPLITUDE = 84;
-
-const PATHS = [
-  { id: 'everyday', label: 'Everyday', trackId: 'human' },
-  { id: 'clarify', label: 'Clarify', trackId: 'pressure' },
-  { id: 'persuade', label: 'Persuade', trackId: 'persuasive' },
+const rooms = [
+  { id: '1', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 18', subtitle: 'Duet: Guess the word' },
+  { id: '2', status: 'Waiting', statusColor: '#F7A928', title: 'Room 29', subtitle: '3/6 players • Starts in 12s' },
+  { id: '3', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 77', subtitle: 'Debate: AI in schools' },
 ];
 
-const STARTER_ROOMS = [
-  { id: 'room-1', name: 'Weekend Fluency', host: 'Ava', players: 3, maxPlayers: 6, code: 'FLUX' },
-  { id: 'room-2', name: 'Pitch Night', host: 'Kai', players: 4, maxPlayers: 6, code: 'PITCH' },
-];
-
-const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
-  Array.from({ length: numNodes }).map((_, i) => {
-    const xOffset = Math.sin(i * 1.02) * X_AMPLITUDE;
-    return {
-      id: i + 1,
-      centerX: viewportWidth / 2 + xOffset,
-      centerY: (i + 1) * Y_SPACING,
-    };
-  });
-
-const generateSvgPath = (nodes) => {
-  if (!nodes.length) return '';
-  let d = `M ${nodes[0].centerX} ${nodes[0].centerY}`;
-  for (let i = 1; i < nodes.length; i += 1) {
-    const prev = nodes[i - 1];
-    const curr = nodes[i];
-    const cpY = prev.centerY + (curr.centerY - prev.centerY) / 2;
-    d += ` C ${prev.centerX} ${cpY}, ${curr.centerX} ${cpY}, ${curr.centerX} ${curr.centerY}`;
-  }
-  return d;
-};
-
-export default function HomeMainScreen({ navigation }) {
-  const [topMode, setTopMode] = useState('practice');
-  const [selectedPathId, setSelectedPathId] = useState('everyday');
-  const [joinCode, setJoinCode] = useState('');
-  const [rooms, setRooms] = useState(STARTER_ROOMS);
-
-  const mapScrollRef = useRef(null);
-  const MAP_WIDTH = SCREEN_WIDTH - 40;
-  const nodes = useMemo(() => generatePathData(11, MAP_WIDTH), [MAP_WIDTH]);
-  const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
-  const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
-
-  const selectedPath = PATHS.find((p) => p.id === selectedPathId) || PATHS[0];
-
-  const createRoom = () => {
-    const code = Math.random().toString(36).slice(2, 6).toUpperCase();
-    const room = { id: `room-${Date.now()}`, name: `Room ${code}`, host: 'You', players: 1, maxPlayers: 6, code };
-    setRooms((prev) => [room, ...prev]);
-  };
-
-  const quickMatch = () => {
-    const room = rooms.find((r) => r.players < r.maxPlayers);
-    if (!room) {
-      createRoom();
-      return;
-    }
-    navigation.navigate('Practice', { screen: 'SessionLive', params: { mode: 'club', roomId: room.id } });
-  };
-
-  const joinRoom = () => {
-    const code = joinCode.trim().toUpperCase();
-    const room = rooms.find((r) => r.code.toUpperCase() === code);
-    if (!room) return;
-    navigation.navigate('Practice', { screen: 'SessionLive', params: { mode: 'club', roomId: room.id } });
-  };
+export default function HomeMainScreen() {
+  const [activeTab, setActiveTab] = useState('practice');
+  const [activeBottom, setActiveBottom] = useState('home');
 
   return (
-    <View style={styles.root}>
-      <View style={styles.switcherShell}>
-        <View style={styles.switcher}>
-          <TopPill active={topMode === 'practice'} label="Practise" onPress={() => setTopMode('practice')} />
-          <TopPill active={topMode === 'club'} label="Club" onPress={() => setTopMode('club')} />
-        </View>
-      </View>
-
-      {topMode === 'practice' ? (
-        <>
-          <Text style={styles.heading}>PRACTICE PATHS</Text>
-
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pathRow}>
-            {PATHS.map((path) => (
-              <TouchableOpacity
-                key={path.id}
-                style={[styles.pathChip, selectedPathId === path.id && styles.pathChipActive]}
-                onPress={() => setSelectedPathId(path.id)}
-              >
-                <Text style={[styles.pathChipText, selectedPathId === path.id && styles.pathChipTextActive]}>{path.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          <ScrollView
-            ref={mapScrollRef}
-            style={styles.mapViewport}
-            contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
-            showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
-          >
-            <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
-              <Defs>
-                <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
-                  <Stop offset="0%" stopColor="#9AE15D" />
-                  <Stop offset="100%" stopColor="#84D64A" />
-                </LinearGradient>
-                <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
-                  <Stop offset="0%" stopColor="#FFF7DD" />
-                  <Stop offset="100%" stopColor="#F1E0B2" />
-                </LinearGradient>
-              </Defs>
-
-              <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
-              <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
-              <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-
-              {nodes.map((n) => (
-                <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
-              ))}
-            </Svg>
-
-            {nodes.map((node, idx) => {
-              const isFlagNode = idx === 0;
-              const numberFromBottom = nodes.length - idx;
-              const shownNumber = isFlagNode ? undefined : numberFromBottom;
-
-              return (
-                <View
-                  key={node.id}
-                  style={{
-                    position: 'absolute',
-                    left: node.centerX - NODE_SIZE / 2,
-                    top: node.centerY - NODE_SIZE / 2,
-                    width: NODE_SIZE,
-                    height: NODE_SIZE,
-                  }}
-                >
-                  <LearningPathNode
-                    number={shownNumber}
-                    icon={isFlagNode ? '⚑' : undefined}
-                    active={isFlagNode}
-                    onPress={() =>
-                      navigation.navigate('Practice', {
-                        screen: 'SessionPreflight',
-                        params: { trackId: selectedPath.trackId },
-                      })
-                    }
-                  />
-                </View>
-              );
-            })}
-          </ScrollView>
-
-          <View style={styles.bottomCta}>
-            <Bouncy3DButton title={`Start ${selectedPath.label}`} variant="orange" onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: selectedPath.trackId } })} />
-          </View>
-        </>
-      ) : (
-        <ScrollView contentContainerStyle={styles.clubWrap}>
-          <Text style={styles.heading}>CLUB</Text>
-          <Text style={styles.clubSub}>Create rooms and play with anyone.</Text>
-
-          <View style={styles.clubActions}>
-            <TouchableOpacity style={[styles.clubBtn, styles.primaryBtn]} onPress={createRoom}>
-              <Plus size={16} color="#fff" />
-              <Text style={styles.primaryBtnText}>Create Room</Text>
+    <SafeAreaView style={styles.safe}>
+      <View style={styles.screen}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.segmentWrap}>
+            <TouchableOpacity
+              style={[styles.segmentBtn, activeTab === 'practice' ? styles.segmentActive : styles.segmentInactive]}
+              onPress={() => setActiveTab('practice')}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.segmentText}>Practise</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.clubBtn, styles.secondaryBtn]} onPress={quickMatch}>
-              <Users size={16} color="#4A42E8" />
-              <Text style={styles.secondaryBtnText}>Quick Match</Text>
+
+            <TouchableOpacity
+              style={[styles.segmentBtn, activeTab === 'club' ? styles.segmentActive : styles.segmentInactive]}
+              onPress={() => setActiveTab('club')}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.segmentText}>Club</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.joinRow}>
-            <View style={styles.joinInputWrap}>
-              <Search size={15} color="#7F88A4" />
-              <TextInput
-                style={styles.joinInput}
-                placeholder="Enter room code"
-                value={joinCode}
-                onChangeText={setJoinCode}
-                autoCapitalize="characters"
-                placeholderTextColor="#96A0B8"
-              />
+          <View style={styles.heroCard}>
+            <View style={styles.liveTag}>
+              <Text style={styles.liveTagText}>• LIVE</Text>
             </View>
-            <TouchableOpacity style={styles.joinBtn} onPress={joinRoom}>
-              <Text style={styles.joinBtnText}>Join</Text>
+
+            <Text style={styles.heroTitle}>Room 4450</Text>
+            <Text style={styles.heroSub}>Competition{"\n"}Top users</Text>
+
+            <TouchableOpacity style={styles.watchGreenBtn} activeOpacity={0.9}>
+              <Play size={14} color="#FFF" fill="#FFF" />
+              <Text style={styles.watchGreenText}>Watch</Text>
+            </TouchableOpacity>
+
+            <View style={styles.heroMascotPlaceholder} />
+          </View>
+
+          <View style={styles.exploreRow}>
+            <Text style={styles.exploreTitle}>Explore</Text>
+            <TouchableOpacity style={styles.createBtn} activeOpacity={0.9}>
+              <Plus size={14} color="#27A14C" />
+              <Text style={styles.createBtnText}>Create Room</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={styles.roomsList}>
+          <View style={styles.listWrap}>
             {rooms.map((room) => (
-              <TouchableOpacity
-                key={room.id}
-                style={styles.roomCard}
-                onPress={() => navigation.navigate('Practice', { screen: 'SessionLive', params: { mode: 'club', roomId: room.id } })}
-              >
-                <View>
-                  <Text style={styles.roomTitle}>{room.name}</Text>
-                  <Text style={styles.roomMeta}>Host {room.host} · Code {room.code}</Text>
+              <View key={room.id} style={styles.roomOuter}>
+                <View style={[styles.overlapTag, { backgroundColor: room.statusColor }]}>
+                  <Text style={styles.overlapTagText}>{room.status}</Text>
                 </View>
-                <Text style={styles.roomMeta}>{room.players}/{room.maxPlayers}</Text>
-              </TouchableOpacity>
+
+                <View style={styles.roomCard}>
+                  <View style={styles.roomLeft}>
+                    <Text style={styles.roomTitle}>{room.title}</Text>
+                    <Text style={styles.roomSub}>{room.subtitle}</Text>
+                  </View>
+
+                  <View style={styles.roomRight}>
+                    <CircleHelp size={24} color="#8C6BFF" />
+                    <TouchableOpacity style={styles.watchOrangeBtn} activeOpacity={0.9}>
+                      <Text style={styles.watchOrangeText}>Watch</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
             ))}
           </View>
         </ScrollView>
-      )}
-    </View>
+
+        <View style={styles.bottomNav}>
+          <BottomItem
+            active={activeBottom === 'home'}
+            onPress={() => setActiveBottom('home')}
+            icon={<House size={22} color={activeBottom === 'home' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
+          />
+          <BottomItem
+            active={activeBottom === 'club'}
+            onPress={() => setActiveBottom('club')}
+            icon={<Trophy size={22} color={activeBottom === 'club' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
+          />
+          <BottomItem
+            active={activeBottom === 'learn'}
+            onPress={() => setActiveBottom('learn')}
+            icon={<GraduationCap size={22} color={activeBottom === 'learn' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
+          />
+          <BottomItem
+            active={activeBottom === 'me'}
+            onPress={() => setActiveBottom('me')}
+            icon={<UserCircle2 size={22} color={activeBottom === 'me' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
+          />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
-function TopPill({ active, label, onPress }) {
+function BottomItem({ icon, onPress }) {
   return (
-    <TouchableOpacity style={[styles.topPill, active && styles.topPillActive]} onPress={onPress}>
-      <Text style={[styles.topPillText, active && styles.topPillTextActive]}>{label}</Text>
+    <TouchableOpacity style={styles.bottomItem} onPress={onPress} activeOpacity={0.8}>
+      {icon}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#F4F9F6' },
-  switcherShell: {
-    marginHorizontal: 20,
-    marginBottom: 12,
-    borderRadius: 18,
-    backgroundColor: '#0E9B55',
-    borderWidth: 1,
-    borderColor: '#0A7C43',
-    padding: 3,
-    shadowColor: '#0C6E3D',
-    shadowOpacity: 0.28,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+  safe: { flex: 1, backgroundColor: '#27A14C' },
+  screen: { flex: 1, backgroundColor: '#27A14C' },
+  content: {
+    paddingHorizontal: 16,
+    paddingTop: 10,
+    paddingBottom: 120,
   },
-  switcher: { flexDirection: 'row', gap: 4 },
-  topPill: {
+
+  segmentWrap: {
+    backgroundColor: '#1C7A35',
+    borderRadius: 20,
+    padding: 4,
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  segmentBtn: {
     flex: 1,
-    borderRadius: 14,
-    paddingVertical: 9,
+    borderRadius: 16,
     alignItems: 'center',
-    backgroundColor: '#29B566',
-    borderWidth: 1,
-    borderColor: '#1E9E58',
+    paddingVertical: 10,
   },
-  topPillActive: {
-    backgroundColor: '#1A9F58',
-    borderColor: '#FFB000',
-    borderWidth: 2,
-    shadowColor: '#0F6E3E',
-    shadowOpacity: 0.22,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 2,
+  segmentActive: {
+    backgroundColor: '#27A14C',
+    borderBottomWidth: 0,
+    transform: [{ translateY: 2 }],
   },
-  topPillText: { fontWeight: '900', color: '#E8FFF1', fontSize: 22 },
-  topPillTextActive: { color: '#FFFFFF' },
-  heading: {
-    color: '#4B4B4B',
-    fontSize: 15,
+  segmentInactive: {
+    backgroundColor: '#37C25E',
+    borderBottomWidth: 4,
+    borderBottomColor: '#1C7A35',
+  },
+  segmentText: {
+    color: '#FFF',
     fontWeight: '900',
-    letterSpacing: 1,
-    marginBottom: 8,
-    paddingHorizontal: 20,
+    fontSize: 16,
   },
-  pathRow: { paddingHorizontal: 20, gap: 8, paddingBottom: 10 },
-  pathChip: { backgroundColor: '#E8EDF7', borderRadius: 12, paddingHorizontal: 12, paddingVertical: 8 },
-  pathChipActive: { backgroundColor: '#DCD9FF' },
-  pathChipText: { fontWeight: '700', color: '#687193' },
-  pathChipTextActive: { color: '#433DD3' },
-  mapViewport: {
-    flex: 1,
-    marginHorizontal: 20,
-    borderRadius: 26,
+
+  heroCard: {
+    height: 180,
+    backgroundColor: '#FFD13B',
+    borderRadius: 24,
+    padding: 16,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.05)',
-    backgroundColor: '#89E256',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
   },
-  mapContent: { backgroundColor: '#89E256' },
-  svgLayer: { position: 'absolute', top: 0, left: 0 },
-  bottomCta: { paddingHorizontal: 20, paddingBottom: 14, paddingTop: 10, backgroundColor: '#F4F9F6' },
+  liveTag: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#EC4C7B',
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    marginBottom: 10,
+  },
+  liveTagText: { color: '#FFF', fontWeight: '900', fontSize: 11 },
+  heroTitle: { color: '#1D1D1D', fontSize: 28, fontWeight: '900' },
+  heroSub: { color: '#6F5B30', fontSize: 13, fontWeight: '700', marginTop: 4, lineHeight: 18 },
+  watchGreenBtn: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#00D15E',
+    borderBottomWidth: 4,
+    borderBottomColor: '#009E47',
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  watchGreenText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
+  heroMascotPlaceholder: {
+    position: 'absolute',
+    right: 10,
+    bottom: -2,
+    width: 95,
+    height: 110,
+    borderRadius: 16,
+    backgroundColor: 'rgba(128, 78, 255, 0.15)',
+  },
 
-  clubWrap: { paddingHorizontal: 20, paddingBottom: 24, gap: 10 },
-  clubSub: { color: '#7F88A4', fontWeight: '700', marginTop: -4, marginBottom: 6 },
-  clubActions: { flexDirection: 'row', gap: 10 },
-  clubBtn: { flex: 1, borderRadius: 12, height: 46, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
-  primaryBtn: { backgroundColor: '#5E54FF' },
-  secondaryBtn: { backgroundColor: '#E8E5FF' },
-  primaryBtnText: { color: '#fff', fontWeight: '800' },
-  secondaryBtnText: { color: '#4A42E8', fontWeight: '800' },
+  exploreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  exploreTitle: {
+    color: '#FFF',
+    fontSize: 22,
+    fontWeight: '900',
+  },
+  createBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 4,
+    borderBottomColor: '#E5E5E5',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  createBtnText: {
+    color: '#27A14C',
+    fontWeight: '900',
+    fontSize: 13,
+  },
 
-  joinRow: { flexDirection: 'row', gap: 10, marginTop: 2 },
-  joinInputWrap: { flex: 1, borderWidth: 1, borderColor: '#DDE3F1', borderRadius: 12, height: 44, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 10, backgroundColor: '#fff' },
-  joinInput: { flex: 1, color: '#253054', fontWeight: '700' },
-  joinBtn: { width: 76, borderRadius: 12, backgroundColor: '#2FB257', alignItems: 'center', justifyContent: 'center' },
-  joinBtnText: { color: '#fff', fontWeight: '800' },
+  listWrap: { paddingTop: 4 },
+  roomOuter: {
+    marginTop: 20,
+    position: 'relative',
+  },
+  overlapTag: {
+    position: 'absolute',
+    top: -16,
+    left: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    zIndex: 20,
+    elevation: 10,
+  },
+  overlapTagText: {
+    color: '#FFF',
+    fontWeight: '900',
+    fontSize: 12,
+  },
+  roomCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 7,
+    zIndex: 1,
+  },
+  roomLeft: { flex: 1, paddingRight: 10 },
+  roomTitle: { color: '#1E1E1E', fontSize: 24, fontWeight: '900' },
+  roomSub: { color: '#949494', fontSize: 12, fontWeight: '700', marginTop: 2 },
 
-  roomsList: { gap: 8, marginTop: 4 },
-  roomCard: { borderWidth: 1, borderColor: '#E1E7F2', backgroundColor: '#fff', borderRadius: 14, padding: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  roomTitle: { fontWeight: '900', color: '#1F2747' },
-  roomMeta: { color: '#657192', fontWeight: '700', fontSize: 12 },
+  roomRight: { alignItems: 'flex-end', gap: 8 },
+  watchOrangeBtn: {
+    backgroundColor: '#F7A928',
+    borderBottomWidth: 4,
+    borderBottomColor: '#D88700',
+    borderRadius: 999,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+  },
+  watchOrangeText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
+
+  bottomNav: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#FFF',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 14,
+    paddingBottom: 22,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 10,
+  },
+  bottomItem: {
+    width: 52,
+    height: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
