@@ -42,10 +42,6 @@ export default function SignUpScreen() {
             style={styles.heroFade}
           />
 
-          <View style={styles.statusRow}>
-            <Text style={styles.statusText}>9:41</Text>
-            <Text style={styles.statusIcons}>◔◔◔</Text>
-          </View>
         </LinearGradient>
 
         <View style={styles.bottomPane}>
@@ -141,24 +137,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-28deg' }],
   },
 
-  statusRow: {
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  statusIcons: {
-    color: '#fff',
-    fontSize: 11,
-    opacity: 0.9,
-    letterSpacing: 1.5,
-  },
-
   bottomPane: {
     backgroundColor: '#020204',
     paddingHorizontal: 20,
@@ -217,7 +195,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     color: '#171311',
-    fontSize: 30,
+    fontSize: 22,
     fontWeight: '500',
   },
 
