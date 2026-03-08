@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -26,24 +26,26 @@ const X_AMPLITUDE = 84;
 
 const PATHS = [
   {
-    id: 'everyday',
-    label: 'Everyday',
+    id: 'interview',
+    label: 'Interview Arena',
     trackId: 'human',
-    subtitle: 'Casual conversations + confidence',
+    subtitle: 'Behavioral + general interview questions',
   },
   {
-    id: 'clarify',
-    label: 'Clarify',
+    id: 'think_fast',
+    label: 'Think Fast',
     trackId: 'pressure',
-    subtitle: 'Questions + active listening',
+    subtitle: 'Speak on random topics on the spot',
   },
   {
-    id: 'persuade',
-    label: 'Persuade',
+    id: 'persuade_pitch',
+    label: 'Persuade & Pitch',
     trackId: 'persuasive',
-    subtitle: 'Pitches + structured influence',
+    subtitle: 'Pitch ideas and handle objections clearly',
   },
 ];
+
+const TOTAL_LEVELS = 10;
 
 const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
   Array.from({ length: numNodes }).map((_, i) => {
@@ -70,6 +72,11 @@ const generateSvgPath = (nodes) => {
 export default function HomeMainScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('club');
   const [selectedPathId, setSelectedPathId] = useState(null);
+  const [pathProgress, setPathProgress] = useState({
+    interview: { passed: 0, unlocked: 1, mastered: false },
+    think_fast: { passed: 0, unlocked: 1, mastered: false },
+    persuade_pitch: { passed: 0, unlocked: 1, mastered: false },
+  });
 
   const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 32;
@@ -77,14 +84,35 @@ export default function HomeMainScreen({ navigation }) {
   const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
   const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
   const selectedPath = PATHS.find((p) => p.id === selectedPathId) || PATHS[0];
+  const selectedPathState = selectedPathId ? pathProgress[selectedPath.id] : null;
 
-  useEffect(() => {
+  const handleLevelAttempt = (level) => {
     if (!selectedPathId) return;
-    const t = setTimeout(() => {
-      mapScrollRef.current?.scrollToEnd({ animated: false });
-    }, 0);
-    return () => clearTimeout(t);
-  }, [selectedPathId]);
+    const state = pathProgress[selectedPath.id];
+    if (level > state.unlocked) return;
+
+    if (level === state.unlocked) {
+      setPathProgress((prev) => {
+        const current = prev[selectedPath.id];
+        const passed = Math.min(TOTAL_LEVELS, Math.max(current.passed, level));
+        const unlocked = Math.min(TOTAL_LEVELS, passed + 1);
+        return {
+          ...prev,
+          [selectedPath.id]: {
+            passed,
+            unlocked,
+            mastered: passed >= TOTAL_LEVELS,
+          },
+        };
+      });
+    }
+
+    navigation.navigate('Learn', {
+      screen: 'SessionPreflight',
+      params: { trackId: selectedPath.trackId, level },
+    });
+  };
+
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -158,26 +186,39 @@ export default function HomeMainScreen({ navigation }) {
                   <Text style={styles.practiceSub}>Pick a path card to open the full node map.</Text>
 
                   <View style={styles.pathCardsStack}>
-                    {PATHS.map((path) => (
-                      <TouchableOpacity
-                        key={path.id}
-                        style={styles.pathCard}
-                        onPress={() => setSelectedPathId(path.id)}
-                        activeOpacity={0.92}
-                      >
-                        <Text style={styles.pathCardTitle}>{path.label}</Text>
-                        <Text style={styles.pathCardSub}>{path.subtitle}</Text>
-                        <View style={styles.pathCardCta}>
-                          <Text style={styles.pathCardCtaText}>Open Path</Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
+                    {PATHS.map((path) => {
+                      const progress = pathProgress[path.id];
+                      return (
+                        <TouchableOpacity
+                          key={path.id}
+                          style={styles.pathCard}
+                          onPress={() => setSelectedPathId(path.id)}
+                          activeOpacity={0.92}
+                        >
+                          <Text style={styles.pathCardTitle}>{path.label}</Text>
+                          <Text style={styles.pathCardSub}>{path.subtitle}</Text>
+                          <Text style={styles.pathCardMeta}>
+                            {progress.mastered ? 'Mastered' : `Level ${Math.min(progress.unlocked, TOTAL_LEVELS)} / ${TOTAL_LEVELS}`}
+                          </Text>
+                          <View style={styles.pathCardCta}>
+                            <Text style={styles.pathCardCtaText}>{progress.mastered ? 'Review Path' : 'Open Path'}</Text>
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
                 </>
               ) : (
                 <>
                   <View style={styles.practiceTopRow}>
-                    <Text style={styles.practiceHeader}>{selectedPath.label.toUpperCase()} PATH</Text>
+                    <View>
+                      <Text style={styles.practiceHeader}>{selectedPath.label.toUpperCase()}</Text>
+                      <Text style={styles.pathProgressLine}>
+                        {selectedPathState?.mastered
+                          ? 'Mastered'
+                          : `Current level: ${Math.min(selectedPathState?.unlocked || 1, TOTAL_LEVELS)} / ${TOTAL_LEVELS}`}
+                      </Text>
+                    </View>
                     <TouchableOpacity onPress={() => setSelectedPathId(null)} style={styles.backToCardsBtn}>
                       <Text style={styles.backToCardsText}>All Paths</Text>
                     </TouchableOpacity>
@@ -217,7 +258,11 @@ export default function HomeMainScreen({ navigation }) {
 
                     {nodes.map((node, idx) => {
                       const isFlagNode = idx === 0;
-                      const shownNumber = isFlagNode ? undefined : idx;
+                      const level = idx;
+                      const shownNumber = isFlagNode ? undefined : level;
+                      const isPassed = !isFlagNode && level <= (selectedPathState?.passed || 0);
+                      const isUnlocked = !isFlagNode && level <= (selectedPathState?.unlocked || 1);
+                      const isCurrent = !isFlagNode && level === (selectedPathState?.unlocked || 1) && !selectedPathState?.mastered;
 
                       return (
                         <View
@@ -232,14 +277,13 @@ export default function HomeMainScreen({ navigation }) {
                         >
                           <LearningPathNode
                             number={shownNumber}
-                            icon={isFlagNode ? '⚑' : undefined}
-                            active={isFlagNode}
-                            onPress={() =>
-                              navigation.navigate('Learn', {
-                                screen: 'SessionPreflight',
-                                params: { trackId: selectedPath.trackId },
-                              })
-                            }
+                            icon={isFlagNode ? '⚑' : isPassed ? '✓' : undefined}
+                            active={isFlagNode || isCurrent}
+                            locked={!isFlagNode && !isUnlocked}
+                            onPress={() => {
+                              if (isFlagNode || !isUnlocked) return;
+                              handleLevelAttempt(level);
+                            }}
                           />
                         </View>
                       );
@@ -248,14 +292,9 @@ export default function HomeMainScreen({ navigation }) {
 
                   <View style={styles.bottomCtaArea}>
                     <Bouncy3DButton
-                      title={`Start ${selectedPath.label}`}
+                      title={selectedPathState?.mastered ? `Review ${selectedPath.label}` : `Play Level ${Math.min(selectedPathState?.unlocked || 1, TOTAL_LEVELS)}`}
                       variant="orange"
-                      onPress={() =>
-                        navigation.navigate('Learn', {
-                          screen: 'SessionPreflight',
-                          params: { trackId: selectedPath.trackId },
-                        })
-                      }
+                      onPress={() => handleLevelAttempt(Math.min(selectedPathState?.unlocked || 1, TOTAL_LEVELS))}
                     />
                   </View>
                 </>
@@ -446,6 +485,7 @@ const styles = StyleSheet.create({
   },
   pathCardTitle: { color: '#182026', fontWeight: '900', fontSize: 20 },
   pathCardSub: { color: '#55616B', fontWeight: '700', marginTop: 4, fontSize: 12 },
+  pathCardMeta: { color: '#1C7A35', fontWeight: '900', marginTop: 8, fontSize: 12 },
   pathCardCta: {
     alignSelf: 'flex-start',
     marginTop: 14,
@@ -458,6 +498,7 @@ const styles = StyleSheet.create({
   },
   pathCardCtaText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
   practiceTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  pathProgressLine: { color: 'rgba(255,255,255,0.92)', fontWeight: '700', marginTop: 2 },
   backToCardsBtn: {
     backgroundColor: '#FFFFFF',
     borderRadius: 999,
