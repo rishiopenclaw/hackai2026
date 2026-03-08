@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { PDFParse } from 'pdf-parse';
 import { User } from '../models/User.js';
 import { analyzeResume } from '../services/gemini.js';
 
@@ -20,6 +21,32 @@ function validateObjectId(id, label = 'id') {
     err.status = 400;
     throw err;
   }
+}
+
+function normalizeBase64Document(input) {
+  if (typeof input !== 'string') return '';
+  const value = input.trim();
+  const commaIndex = value.indexOf(',');
+  if (value.startsWith('data:') && commaIndex !== -1) {
+    return value.slice(commaIndex + 1);
+  }
+  return value;
+}
+
+async function upsertProfileFromResumeText({ userId, resumeText }) {
+  const profile = await analyzeResume(resumeText);
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        resumeRawText: resumeText,
+        ...mapResumeToUserFields(profile),
+      },
+    },
+    { new: true, runValidators: true }
+  );
+  if (!user) return null;
+  return { profile, user };
 }
 
 export async function createProfile(req, res, next) {
@@ -112,23 +139,66 @@ export async function parseResumeIntoProfile(req, res, next) {
       return res.status(400).json({ error: 'resumeText is required.' });
     }
 
-    const profile = await analyzeResume(resumeText);
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        $set: {
-          resumeRawText: resumeText,
-          ...mapResumeToUserFields(profile),
-        },
-      },
-      { new: true, runValidators: true }
-    );
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    const data = await upsertProfileFromResumeText({ userId, resumeText });
+    if (!data) return res.status(404).json({ error: 'User not found.' });
 
     res.json({
       ok: true,
-      profile,
-      user,
+      profile: data.profile,
+      user: data.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function parseResumePdfIntoProfile(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { resumePdfBase64, fileName } = req.body || {};
+    validateObjectId(userId, 'userId');
+
+    if (!resumePdfBase64 || typeof resumePdfBase64 !== 'string') {
+      return res.status(400).json({ error: 'resumePdfBase64 is required.' });
+    }
+
+    const normalizedBase64 = normalizeBase64Document(resumePdfBase64);
+    let pdfBuffer;
+    try {
+      pdfBuffer = Buffer.from(normalizedBase64, 'base64');
+    } catch {
+      return res.status(400).json({ error: 'Invalid base64 payload.' });
+    }
+    if (!pdfBuffer || pdfBuffer.length < 16) {
+      return res.status(400).json({ error: 'Invalid PDF payload.' });
+    }
+
+    let extractedText = '';
+    let parser;
+    try {
+      parser = new PDFParse({ data: pdfBuffer });
+      const parsed = await parser.getText();
+      extractedText = (parsed?.text || '').trim();
+    } catch {
+      return res.status(400).json({ error: 'Unable to parse PDF. Ensure the file is a valid text-based PDF.' });
+    } finally {
+      if (parser) {
+        await parser.destroy().catch(() => {});
+      }
+    }
+    if (!extractedText) {
+      return res.status(400).json({ error: 'No readable text found in PDF.' });
+    }
+
+    const data = await upsertProfileFromResumeText({ userId, resumeText: extractedText });
+    if (!data) return res.status(404).json({ error: 'User not found.' });
+
+    res.json({
+      ok: true,
+      fileName: fileName || null,
+      extractedTextLength: extractedText.length,
+      profile: data.profile,
+      user: data.user,
     });
   } catch (error) {
     next(error);

@@ -44,6 +44,7 @@ NODE_ENV=development
 - `GET /api/profiles/:userId` - fetch profile
 - `PATCH /api/profiles/:userId` - update profile fields
 - `POST /api/profiles/:userId/parse-resume` - re-parse resume and refresh profile fields
+- `POST /api/profiles/:userId/parse-resume-pdf` - parse base64 PDF, then refresh profile fields
 
 ### Debates (P2P)
 
@@ -102,6 +103,17 @@ Rules:
 
 Returns final:
 - `score_a`, `score_b`, `winner`, `reasoning`, `feedback_a`, `feedback_b`
+
+## PDF Resume Parse Payload
+
+`POST /api/profiles/:userId/parse-resume-pdf`
+
+```json
+{
+  "resumePdfBase64": "<base64-pdf-or-data-uri>",
+  "fileName": "resume.pdf"
+}
+```
 
 ## Notes
 
