@@ -13,10 +13,42 @@ import { Play, Plus, CircleHelp, Check, Gift } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
-const rooms = [
-  { id: '1', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 18', subtitle: 'Duet: Guess the word' },
-  { id: '2', status: 'Waiting', statusColor: '#8C6BFF', title: 'Room 29', subtitle: '3/6 players • Starts in 12s' },
-  { id: '3', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 77', subtitle: 'Debate: AI in schools' },
+const DEBATE_TOPICS = [
+  'Should AI replace final exams in universities?',
+  'Is remote work better for long-term productivity?',
+  'Should social media platforms verify every account?',
+  'Is a 4-day work week better for company performance?',
+  'Should public speaking be mandatory in high school?',
+  'Do startups need offices in 2026?',
+  'Should interview rounds be fully skills-based?',
+  'Is personal branding essential for career growth?',
+];
+
+const INITIAL_ROOMS = [
+  {
+    id: '1',
+    status: 'Fighting',
+    statusColor: '#EC4C7B',
+    title: 'Room 18',
+    subtitle: '3/6 players • Live debate',
+    topic: 'Should AI replace final exams in universities?',
+  },
+  {
+    id: '2',
+    status: 'Waiting',
+    statusColor: '#8C6BFF',
+    title: 'Room 29',
+    subtitle: '2/6 players • Starting soon',
+    topic: 'Is a 4-day work week better for company performance?',
+  },
+  {
+    id: '3',
+    status: 'Fighting',
+    statusColor: '#EC4C7B',
+    title: 'Room 77',
+    subtitle: '5/6 players • Live debate',
+    topic: 'Is remote work better for long-term productivity?',
+  },
 ];
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -77,6 +109,7 @@ export default function HomeMainScreen({ navigation }) {
     think_fast: { passed: 0, unlocked: 1, mastered: false },
     persuade_pitch: { passed: 0, unlocked: 1, mastered: false },
   });
+  const [clubRooms, setClubRooms] = useState(INITIAL_ROOMS);
 
   const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 32;
@@ -110,6 +143,34 @@ export default function HomeMainScreen({ navigation }) {
     navigation.navigate('Learn', {
       screen: 'SessionPreflight',
       params: { trackId: selectedPath.trackId, level },
+    });
+  };
+
+  const randomTopic = () => DEBATE_TOPICS[Math.floor(Math.random() * DEBATE_TOPICS.length)];
+
+  const createClubRoom = () => {
+    const topic = randomTopic();
+    const roomNum = Math.floor(1000 + Math.random() * 9000);
+    const room = {
+      id: String(Date.now()),
+      status: 'Waiting',
+      statusColor: '#8C6BFF',
+      title: `Room ${roomNum}`,
+      subtitle: '1/6 players • Waiting for opponents',
+      topic,
+    };
+    setClubRooms((prev) => [room, ...prev]);
+  };
+
+  const joinDebateRoom = (room) => {
+    navigation.navigate('Learn', {
+      screen: 'SessionLive',
+      params: {
+        mode: 'club-debate',
+        roomId: room.id,
+        roomTitle: room.title,
+        topic: room.topic,
+      },
     });
   };
 
@@ -307,12 +368,18 @@ export default function HomeMainScreen({ navigation }) {
                   <Text style={styles.liveTagText}>• LIVE</Text>
                 </View>
 
-                <Text style={styles.heroTitle}>Room 4450</Text>
-                <Text style={styles.heroSub}>Competition{"\n"}Top users</Text>
+                <Text style={styles.heroTitle}>Debate Club</Text>
+                <Text style={styles.heroSub}>Random topic rooms with instant matchmaking</Text>
 
-                <TouchableOpacity style={styles.watchGreenBtn} activeOpacity={0.9}>
+                <TouchableOpacity
+                  style={styles.watchGreenBtn}
+                  activeOpacity={0.9}
+                  onPress={() =>
+                    joinDebateRoom({ id: 'quick', title: 'Quick Debate', topic: randomTopic() })
+                  }
+                >
                   <Play size={14} color="#FFF" fill="#FFF" />
-                  <Text style={styles.watchGreenText}>Watch</Text>
+                  <Text style={styles.watchGreenText}>Start Now</Text>
                 </TouchableOpacity>
 
                 <View style={styles.heroMascotPlaceholder} />
@@ -320,14 +387,14 @@ export default function HomeMainScreen({ navigation }) {
 
               <View style={styles.exploreRow}>
                 <Text style={styles.exploreTitle}>Explore</Text>
-                <TouchableOpacity style={styles.createBtn} activeOpacity={0.9}>
+                <TouchableOpacity style={styles.createBtn} activeOpacity={0.9} onPress={createClubRoom}>
                   <Plus size={14} color="#27A14C" />
                   <Text style={styles.createBtnText}>Create Room</Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.listWrap}>
-                {rooms.map((room) => (
+                {clubRooms.map((room) => (
                   <View key={room.id} style={styles.roomOuter}>
                     <View style={[styles.overlapTag, { backgroundColor: room.statusColor }]}>
                       <Text style={styles.overlapTagText}>{room.status}</Text>
@@ -337,12 +404,13 @@ export default function HomeMainScreen({ navigation }) {
                       <View style={styles.roomLeft}>
                         <Text style={styles.roomTitle}>{room.title}</Text>
                         <Text style={styles.roomSub}>{room.subtitle}</Text>
+                        <Text style={styles.roomTopic}>{room.topic}</Text>
                       </View>
 
                       <View style={styles.roomRight}>
                         <CircleHelp size={24} color="#8C6BFF" />
-                        <TouchableOpacity style={styles.watchOrangeBtn} activeOpacity={0.9}>
-                          <Text style={styles.watchOrangeText}>Watch</Text>
+                        <TouchableOpacity style={styles.watchOrangeBtn} activeOpacity={0.9} onPress={() => joinDebateRoom(room)}>
+                          <Text style={styles.watchOrangeText}>Debate</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
@@ -616,7 +684,8 @@ const styles = StyleSheet.create({
   roomLeft: { flex: 1, paddingRight: 10 },
   roomTitle: { color: '#1E1E1E', fontSize: 24, fontWeight: '900' },
   roomSub: { color: '#949494', fontSize: 12, fontWeight: '700', marginTop: 2 },
-  roomRight: { alignItems: 'flex-end', gap: 8 },
+  roomTopic: { color: '#2E3551', fontSize: 12, fontWeight: '700', marginTop: 6, lineHeight: 16 },
+  roomRight: { alignItems: 'flex-end', gap: 8, paddingLeft: 8 },
   watchOrangeBtn: {
     backgroundColor: '#8C6BFF',
     borderBottomWidth: 4,
