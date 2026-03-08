@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import TopHeaderStats from '../../components/TopHeaderStats';
 import LearningPathNode from '../../components/LearningPathNode';
 import GamifiedModal from '../../components/GamifiedModal';
@@ -11,35 +11,34 @@ const NODE_SIZE = 70;
 const Y_SPACING = 130;
 const X_AMPLITUDE = 60;
 
-const generatePathData = (numNodes = 10) =>
+const generatePathData = (numNodes = 10, viewportWidth = SCREEN_WIDTH) =>
   Array.from({ length: numNodes }).map((_, i) => {
     const xOffset = Math.sin(i * 0.8) * X_AMPLITUDE;
     return {
       id: i + 1,
-      centerX: SCREEN_WIDTH / 2 + xOffset,
+      centerX: viewportWidth / 2 + xOffset,
       centerY: (i + 1) * Y_SPACING,
     };
   });
 
 const generateSvgPath = (nodes) => {
   if (!nodes.length) return '';
-  let path = `M ${nodes[0].centerX} ${nodes[0].centerY}`;
-
+  let d = `M ${nodes[0].centerX} ${nodes[0].centerY}`;
   for (let i = 1; i < nodes.length; i += 1) {
     const prev = nodes[i - 1];
     const curr = nodes[i];
-    const cp1Y = prev.centerY + (curr.centerY - prev.centerY) / 2;
-    path += ` C ${prev.centerX} ${cp1Y}, ${curr.centerX} ${cp1Y}, ${curr.centerX} ${curr.centerY}`;
+    const cpY = prev.centerY + (curr.centerY - prev.centerY) / 2;
+    d += ` C ${prev.centerX} ${cpY}, ${curr.centerX} ${cpY}, ${curr.centerX} ${curr.centerY}`;
   }
-
-  return path;
+  return d;
 };
 
 export default function HomeMainScreen({ navigation }) {
   const [open, setOpen] = useState(false);
+  const MAP_WIDTH = SCREEN_WIDTH - 40; // same as map viewport width (marginHorizontal: 20)
 
-  const nodes = useMemo(() => generatePathData(10), []);
-  const svgPathString = useMemo(() => generateSvgPath(nodes), [nodes]);
+  const nodes = useMemo(() => generatePathData(10, MAP_WIDTH), [MAP_WIDTH]);
+  const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
   const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
 
   return (
@@ -53,39 +52,46 @@ export default function HomeMainScreen({ navigation }) {
         contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Layer 1: path from same math source as nodes */}
-        <Svg style={StyleSheet.absoluteFillObject}>
-          <Path
-            d={svgPathString}
-            stroke="#E5C07B"
-            strokeWidth={44}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <Path
-            d={svgPathString}
-            stroke="#FFF1C1"
-            strokeWidth={32}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        {/* Layer 1: Grass terrain + path */}
+        <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
+          <Defs>
+            <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0%" stopColor="#9AE15D" />
+              <Stop offset="100%" stopColor="#84D64A" />
+            </LinearGradient>
+            <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0%" stopColor="#FFF7DD" />
+              <Stop offset="100%" stopColor="#F1E0B2" />
+            </LinearGradient>
+          </Defs>
+
+          <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
+
+          {/* grass details */}
+          <Circle cx="42" cy="150" r="10" fill="#78C33E" opacity="0.9" />
+          <Circle cx="56" cy="160" r="7" fill="#84CF4B" opacity="0.9" />
+          <Circle cx={MAP_WIDTH - 48} cy="340" r="9" fill="#78C33E" opacity="0.9" />
+          <Circle cx={MAP_WIDTH - 61} cy="352" r="6" fill="#84CF4B" opacity="0.9" />
+          <Circle cx="70" cy={CONTENT_HEIGHT - 190} r="11" fill="#78C33E" opacity="0.9" />
+          <Circle cx="88" cy={CONTENT_HEIGHT - 178} r="7" fill="#84CF4B" opacity="0.9" />
+
+          {/* thick trail */}
+          <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+          <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
         </Svg>
 
-        {/* Layer 2: nodes from exact same coordinate array */}
+        {/* Layer 2: Nodes aligned to same coordinates */}
         {nodes.map((node, idx) => (
           <View
             key={node.id}
-            style={[
-              styles.nodeContainer,
-              {
-                left: node.centerX - NODE_SIZE / 2,
-                top: node.centerY - NODE_SIZE / 2,
-                width: NODE_SIZE,
-                height: NODE_SIZE,
-              },
-            ]}
+            style={{
+              position: 'absolute',
+              left: node.centerX - NODE_SIZE / 2,
+              top: node.centerY - NODE_SIZE / 2,
+              width: NODE_SIZE,
+              height: NODE_SIZE,
+            }}
           >
             <LearningPathNode
               number={node.id}
@@ -143,8 +149,10 @@ const styles = StyleSheet.create({
   mapContent: {
     backgroundColor: '#89E256',
   },
-  nodeContainer: {
+  svgLayer: {
     position: 'absolute',
+    top: 0,
+    left: 0,
   },
   bottomCta: {
     paddingHorizontal: 20,
