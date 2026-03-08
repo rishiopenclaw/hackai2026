@@ -25,9 +25,9 @@ export default function LearningPathNode({ active, locked, icon, number, onPress
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', marginVertical: 12 },
+  wrap: { alignItems: 'center', width: 75, height: 75, justifyContent: 'center' },
   nodeBtn: { width: 75 },
-  tipWrap: { alignItems: 'center', marginBottom: 8 },
+  tipWrap: { position: 'absolute', alignItems: 'center', top: -42, zIndex: 4 },
   tip: {
     borderRadius: 14,
     backgroundColor: '#FFFFFF',
