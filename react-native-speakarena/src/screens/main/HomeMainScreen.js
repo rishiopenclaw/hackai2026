@@ -89,7 +89,11 @@ export default function HomeMainScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.screen}>
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={!(activeTab === 'practice' && !!selectedPathId)}
+        >
           <View style={styles.segmentWrap}>
             <TouchableOpacity
               style={[styles.segmentBtn, activeTab === 'practice' ? styles.segmentActive : styles.segmentInactive]}
