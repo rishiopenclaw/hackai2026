@@ -108,7 +108,7 @@ export default function HomeMainScreen({ navigation }) {
             <View style={{ height: MAP_HEIGHT }}>
               <MapArtwork height={MAP_HEIGHT} />
 
-              {/* END node (flag) at TOP of path */}
+              {/* 10 nodes placed on the trail centerline */}
               <View style={[styles.nodePos, { top: 62, left: 226 }]}>
                 <LearningPathNode
                   active
@@ -117,23 +117,40 @@ export default function HomeMainScreen({ navigation }) {
                 />
               </View>
 
-              {/* Mid nodes */}
-              <View style={[styles.nodePos, { top: 268, left: 78 }]}>
+              <View style={[styles.nodePos, { top: 184, left: 154 }]}>
                 <LearningPathNode number={2} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })} />
               </View>
-              <View style={[styles.nodePos, { top: 468, left: 176 }]}>
+
+              <View style={[styles.nodePos, { top: 268, left: 78 }]}>
                 <LearningPathNode number={3} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })} />
               </View>
-              <View style={[styles.nodePos, { top: 662, left: 110 }]}>
-                <LearningPathNode locked icon="🔒" />
+
+              <View style={[styles.nodePos, { top: 352, left: 116 }]}>
+                <LearningPathNode number={4} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'human' } })} />
               </View>
 
-              {/* Extra roadmap depth (for scroll feel) */}
-              <View style={[styles.nodePos, { top: 844, left: 96 }]}>
-                <LearningPathNode locked number={5} />
+              <View style={[styles.nodePos, { top: 440, left: 186 }]}>
+                <LearningPathNode number={5} />
               </View>
+
+              <View style={[styles.nodePos, { top: 532, left: 208 }]}>
+                <LearningPathNode number={6} />
+              </View>
+
+              <View style={[styles.nodePos, { top: 632, left: 136 }]}>
+                <LearningPathNode number={7} />
+              </View>
+
+              <View style={[styles.nodePos, { top: 734, left: 102 }]}>
+                <LearningPathNode number={8} />
+              </View>
+
+              <View style={[styles.nodePos, { top: 874, left: 164 }]}>
+                <LearningPathNode number={9} />
+              </View>
+
               <View style={[styles.nodePos, { top: 1184, left: 281 }]}>
-                <LearningPathNode locked number={1} />
+                <LearningPathNode number={10} />
               </View>
             </View>
           </ScrollView>
