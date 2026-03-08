@@ -179,15 +179,21 @@ Output ONLY a valid JSON object. Do not include markdown, code fences, or commen
 }
 
 // ─── 2. SPEECH ANALYSIS (audio → metrics) ───
-export async function analyzeSpeech({ audioBase64, mimeType, context }) {
+export async function analyzeSpeech({ audioBase64, mimeType, transcriptText, context }) {
   // context = { topic, speaker, exerciseType }
+  const transcriptHint =
+    transcriptText && typeof transcriptText === "string"
+      ? `Speaker text input:\n"${transcriptText.trim()}"`
+      : "";
   const prompt = `
 You are an expert speech and communication coach.
-Analyze this audio recording of a person speaking.
+Analyze this speaking sample.
 
 Context: ${context.exerciseType || "general"} exercise.
 ${context.topic ? `Topic: "${context.topic}"` : ""}
 ${context.speaker ? `Speaker: Player ${context.speaker}` : ""}
+${audioBase64 ? "Input type: audio" : "Input type: text transcript"}
+${transcriptHint}
 
 Analyze the speaker's delivery in detail. Listen carefully for:
 - Filler words (um, uh, like, you know, so, basically, right, actually)
@@ -219,19 +225,25 @@ Return STRICT JSON:
 
 Output ONLY a valid JSON object. Do not include markdown, code fences, or commentary.
   `;
+  let normalizedAudio = audioBase64 || "";
+  if (normalizedAudio.startsWith("data:") && normalizedAudio.includes(",")) {
+    normalizedAudio = normalizedAudio.slice(normalizedAudio.indexOf(",") + 1);
+  }
 
-  const audioPart = {
-    inlineData: {
-      mimeType: mimeType || "audio/webm",
-      data: audioBase64,
-    },
-  };
+  const audioPart = normalizedAudio
+    ? {
+        inlineData: {
+          mimeType: mimeType || "audio/mp4",
+          data: normalizedAudio,
+        },
+      }
+    : null;
 
   const metrics = await callGeminiJSON({
     prompt,
     audioPart,
     validator: validateSpeechMetrics,
-    modelType: "audio",
+    modelType: audioBase64 ? "audio" : "text",
     retries: 1,
   });
 

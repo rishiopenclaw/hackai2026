@@ -9,6 +9,34 @@ import {
 
 const router = Router();
 
+router.post("/speech", async (req, res, next) => {
+  try {
+    const { audioBase64, mimeType, transcriptText, topic, speaker, exerciseType } = req.body;
+    if (!audioBase64 && !transcriptText) {
+      return res.status(400).json({ error: "audioBase64 or transcriptText is required." });
+    }
+    const metrics = await analyzeSpeech({
+      audioBase64,
+      mimeType,
+      transcriptText,
+      context: { topic, speaker, exerciseType },
+    });
+    res.json({ ok: true, metrics });
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.post("/question", async (req, res, next) => {
+  try {
+    const { profile, weakAreas, exerciseType } = req.body;
+    const question = await generateQuestion({ profile, weakAreas, exerciseType });
+    res.json({ ok: true, question });
+  } catch (e) {
+    next(e);
+  }
+});
+
 // Test: resume analysis
 router.post("/test/resume", async (req, res, next) => {
   try {

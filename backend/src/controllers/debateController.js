@@ -58,6 +58,32 @@ function baselineMetrics() {
   };
 }
 
+function transcriptFallbackMetrics(transcriptText = '') {
+  const transcript = String(transcriptText || '').trim();
+  const words = transcript ? transcript.split(/\s+/).length : 0;
+  const fillerWords = ['um', 'uh', 'like', 'you know', 'basically', 'actually', 'right'];
+  const lower = transcript.toLowerCase();
+  const matched = fillerWords.filter((w) => lower.includes(w));
+  const overall = Math.max(45, Math.min(90, 50 + Math.floor(words / 4) - matched.length * 2));
+  return {
+    ...baselineMetrics(),
+    transcript,
+    filler_count: matched.length,
+    filler_words: matched,
+    wpm: words > 0 ? 110 : 0,
+    structure_score: overall,
+    grammar_score: overall,
+    confidence_score: overall,
+    argument_strength: overall,
+    overall_score: overall,
+    top_strength: transcript ? 'Clear point made within time.' : 'Completed the turn on time.',
+    top_weakness: transcript ? 'Add one concrete example for stronger persuasion.' : 'Provide clearer spoken arguments.',
+    one_line_feedback: transcript
+      ? 'Good pace. Add one stronger example to improve this round.'
+      : 'Speak with clearer claims and one supporting reason.',
+  };
+}
+
 export async function startDebate(req, res, next) {
   try {
     const { topic, mode = 'p2p', speakerAUserId, speakerBUserId = null } = req.body || {};
@@ -91,11 +117,11 @@ export async function startDebate(req, res, next) {
 
 export async function submitDebateTurn(req, res, next) {
   try {
-    const { debateId, speaker, turnIndex, audioBase64, mimeType } = req.body || {};
+    const { debateId, speaker, turnIndex, audioBase64, mimeType, transcriptText } = req.body || {};
 
-    if (!debateId || !speaker || typeof turnIndex !== 'number' || !audioBase64) {
+    if (!debateId || !speaker || typeof turnIndex !== 'number' || (!audioBase64 && !transcriptText)) {
       return res.status(400).json({
-        error: 'debateId, speaker, turnIndex, and audioBase64 are required.',
+        error: 'debateId, speaker, turnIndex, and either audioBase64 or transcriptText are required.',
       });
     }
 
@@ -126,17 +152,23 @@ export async function submitDebateTurn(req, res, next) {
       });
     }
 
-    const analyzed = await analyzeSpeech({
-      audioBase64,
-      mimeType,
-      context: { topic: debate.topicPrompt, speaker, exerciseType: 'debate' },
-    });
+    let analyzed = null;
+    if (audioBase64) {
+      analyzed = await analyzeSpeech({
+        audioBase64,
+        mimeType,
+        transcriptText,
+        context: { topic: debate.topicPrompt, speaker, exerciseType: 'debate' },
+      });
+    } else {
+      analyzed = transcriptFallbackMetrics(transcriptText);
+    }
     const metrics = { ...baselineMetrics(), ...(analyzed || {}) };
 
     debate.turns.push({
       speaker,
       turnIndex,
-      mimeType: mimeType || 'audio/webm',
+      mimeType: mimeType || 'audio/mp4',
       metrics,
       role: toRole(speaker),
       phase: toPhase(speaker, turnIndex),

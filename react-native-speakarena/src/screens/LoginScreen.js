@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CleanCard from '../components/CleanCard';
 import { PrimaryPill, TextAction } from '../components/CleanCTA';
 import { palette, type } from '../theme/design';
+import { bootstrapDemoSession } from '../lib/api';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -13,16 +13,10 @@ export default function LoginScreen({ navigation }) {
   const handleLogin = async () => {
     setLoading(true);
     try {
-      // Demo mode: bypass backend auth and enter app immediately.
-      const demoData = {
-        _id: 'demo-user',
+      await bootstrapDemoSession({
         displayName: 'Guest User',
         email: email?.trim()?.toLowerCase() || 'guest@speakarena.app',
-        token: 'demo-token',
-      };
-
-      await AsyncStorage.setItem('userToken', demoData.token);
-      await AsyncStorage.setItem('userData', JSON.stringify(demoData));
+      });
       navigation.replace('MainTabs');
     } catch (err) {
       console.error('Login error:', err);

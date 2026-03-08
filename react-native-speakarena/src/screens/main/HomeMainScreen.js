@@ -7,11 +7,15 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  Alert,
+  Linking,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import { Play, Plus, CircleHelp, Check, Gift } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
+import { apiJson, getDemoUserId } from '../../lib/api';
+import { requestMicPermission } from '../../lib/voice';
 
 const DEBATE_TOPICS = [
   'Should AI replace final exams in universities?',
@@ -111,6 +115,7 @@ export default function HomeMainScreen({ navigation }) {
   });
   const [clubRooms, setClubRooms] = useState(INITIAL_ROOMS);
   const [myLobbyRoom, setMyLobbyRoom] = useState(null);
+  const [startingDebate, setStartingDebate] = useState(false);
 
   const mapScrollRef = useRef(null);
   const MAP_WIDTH = SCREEN_WIDTH - 32;
@@ -164,17 +169,49 @@ export default function HomeMainScreen({ navigation }) {
     setMyLobbyRoom(room);
   };
 
-  const joinDebateRoom = (room, localFriend = false) => {
-    navigation.navigate('Learn', {
-      screen: 'SessionLive',
-      params: {
-        mode: 'club-debate',
-        roomId: room.id,
-        roomTitle: room.title,
-        topic: room.topic,
-        localFriend,
-      },
-    });
+  const joinDebateRoom = async (room, localFriend = false) => {
+    if (startingDebate) return;
+    setStartingDebate(true);
+    try {
+      const micGranted = await requestMicPermission();
+      if (!micGranted) {
+        Alert.alert(
+          'Microphone Required',
+          'SpeakArena needs microphone access for debate turns.',
+          [
+            { text: 'Open Settings', onPress: () => Linking.openSettings() },
+            { text: 'Cancel', style: 'cancel' },
+          ],
+        );
+        setStartingDebate(false);
+        return;
+      }
+      const speakerAUserId = await getDemoUserId();
+      const startData = await apiJson('/api/debates/start', {
+        method: 'POST',
+        body: JSON.stringify({
+          topic: room.topic,
+          mode: 'p2p',
+          speakerAUserId: speakerAUserId || undefined,
+        }),
+      });
+
+      navigation.navigate('Learn', {
+        screen: 'SessionLive',
+        params: {
+          mode: 'club-debate',
+          roomId: room.id,
+          roomTitle: room.title,
+          topic: startData?.topic || room.topic,
+          debateId: startData?.debateId || '',
+          localFriend,
+        },
+      });
+    } catch (error) {
+      console.error('Failed to start debate room', error);
+    } finally {
+      setStartingDebate(false);
+    }
   };
 
   const startWithFriend = () => {

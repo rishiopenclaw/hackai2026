@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Polygon, Circle, Text as SvgText, Line } from 'react-native-svg';
 import { CheckCircle2, CircleDashed, Trophy, Medal, Star } from 'lucide-react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
 import { palette, type } from '../../theme/design';
+import { apiJson } from '../../lib/api';
 
 // Radar Chart Component
 const RadarChart = ({ stats }) => {
@@ -113,28 +113,12 @@ export default function ProgressMainScreen({ navigation }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = await AsyncStorage.getItem('userToken');
-        if (!token) return;
-
-        // Fetch User and Stats
-        const meRes = await fetch('http://localhost:3000/api/auth/me', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        
-        // Fetch Leaderboard
-        const leadRes = await fetch('http://localhost:3000/api/auth/leaderboard', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-        if (meRes.ok) {
-          const meData = await meRes.json();
-          setUserStats(meData);
-        }
-
-        if (leadRes.ok) {
-          const leadData = await leadRes.json();
-          setLeaderboard(leadData);
-        }
+        const [meData, leadData] = await Promise.all([
+          apiJson('/api/auth/me'),
+          apiJson('/api/auth/leaderboard'),
+        ]);
+        setUserStats(meData);
+        setLeaderboard(Array.isArray(leadData) ? leadData : []);
       } catch (e) {
         console.error("Failed to load progress data", e);
       } finally {

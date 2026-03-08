@@ -5,6 +5,7 @@ backend/.env
 # React Native / Expo
 react-native-speakarena/node_modules/
 react-native-speakarena/.expo/
+react-native-speakarena/.env
 
 # macOS
 .DS_Store

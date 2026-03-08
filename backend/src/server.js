@@ -2,7 +2,7 @@ import app from './app.js';
 import { connectDB } from './config/db.js';
 import { config } from './config/env.js';
 
-const PORT = config.port || 4000;
+const PORT = config.port;
 
 async function bootstrap() {
   await connectDB(config.mongoUri, config.dbName);

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import CleanCard from '../components/CleanCard';
 import { PrimaryPill, TextAction } from '../components/CleanCTA';
 import { palette, type } from '../theme/design';
+import { bootstrapDemoSession } from '../lib/api';
 
 export default function SignUpScreen({ navigation }) {
   const [name, setName] = useState('');
@@ -12,17 +12,11 @@ export default function SignUpScreen({ navigation }) {
 
   const handleContinueToApp = async () => {
     try {
-      // Demo mode: skip backend auth so users can continue immediately.
       const demoName = name?.trim() || 'Guest User';
-      const demoData = {
-        _id: 'demo-user',
+      await bootstrapDemoSession({
         displayName: demoName,
         email: email?.trim()?.toLowerCase() || 'guest@speakarena.app',
-        token: 'demo-token',
-      };
-
-      await AsyncStorage.setItem('userToken', demoData.token);
-      await AsyncStorage.setItem('userData', JSON.stringify(demoData));
+      });
       navigation.replace('MainTabs');
     } catch (err) {
       console.error('Sign up error:', err);

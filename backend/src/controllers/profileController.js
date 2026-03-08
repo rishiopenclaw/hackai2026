@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import { PDFParse } from 'pdf-parse';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 import { analyzeResume } from '../services/gemini.js';
 
@@ -31,6 +33,12 @@ function normalizeBase64Document(input) {
     return value.slice(commaIndex + 1);
   }
   return value;
+}
+
+function generateToken(id) {
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'speakarena_secret_2026', {
+    expiresIn: '30d',
+  });
 }
 
 async function upsertProfileFromResumeText({ userId, resumeText }) {
@@ -199,6 +207,42 @@ export async function parseResumePdfIntoProfile(req, res, next) {
       extractedTextLength: extractedText.length,
       profile: data.profile,
       user: data.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function bootstrapDemoUser(req, res, next) {
+  try {
+    const { displayName, email } = req.body || {};
+    const normalizedEmail = (typeof email === 'string' ? email.trim().toLowerCase() : '') || 'demo@vocalyze.app';
+    const safeDisplayName = (typeof displayName === 'string' ? displayName.trim() : '') || 'Guest User';
+
+    let user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      const passwordHash = await bcrypt.hash('demo-password', 10);
+      user = await User.create({
+        displayName: safeDisplayName,
+        email: normalizedEmail,
+        passwordHash,
+      });
+    } else if (safeDisplayName && user.displayName !== safeDisplayName) {
+      user.displayName = safeDisplayName;
+      await user.save();
+    }
+
+    return res.json({
+      ok: true,
+      user: {
+        _id: user._id,
+        displayName: user.displayName,
+        email: user.email,
+        skillLevel: user.skillLevel,
+        xp: user.xp,
+        level: user.level,
+      },
+      token: generateToken(user._id),
     });
   } catch (error) {
     next(error);
