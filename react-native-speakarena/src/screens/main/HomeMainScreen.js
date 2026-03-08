@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import TopHeaderStats from '../../components/TopHeaderStats';
@@ -6,9 +6,9 @@ import LearningPathNode from '../../components/LearningPathNode';
 import GamifiedModal from '../../components/GamifiedModal';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
-function MapArtwork() {
+function MapArtwork({ height }) {
   return (
-    <Svg style={StyleSheet.absoluteFill} viewBox="0 0 360 650" preserveAspectRatio="none">
+    <Svg style={StyleSheet.absoluteFill} viewBox={`0 0 360 ${height}`} preserveAspectRatio="none">
       <Defs>
         <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0%" stopColor="#BDEA8D" />
@@ -24,32 +24,28 @@ function MapArtwork() {
         </LinearGradient>
       </Defs>
 
-      {/* Base field */}
-      <Path d="M0 0 H360 V650 H0 Z" fill="url(#grassBase)" />
+      <Path d={`M0 0 H360 V${height} H0 Z`} fill="url(#grassBase)" />
 
-      {/* Organic terrain masses */}
-      <Path d="M-40 40 C60 -20, 180 40, 240 90 C280 120, 330 160, 390 130 V-20 H-40 Z" fill="url(#hillShade)" opacity="0.65" />
-      <Path d="M-30 250 C80 190, 160 250, 210 290 C250 320, 290 360, 390 330 V220 H-30 Z" fill="#94CE5E" opacity="0.55" />
-      <Path d="M-40 460 C70 410, 160 470, 230 520 C280 560, 320 600, 390 580 V700 H-40 Z" fill="#87C650" opacity="0.58" />
+      <Path d="M-40 60 C60 -10, 180 40, 390 110 V-20 H-40 Z" fill="url(#hillShade)" opacity="0.65" />
+      <Path d="M-30 390 C80 330, 170 400, 390 360 V260 H-30 Z" fill="#94CE5E" opacity="0.55" />
+      <Path d={`M-40 ${height - 230} C70 ${height - 280}, 160 ${height - 210}, 390 ${height - 230} V${height} H-40 Z`} fill="#87C650" opacity="0.58" />
 
-      {/* Decorative bushes / flowers */}
-      <Circle cx="48" cy="130" r="8" fill="#7FC345" />
-      <Circle cx="60" cy="136" r="6" fill="#8BCF52" />
-      <Circle cx="286" cy="248" r="7" fill="#7FC345" />
-      <Circle cx="297" cy="255" r="5" fill="#8BCF52" />
-      <Circle cx="74" cy="520" r="9" fill="#7FC345" />
-      <Circle cx="89" cy="528" r="6" fill="#8BCF52" />
-      <Circle cx="300" cy="560" r="3" fill="#FFD54F" />
-      <Circle cx="307" cy="554" r="3" fill="#FF8A80" />
-      <Circle cx="292" cy="548" r="3" fill="#81D4FA" />
+      <Circle cx="50" cy="170" r="8" fill="#7FC345" />
+      <Circle cx="62" cy="178" r="6" fill="#8BCF52" />
+      <Circle cx="295" cy="500" r="7" fill="#7FC345" />
+      <Circle cx="306" cy="507" r="5" fill="#8BCF52" />
+      <Circle cx="92" cy="980" r="8" fill="#7FC345" />
+      <Circle cx="104" cy="988" r="6" fill="#8BCF52" />
 
-      {/* Winding trail shadow */}
+      {/* Long winding trail (top = end, bottom = start) */}
       <Path
-        d="M278 72
-           C205 104, 120 158, 92 232
-           C72 284, 102 338, 178 390
-           C235 430, 252 492, 210 548
-           C184 584, 132 612, 96 632"
+        d={`M258 90
+            C188 132, 102 196, 84 282
+            C70 348, 112 414, 194 472
+            C250 512, 262 582, 214 650
+            C170 712, 108 772, 106 840
+            C104 916, 162 982, 244 1040
+            C278 1064, 300 1100, 300 1140`}
         stroke="#D9C894"
         strokeWidth="42"
         strokeLinecap="round"
@@ -57,28 +53,28 @@ function MapArtwork() {
         opacity="0.55"
         fill="none"
       />
-
-      {/* Winding trail main */}
       <Path
-        d="M278 64
-           C205 96, 120 150, 92 224
-           C72 276, 102 330, 178 382
-           C235 422, 252 484, 210 540
-           C184 576, 132 604, 96 624"
+        d={`M258 90
+            C188 132, 102 196, 84 282
+            C70 348, 112 414, 194 472
+            C250 512, 262 582, 214 650
+            C170 712, 108 772, 106 840
+            C104 916, 162 982, 244 1040
+            C278 1064, 300 1100, 300 1140`}
         stroke="url(#trailFill)"
         strokeWidth="38"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
       />
-
-      {/* Trail highlight */}
       <Path
-        d="M286 62
-           C214 94, 130 146, 101 219
-           C82 269, 112 323, 186 374
-           C241 412, 260 474, 219 530
-           C194 564, 145 592, 110 611"
+        d={`M266 88
+            C196 130, 112 192, 94 276
+            C80 340, 122 406, 202 462
+            C256 500, 270 572, 224 638
+            C180 700, 118 760, 116 830
+            C114 904, 170 968, 252 1028
+            C286 1052, 308 1088, 308 1128`}
         stroke="rgba(255,255,255,0.42)"
         strokeWidth="9"
         strokeLinecap="round"
@@ -91,6 +87,8 @@ function MapArtwork() {
 
 export default function HomeMainScreen({ navigation }) {
   const [open, setOpen] = useState(false);
+  const mapScrollRef = useRef(null);
+  const MAP_HEIGHT = 1240;
 
   return (
     <View style={styles.root}>
@@ -99,35 +97,46 @@ export default function HomeMainScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>YOUR PATH</Text>
 
+        {/* Fixed viewport box; map scrolls inside this box only */}
         <View style={styles.terrainWrap}>
-          <MapArtwork />
+          <ScrollView
+            ref={mapScrollRef}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ height: MAP_HEIGHT }}
+            onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
+          >
+            <View style={{ height: MAP_HEIGHT }}>
+              <MapArtwork height={MAP_HEIGHT} />
 
-          {/* Nodes pinned to trail waypoints */}
-          <View style={[styles.nodePos, { top: 34, left: 254 }]}>
-            <LearningPathNode
-              active
-              icon="⚑"
-              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
-            />
-          </View>
+              {/* END node (flag) at TOP of path */}
+              <View style={[styles.nodePos, { top: 62, left: 226 }]}>
+                <LearningPathNode
+                  active
+                  icon="⚑"
+                  onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
+                />
+              </View>
 
-          <View style={[styles.nodePos, { top: 232, left: 84 }]}>
-            <LearningPathNode
-              number={2}
-              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })}
-            />
-          </View>
+              {/* Mid nodes */}
+              <View style={[styles.nodePos, { top: 268, left: 78 }]}>
+                <LearningPathNode number={2} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })} />
+              </View>
+              <View style={[styles.nodePos, { top: 468, left: 176 }]}>
+                <LearningPathNode number={3} onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })} />
+              </View>
+              <View style={[styles.nodePos, { top: 662, left: 110 }]}>
+                <LearningPathNode locked icon="🔒" />
+              </View>
 
-          <View style={[styles.nodePos, { top: 392, left: 170 }]}>
-            <LearningPathNode
-              number={3}
-              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })}
-            />
-          </View>
-
-          <View style={[styles.nodePos, { top: 552, left: 120 }]}>
-            <LearningPathNode locked icon="🔒" />
-          </View>
+              {/* Extra roadmap depth (for scroll feel) */}
+              <View style={[styles.nodePos, { top: 844, left: 96 }]}>
+                <LearningPathNode locked number={5} />
+              </View>
+              <View style={[styles.nodePos, { top: 1032, left: 240 }]}>
+                <LearningPathNode locked number={6} />
+              </View>
+            </View>
+          </ScrollView>
         </View>
 
         <Bouncy3DButton title="Try challenge" variant="orange" onPress={() => setOpen(true)} style={{ marginTop: 16 }} />
@@ -159,7 +168,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#BDEB92',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
-    position: 'relative',
   },
   nodePos: { position: 'absolute' },
 });
