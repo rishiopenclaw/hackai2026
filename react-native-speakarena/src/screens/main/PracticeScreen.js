@@ -4,27 +4,21 @@ import { ChevronRight } from 'lucide-react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
 import { palette, type } from '../../theme/design';
-
-const TRACKS = [
-  { key: 'DebateArena', title: 'Speak Persuasive', sub: 'Claim, reason, rebuttal.' },
-  { key: 'HotSeatInterview', title: 'Think Fast', sub: 'Answer confidently on the spot.' },
-  { key: 'CrisisRoom', title: 'Pressure Clarity', sub: 'Stay calm when constraints change.' },
-  { key: 'StoryBuilder', title: 'Speak Human', sub: 'Tell stories people remember.' },
-];
+import { TRACK_LIST } from '../../data/tracks';
 
 export default function PracticeScreen({ navigation }) {
   return (
     <CleanShell>
       <Text style={styles.title}>Practice tracks</Text>
-      <Text style={styles.sub}>Pick one focused loop.</Text>
+      <Text style={styles.sub}>Choose one. Then run Prompt → Speak → Reflect → Retry.</Text>
 
       <View style={{ marginTop: 14, gap: 10 }}>
-        {TRACKS.map((t, i) => (
-          <Pressable key={t.key} onPress={() => navigation.navigate(t.key)}>
+        {TRACK_LIST.map((t, i) => (
+          <Pressable key={t.id} onPress={() => navigation.navigate('SessionPreflight', { trackId: t.id })}>
             <CleanCard style={[styles.rowCard, i === 0 && styles.firstCard]}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.cardTitle}>{t.title}</Text>
-                <Text style={styles.cardSub}>{t.sub}</Text>
+                <Text style={styles.cardSub}>{t.subtitle}</Text>
               </View>
               <ChevronRight size={16} color="#8E95B3" />
             </CleanCard>

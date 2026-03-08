@@ -1,10 +1,11 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PracticeScreen from '../screens/main/PracticeScreen';
-import DebateArenaScreen from '../screens/modes/DebateArenaScreen';
-import HotSeatInterviewScreen from '../screens/modes/HotSeatInterviewScreen';
-import CrisisRoomScreen from '../screens/modes/CrisisRoomScreen';
-import StoryBuilderScreen from '../screens/modes/StoryBuilderScreen';
+import SessionPreflightScreen from '../screens/sessions/SessionPreflightScreen';
+import SessionLiveScreen from '../screens/sessions/SessionLiveScreen';
+import SessionReflectScreen from '../screens/sessions/SessionReflectScreen';
+import SessionRetryScreen from '../screens/sessions/SessionRetryScreen';
+import SessionCompleteScreen from '../screens/sessions/SessionCompleteScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -13,14 +14,15 @@ export default function PracticeStack() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#09090C' },
+        contentStyle: { backgroundColor: '#F7F8FF' },
       }}
     >
       <Stack.Screen name="PracticeHome" component={PracticeScreen} />
-      <Stack.Screen name="DebateArena" component={DebateArenaScreen} />
-      <Stack.Screen name="HotSeatInterview" component={HotSeatInterviewScreen} />
-      <Stack.Screen name="CrisisRoom" component={CrisisRoomScreen} />
-      <Stack.Screen name="StoryBuilder" component={StoryBuilderScreen} />
+      <Stack.Screen name="SessionPreflight" component={SessionPreflightScreen} />
+      <Stack.Screen name="SessionLive" component={SessionLiveScreen} />
+      <Stack.Screen name="SessionReflect" component={SessionReflectScreen} />
+      <Stack.Screen name="SessionRetry" component={SessionRetryScreen} />
+      <Stack.Screen name="SessionComplete" component={SessionCompleteScreen} />
     </Stack.Navigator>
   );
 }

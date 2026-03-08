@@ -22,7 +22,7 @@ export default function HomeMainScreen({ navigation }) {
         </View>
         <ActionRow
           primaryTitle="Start"
-          onPrimary={() => navigation.navigate('Practice', { screen: 'DebateArena' })}
+          onPrimary={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
           secondaryTitle="Preview"
           onSecondary={() => navigation.navigate('Practice')}
         />
