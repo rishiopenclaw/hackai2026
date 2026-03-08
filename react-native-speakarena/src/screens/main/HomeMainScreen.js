@@ -106,7 +106,7 @@ export default function HomeMainScreen({ navigation }) {
           <View style={[styles.nodePos, { top: 34, left: 254 }]}>
             <LearningPathNode
               active
-              icon="🇺🇸"
+              icon="⚑"
               onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
             />
           </View>
