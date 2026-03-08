@@ -1,8 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, TextInput } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Plus, Users, Search } from 'lucide-react-native';
-import TopHeaderStats from '../../components/TopHeaderStats';
+import { Plus, Users, Search, Flame, Gem, Heart } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -82,7 +81,17 @@ export default function HomeMainScreen({ navigation }) {
 
   return (
     <View style={styles.root}>
-      <TopHeaderStats />
+      <View style={styles.richTopBar}>
+        <View style={styles.flagChip}>
+          <Text style={styles.flagText}>🇺🇸</Text>
+        </View>
+
+        <View style={styles.statsRow}>
+          <StatPill icon={<Flame size={14} color="#FF6B00" />} value="12" />
+          <StatPill icon={<Gem size={14} color="#3AB2FF" />} value="240" />
+          <StatPill icon={<Heart size={14} color="#FF4A61" />} value="5" />
+        </View>
+      </View>
 
       <View style={styles.switcherShell}>
         <View style={styles.switcher}>
@@ -234,44 +243,92 @@ function TopPill({ active, label, onPress }) {
   );
 }
 
+function StatPill({ icon, value }) {
+  return (
+    <View style={styles.statPill}>
+      {icon}
+      <Text style={styles.statPillText}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F4F9F6' },
-  switcherShell: {
+  richTopBar: {
     marginHorizontal: 20,
     marginTop: 8,
     marginBottom: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  flagChip: {
+    height: 42,
+    width: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#DCE2EE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#63709A',
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  flagText: { fontSize: 18 },
+  statsRow: { flexDirection: 'row', gap: 8 },
+  statPill: {
+    height: 40,
+    minWidth: 74,
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#DCE2EE',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  statPillText: { fontWeight: '900', color: '#4A557A', fontSize: 15 },
+
+  switcherShell: {
+    marginHorizontal: 20,
+    marginBottom: 12,
     borderRadius: 18,
-    backgroundColor: '#1E8D53',
+    backgroundColor: '#0E9B55',
+    borderWidth: 1,
+    borderColor: '#0A7C43',
     padding: 3,
-    shadowColor: '#11683A',
-    shadowOpacity: 0.24,
-    shadowRadius: 3,
+    shadowColor: '#0C6E3D',
+    shadowOpacity: 0.28,
+    shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
-  switcher: {
-    flexDirection: 'row',
-    gap: 4,
-  },
+  switcher: { flexDirection: 'row', gap: 4 },
   topPill: {
     flex: 1,
     borderRadius: 14,
-    paddingVertical: 8,
+    paddingVertical: 9,
     alignItems: 'center',
-    backgroundColor: '#2FB56F',
+    backgroundColor: '#29B566',
     borderWidth: 1,
-    borderColor: '#249E5F',
+    borderColor: '#1E9E58',
   },
   topPillActive: {
-    backgroundColor: '#239F5E',
-    borderColor: '#19864E',
+    backgroundColor: '#1A9F58',
+    borderColor: '#FFB000',
+    borderWidth: 2,
     shadowColor: '#0F6E3E',
     shadowOpacity: 0.22,
     shadowRadius: 2,
     shadowOffset: { width: 0, height: 1 },
     elevation: 2,
   },
-  topPillText: { fontWeight: '800', color: '#DDF7E9', fontSize: 15 },
+  topPillText: { fontWeight: '900', color: '#E8FFF1', fontSize: 22 },
   topPillTextActive: { color: '#FFFFFF' },
   heading: {
     color: '#4B4B4B',
