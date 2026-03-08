@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import ArenaScreen from './screens/ArenaScreen';
 import DrillsScreen from './screens/DrillsScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import CustomTabBar from './components/CustomTabBar';
 import { colors } from './theme/colors';
 
 const Tab = createBottomTabNavigator();
@@ -17,10 +18,10 @@ export default function App() {
       <NavigationContainer>
         <StatusBar style="dark" />
         <Tab.Navigator
+          tabBar={(props) => <CustomTabBar {...props} />}
           screenOptions={{
             headerShown: false,
-            tabBarActiveTintColor: colors.green,
-            tabBarStyle: { height: 64, paddingBottom: 8 },
+            sceneStyle: { backgroundColor: colors.bg },
           }}
         >
           <Tab.Screen name="Path" component={HomeScreen} />
