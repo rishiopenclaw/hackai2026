@@ -71,9 +71,9 @@ const styles = StyleSheet.create({
   },
   flatCircleShadow: {
     shadowColor: '#000000',
-    shadowOpacity: 0.24,
-    shadowRadius: 0,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 2,
+    shadowOpacity: 0.42,
+    shadowRadius: 1,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 6,
   },
 });
