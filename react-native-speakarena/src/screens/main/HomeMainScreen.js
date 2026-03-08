@@ -132,7 +132,7 @@ export default function HomeMainScreen({ navigation }) {
               <View style={[styles.nodePos, { top: 844, left: 96 }]}>
                 <LearningPathNode locked number={5} />
               </View>
-              <View style={[styles.nodePos, { top: 1182, left: 278 }]}>
+              <View style={[styles.nodePos, { top: 1184, left: 281 }]}>
                 <LearningPathNode locked number={1} />
               </View>
             </View>
