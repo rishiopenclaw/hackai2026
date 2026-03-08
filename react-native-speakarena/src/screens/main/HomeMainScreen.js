@@ -177,22 +177,22 @@ export default function HomeMainScreen({ navigation }) {
                     <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
                       <Defs>
                         <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
-                          <Stop offset="0%" stopColor="#EFE9FF" />
-                          <Stop offset="100%" stopColor="#D5C7FF" />
+                          <Stop offset="0%" stopColor="#9AE15D" />
+                          <Stop offset="100%" stopColor="#84D64A" />
                         </LinearGradient>
                         <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
-                          <Stop offset="0%" stopColor="#F5F3FF" />
-                          <Stop offset="100%" stopColor="#E8E4FA" />
+                          <Stop offset="0%" stopColor="#FFF7DD" />
+                          <Stop offset="100%" stopColor="#F1E0B2" />
                         </LinearGradient>
                       </Defs>
 
                       <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
-                      <Path d={pathD} stroke="#CFC7F4" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+                      <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
                       <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                       <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
                       {nodes.map((n) => (
-                        <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#E5DCFF" />
+                        <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
                       ))}
                     </Svg>
 
@@ -264,7 +264,7 @@ export default function HomeMainScreen({ navigation }) {
               <View style={styles.exploreRow}>
                 <Text style={styles.exploreTitle}>Explore</Text>
                 <TouchableOpacity style={styles.createBtn} activeOpacity={0.9}>
-                  <Plus size={14} color="#BFA9FF" />
+                  <Plus size={14} color="#27A14C" />
                   <Text style={styles.createBtnText}>Create Room</Text>
                 </TouchableOpacity>
               </View>
@@ -303,20 +303,20 @@ export default function HomeMainScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#BFA9FF' },
-  screen: { flex: 1, backgroundColor: '#BFA9FF' },
+  safe: { flex: 1, backgroundColor: '#27A14C' },
+  screen: { flex: 1, backgroundColor: '#27A14C' },
   content: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 120 },
 
   segmentWrap: {
-    backgroundColor: '#9B84E8',
+    backgroundColor: '#1C7A35',
     borderRadius: 20,
     padding: 4,
     flexDirection: 'row',
     marginBottom: 16,
   },
   segmentBtn: { flex: 1, borderRadius: 16, alignItems: 'center', paddingVertical: 10 },
-  segmentActive: { backgroundColor: '#BFA9FF', borderBottomWidth: 0, transform: [{ translateY: 2 }] },
-  segmentInactive: { backgroundColor: '#D9CCFF', borderBottomWidth: 4, borderBottomColor: '#9B84E8' },
+  segmentActive: { backgroundColor: '#27A14C', borderBottomWidth: 0, transform: [{ translateY: 2 }] },
+  segmentInactive: { backgroundColor: '#37C25E', borderBottomWidth: 4, borderBottomColor: '#1C7A35' },
   segmentText: { color: '#FFF', fontWeight: '900', fontSize: 16 },
 
   streakCardWrap: { marginBottom: 14, position: 'relative' },
@@ -379,8 +379,8 @@ const styles = StyleSheet.create({
     minHeight: 132,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E8E6FF',
-    shadowColor: '#9A84D6',
+    borderColor: '#E8F0E9',
+    shadowColor: '#0E5D2E',
     shadowOpacity: 0.14,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 8 },
@@ -394,9 +394,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 9,
-    backgroundColor: '#B39BFF',
+    backgroundColor: '#00D15E',
     borderBottomWidth: 4,
-    borderBottomColor: '#8C74DE',
+    borderBottomColor: '#009E47',
   },
   pathCardCtaText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
   practiceTopRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
@@ -408,17 +408,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderBottomColor: '#DFDFDF',
   },
-  backToCardsText: { color: '#9B84E8', fontWeight: '900' },
+  backToCardsText: { color: '#1C7A35', fontWeight: '900' },
   mapViewport: {
     flex: 1,
     borderRadius: 26,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
-    backgroundColor: '#E5DCFF',
+    backgroundColor: '#89E256',
     minHeight: 500,
   },
-  mapContent: { backgroundColor: '#E5DCFF' },
+  mapContent: { backgroundColor: '#89E256' },
   svgLayer: { position: 'absolute', top: 0, left: 0 },
   bottomCtaArea: { paddingTop: 10 },
 
@@ -452,9 +452,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#B39BFF',
+    backgroundColor: '#00D15E',
     borderBottomWidth: 4,
-    borderBottomColor: '#8C74DE',
+    borderBottomColor: '#009E47',
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 7,
   },
-  createBtnText: { color: '#BFA9FF', fontWeight: '900', fontSize: 13 },
+  createBtnText: { color: '#27A14C', fontWeight: '900', fontSize: 13 },
 
   listWrap: { paddingTop: 4 },
   roomOuter: { marginTop: 20, position: 'relative' },
