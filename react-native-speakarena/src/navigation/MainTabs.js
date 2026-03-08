@@ -5,8 +5,6 @@ import HomeMainScreen from '../screens/main/HomeMainScreen';
 import PracticeStack from './PracticeStack';
 import ProgressMainScreen from '../screens/main/ProgressMainScreen';
 import ProfileMainScreen from '../screens/main/ProfileMainScreen';
-import CardsShowcaseScreen from '../screens/main/CardsShowcaseScreen';
-import CardsTabIcon from '../components/CardsTabIcon';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,10 +24,6 @@ export default function MainTabs() {
         tabBarInactiveTintColor: '#8A90AE',
         tabBarLabelStyle: { fontSize: 12, fontWeight: '700' },
         tabBarIcon: ({ color, size }) => {
-          if (route.name === 'Cards') {
-            return <CardsTabIcon color={color} />;
-          }
-
           const map = { Home, Practice: Layers3, Progress: BarChart3, Profile: UserRound };
           const Icon = map[route.name] || Home;
           return <Icon size={size} color={color} strokeWidth={2.2} />;
@@ -37,7 +31,6 @@ export default function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeMainScreen} />
-      <Tab.Screen name="Cards" component={CardsShowcaseScreen} />
       <Tab.Screen name="Practice" component={PracticeStack} />
       <Tab.Screen name="Progress" component={ProgressMainScreen} />
       <Tab.Screen name="Profile" component={ProfileMainScreen} />
