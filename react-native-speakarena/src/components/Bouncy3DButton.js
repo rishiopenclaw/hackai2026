@@ -13,6 +13,7 @@ export default function Bouncy3DButton({ title, variant = 'green', onPress, styl
   const p = PALETTE[variant] || PALETTE.green;
   const press = useRef(new Animated.Value(0)).current;
   const [lip, setLip] = useState(6);
+  const isFlatBlueCircle = circle && variant === 'blue';
 
   const pressIn = () => {
     setLip(0);
@@ -32,13 +33,13 @@ export default function Bouncy3DButton({ title, variant = 'green', onPress, styl
           circle && { width: size, minHeight: size, height: size, borderRadius: size / 2, paddingHorizontal: 0 },
           {
             backgroundColor: p.fill,
-            borderBottomColor: p.lip,
-            borderBottomWidth: lip,
+            borderBottomColor: isFlatBlueCircle ? p.fill : p.lip,
+            borderBottomWidth: isFlatBlueCircle ? 0 : lip,
             transform: [{ translateY: press.interpolate({ inputRange: [0, 1], outputRange: [0, 4] }) }],
           },
         ]}
       >
-        <View style={styles.gloss} />
+        {!isFlatBlueCircle && <View style={styles.gloss} />}
         <Text style={[styles.text, { color: p.text }, textStyle]}>{String(title || '').toUpperCase()}</Text>
       </Animated.View>
     </Pressable>
