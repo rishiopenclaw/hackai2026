@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CleanCard from '../components/CleanCard';
 import { PrimaryPill, TextAction } from '../components/CleanCTA';
@@ -11,31 +11,21 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
-      return;
-    }
-
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.toLowerCase(), password }),
-      });
+      // Demo mode: bypass backend auth and enter app immediately.
+      const demoData = {
+        _id: 'demo-user',
+        displayName: 'Guest User',
+        email: email?.trim()?.toLowerCase() || 'guest@speakarena.app',
+        token: 'demo-token',
+      };
 
-      const data = await response.json();
-
-      if (response.ok) {
-        await AsyncStorage.setItem('userToken', data.token);
-        await AsyncStorage.setItem('userData', JSON.stringify(data));
-        navigation.replace('MainTabs');
-      } else {
-        Alert.alert('Login failed', data.error || 'Invalid credentials');
-      }
+      await AsyncStorage.setItem('userToken', demoData.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(demoData));
+      navigation.replace('MainTabs');
     } catch (err) {
       console.error('Login error:', err);
-      Alert.alert('Error', 'Could not connect to the server.');
     } finally {
       setLoading(false);
     }

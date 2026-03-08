@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, TextInput, View, Alert } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CleanCard from '../components/CleanCard';
 import { PrimaryPill, TextAction } from '../components/CleanCTA';
@@ -9,36 +9,23 @@ export default function SignUpScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields.');
-      return;
-    }
-
-    setLoading(true);
+  const handleContinueToApp = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName: name, email: email.toLowerCase(), password }),
-      });
+      // Demo mode: skip backend auth so users can continue immediately.
+      const demoName = name?.trim() || 'Guest User';
+      const demoData = {
+        _id: 'demo-user',
+        displayName: demoName,
+        email: email?.trim()?.toLowerCase() || 'guest@speakarena.app',
+        token: 'demo-token',
+      };
 
-      const data = await response.json();
-
-      if (response.ok) {
-        await AsyncStorage.setItem('userToken', data.token);
-        await AsyncStorage.setItem('userData', JSON.stringify(data));
-        navigation.replace('MainTabs');
-      } else {
-        Alert.alert('Sign up failed', data.error || 'Something went wrong');
-      }
+      await AsyncStorage.setItem('userToken', demoData.token);
+      await AsyncStorage.setItem('userData', JSON.stringify(demoData));
+      navigation.replace('MainTabs');
     } catch (err) {
       console.error('Sign up error:', err);
-      Alert.alert('Error', 'Could not connect to the server.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -79,10 +66,9 @@ export default function SignUpScreen({ navigation }) {
         </CleanCard>
 
         <PrimaryPill 
-          title={loading ? "Creating..." : "Create account"} 
-          onPress={handleSignUp} 
+          title="Create account"
+          onPress={handleContinueToApp}
           style={{ marginTop: 14 }}
-          disabled={loading}
         />
         <TextAction title="I already have an account" onPress={() => navigation.navigate('Login')} style={{ marginTop: 8 }} />
       </View>
