@@ -7,13 +7,6 @@ export default function LearningPathNode({ active, locked, icon, number, onPress
 
   return (
     <View style={styles.wrap}>
-      {active ? (
-        <View style={styles.tipWrap}>
-          <View style={styles.tip}><Text style={styles.tipText}>START</Text></View>
-          <View style={styles.tipArrow} />
-        </View>
-      ) : null}
-
       <Bouncy3DButton
         title={icon || (number ? String(number) : '•')}
         variant={variant}
