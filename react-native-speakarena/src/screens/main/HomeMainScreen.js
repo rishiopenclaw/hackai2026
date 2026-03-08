@@ -1,51 +1,14 @@
-import React, { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
 import TopHeaderStats from '../../components/TopHeaderStats';
 import LearningPathNode from '../../components/LearningPathNode';
+import GamifiedModal from '../../components/GamifiedModal';
+import Bouncy3DButton from '../../components/Bouncy3DButton';
 
-const ROADMAPS = [
-  { id: 'persuasive', label: 'Persuasive', trackId: 'persuasive' },
-  { id: 'fast', label: 'Think Fast', trackId: 'fast' },
-  { id: 'pressure', label: 'Pressure', trackId: 'pressure' },
-  { id: 'human', label: 'Story', trackId: 'human' },
-];
-
-const PROGRESS_BY_ROADMAP = {
-  persuasive: 4,
-  fast: 3,
-  pressure: 2,
-  human: 1,
-};
-
-const NODE_COUNT = 15;
-
-function buildPoints(count) {
-  const points = [];
-  for (let i = 0; i < count; i += 1) {
-    const y = 110 + i * 108;
-    const x = 180 + Math.sin(i * 0.9) * 82;
-    points.push({ x, y });
-  }
-  return points;
-}
-
-function pathFromPoints(points) {
-  if (!points.length) return '';
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 1; i < points.length; i += 1) {
-    const prev = points[i - 1];
-    const curr = points[i];
-    const cx = (prev.x + curr.x) / 2;
-    const cy = (prev.y + curr.y) / 2;
-    d += ` Q ${prev.x} ${prev.y} ${cx} ${cy}`;
-  }
-  return d;
-}
-
-function MapArtwork({ height, pathD }) {
+function MapArtwork() {
   return (
-    <Svg style={StyleSheet.absoluteFill} viewBox={`0 0 360 ${height}`} preserveAspectRatio="none">
+    <Svg style={StyleSheet.absoluteFill} viewBox="0 0 360 650" preserveAspectRatio="none">
       <Defs>
         <LinearGradient id="grassBase" x1="0" y1="0" x2="0" y2="1">
           <Stop offset="0%" stopColor="#BDEA8D" />
@@ -61,35 +24,73 @@ function MapArtwork({ height, pathD }) {
         </LinearGradient>
       </Defs>
 
-      <Path d={`M0 0 H360 V${height} H0 Z`} fill="url(#grassBase)" />
+      {/* Base field */}
+      <Path d="M0 0 H360 V650 H0 Z" fill="url(#grassBase)" />
 
-      <Path d={`M-30 120 C80 40, 210 110, 390 80 V-20 H-30 Z`} fill="url(#hillShade)" opacity="0.6" />
-      <Path d={`M-40 520 C70 450, 170 530, 390 490 V390 H-40 Z`} fill="#94CE5E" opacity="0.55" />
-      <Path d={`M-30 ${height - 240} C70 ${height - 300}, 180 ${height - 210}, 390 ${height - 240} V${height} H-30 Z`} fill="#87C650" opacity="0.58" />
+      {/* Organic terrain masses */}
+      <Path d="M-40 40 C60 -20, 180 40, 240 90 C280 120, 330 160, 390 130 V-20 H-40 Z" fill="url(#hillShade)" opacity="0.65" />
+      <Path d="M-30 250 C80 190, 160 250, 210 290 C250 320, 290 360, 390 330 V220 H-30 Z" fill="#94CE5E" opacity="0.55" />
+      <Path d="M-40 460 C70 410, 160 470, 230 520 C280 560, 320 600, 390 580 V700 H-40 Z" fill="#87C650" opacity="0.58" />
 
-      <Circle cx="44" cy="160" r="8" fill="#7FC345" />
-      <Circle cx="56" cy="168" r="6" fill="#8BCF52" />
-      <Circle cx="300" cy="350" r="7" fill="#7FC345" />
-      <Circle cx="310" cy="357" r="5" fill="#8BCF52" />
-      <Circle cx="80" cy="720" r="9" fill="#7FC345" />
-      <Circle cx="95" cy="728" r="6" fill="#8BCF52" />
+      {/* Decorative bushes / flowers */}
+      <Circle cx="48" cy="130" r="8" fill="#7FC345" />
+      <Circle cx="60" cy="136" r="6" fill="#8BCF52" />
+      <Circle cx="286" cy="248" r="7" fill="#7FC345" />
+      <Circle cx="297" cy="255" r="5" fill="#8BCF52" />
+      <Circle cx="74" cy="520" r="9" fill="#7FC345" />
+      <Circle cx="89" cy="528" r="6" fill="#8BCF52" />
+      <Circle cx="300" cy="560" r="3" fill="#FFD54F" />
+      <Circle cx="307" cy="554" r="3" fill="#FF8A80" />
+      <Circle cx="292" cy="548" r="3" fill="#81D4FA" />
 
-      <Path d={pathD} stroke="#D9C894" strokeWidth="42" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" fill="none" />
-      <Path d={pathD} stroke="url(#trailFill)" strokeWidth="38" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <Path d={pathD} stroke="rgba(255,255,255,0.42)" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      {/* Winding trail shadow */}
+      <Path
+        d="M278 72
+           C205 104, 120 158, 92 232
+           C72 284, 102 338, 178 390
+           C235 430, 252 492, 210 548
+           C184 584, 132 612, 96 632"
+        stroke="#D9C894"
+        strokeWidth="42"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        opacity="0.55"
+        fill="none"
+      />
+
+      {/* Winding trail main */}
+      <Path
+        d="M278 64
+           C205 96, 120 150, 92 224
+           C72 276, 102 330, 178 382
+           C235 422, 252 484, 210 540
+           C184 576, 132 604, 96 624"
+        stroke="url(#trailFill)"
+        strokeWidth="38"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+
+      {/* Trail highlight */}
+      <Path
+        d="M286 62
+           C214 94, 130 146, 101 219
+           C82 269, 112 323, 186 374
+           C241 412, 260 474, 219 530
+           C194 564, 145 592, 110 611"
+        stroke="rgba(255,255,255,0.42)"
+        strokeWidth="9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
     </Svg>
   );
 }
 
 export default function HomeMainScreen({ navigation }) {
-  const [roadmap, setRoadmap] = useState('persuasive');
-  const progress = PROGRESS_BY_ROADMAP[roadmap] ?? 1;
-
-  const points = useMemo(() => buildPoints(NODE_COUNT), [roadmap]);
-  const pathD = useMemo(() => pathFromPoints(points), [points]);
-  const mapHeight = useMemo(() => points[points.length - 1].y + 130, [points]);
-
-  const selectedTrack = ROADMAPS.find((r) => r.id === roadmap)?.trackId || 'persuasive';
+  const [open, setOpen] = useState(false);
 
   return (
     <View style={styles.root}>
@@ -98,45 +99,51 @@ export default function HomeMainScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.heading}>YOUR PATH</Text>
 
-        <View style={styles.roadmapRow}>
-          {ROADMAPS.map((r) => (
-            <Pressable
-              key={r.id}
-              onPress={() => setRoadmap(r.id)}
-              style={[styles.roadmapPill, roadmap === r.id && styles.roadmapPillActive]}
-            >
-              <Text style={[styles.roadmapText, roadmap === r.id && styles.roadmapTextActive]}>{r.label}</Text>
-            </Pressable>
-          ))}
+        <View style={styles.terrainWrap}>
+          <MapArtwork />
+
+          {/* Nodes pinned to trail waypoints */}
+          <View style={[styles.nodePos, { top: 34, left: 254 }]}>
+            <LearningPathNode
+              active
+              icon="⚑"
+              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'persuasive' } })}
+            />
+          </View>
+
+          <View style={[styles.nodePos, { top: 232, left: 84 }]}>
+            <LearningPathNode
+              number={2}
+              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })}
+            />
+          </View>
+
+          <View style={[styles.nodePos, { top: 392, left: 170 }]}>
+            <LearningPathNode
+              number={3}
+              onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })}
+            />
+          </View>
+
+          <View style={[styles.nodePos, { top: 552, left: 120 }]}>
+            <LearningPathNode locked icon="🔒" />
+          </View>
         </View>
 
-        <View style={[styles.terrainWrap, { height: mapHeight }]}>
-          <MapArtwork height={mapHeight} pathD={pathD} />
-
-          {points.map((p, i) => {
-            const left = p.x - 34;
-            const top = p.y - 34;
-            const isActive = i === progress;
-            const isLocked = i > progress;
-
-            return (
-              <View key={`n-${i}`} style={[styles.nodePos, { left, top }]}> 
-                <LearningPathNode
-                  active={isActive}
-                  locked={isLocked}
-                  icon={isLocked ? '🔒' : i === 0 ? '⚑' : undefined}
-                  number={i === 0 || isLocked ? undefined : i + 1}
-                  onPress={
-                    isLocked
-                      ? undefined
-                      : () => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: selectedTrack } })
-                  }
-                />
-              </View>
-            );
-          })}
-        </View>
+        <Bouncy3DButton title="Try challenge" variant="orange" onPress={() => setOpen(true)} style={{ marginTop: 16 }} />
       </ScrollView>
+
+      <GamifiedModal
+        visible={open}
+        title="Keep your momentum?"
+        subtitle="You’re one lesson away from keeping your consistency alive."
+        emoji="🔥"
+        primaryTitle="STAY"
+        secondaryTitle="LEAVE"
+        onClose={() => setOpen(false)}
+        onPrimary={() => setOpen(false)}
+        onSecondary={() => setOpen(false)}
+      />
     </View>
   );
 }
@@ -145,21 +152,8 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F4F9F6' },
   content: { paddingHorizontal: 20, paddingTop: 6, paddingBottom: 24 },
   heading: { color: '#4B4B4B', fontSize: 15, fontWeight: '900', letterSpacing: 1, marginBottom: 10 },
-
-  roadmapRow: { flexDirection: 'row', gap: 8, marginBottom: 10, flexWrap: 'wrap' },
-  roadmapPill: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 999,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.08)',
-  },
-  roadmapPillActive: { backgroundColor: '#E9FAD9', borderColor: 'rgba(88,167,0,0.25)' },
-  roadmapText: { color: '#7A7A7A', fontSize: 12, fontWeight: '800' },
-  roadmapTextActive: { color: '#4B4B4B' },
-
   terrainWrap: {
+    height: 650,
     borderRadius: 26,
     overflow: 'hidden',
     backgroundColor: '#BDEB92',
