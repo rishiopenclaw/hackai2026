@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Play, Plus, CircleHelp, Flame } from 'lucide-react-native';
+import { Play, Plus, CircleHelp, Flame, Gift } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -104,45 +104,36 @@ export default function HomeMainScreen({ navigation }) {
             <>
               {!selectedPathId ? (
                 <>
-                  <View style={styles.streakCard}>
-                    <View style={styles.streakTopRow}>
-                      <View style={styles.streakTitleRow}>
-                        <View style={styles.streakFlameWrap}>
-                          <Flame size={16} color="#8A76E8" fill="#8A76E8" />
-                        </View>
-                        <View style={styles.streakTextBlock}>
-                          <Text style={styles.streakTitle}>Consecutive study days</Text>
-                          <Text style={styles.streakSubtitle}>Keep the chain alive by finishing one quick lesson each day this week.</Text>
+                  <View style={styles.streakCardWrap}>
+                    <View style={styles.streakCardGlow} />
+                    <View style={styles.streakCard}>
+                      <View style={styles.streakTopRow}>
+                        <Text style={styles.streakTitle}>Consecutive study days</Text>
+                        <View style={styles.giftBadge}>
+                          <Gift size={15} color="#FFFFFF" />
                         </View>
                       </View>
-                      <View style={styles.runPill}>
-                        <Text style={styles.runPillText}>4 day run</Text>
-                      </View>
-                    </View>
 
-                    <View style={styles.weekRow}>
-                      {[
-                        { day: 'Mon', done: true },
-                        { day: 'Tue', done: true },
-                        { day: 'Wed', done: true },
-                        { day: 'Thu', done: true },
-                        { day: 'Fri', done: false },
-                        { day: 'Sat', done: false },
-                        { day: 'Sun', done: false },
-                      ].map((d) => (
-                        <View key={d.day} style={styles.dayItem}>
-                          <Text style={styles.dayLabel}>{d.day}</Text>
-                          <View style={[styles.dayDot, d.done ? styles.dayDotDone : styles.dayDotIdle]}>
-                            <Flame size={12} color={d.done ? '#FFFFFF' : '#C5CBD5'} fill={d.done ? '#FFFFFF' : '#C5CBD5'} />
+                      <View style={styles.weekRow}>
+                        {[
+                          { day: 'Mon', done: true },
+                          { day: 'Tue', done: true },
+                          { day: 'Wed', done: true },
+                          { day: 'Thu', done: true, active: true },
+                          { day: 'Fri', done: false },
+                          { day: 'Sat', done: false },
+                          { day: 'Sun', done: false },
+                        ].map((d) => (
+                          <View key={d.day} style={styles.dayItem}>
+                            <View style={[styles.dayDot, d.done ? styles.dayDotDone : styles.dayDotIdle, d.active && styles.dayDotActive]}>
+                              {d.done ? (
+                                <Flame size={11} color="#FFFFFF" fill="#FFFFFF" />
+                              ) : null}
+                            </View>
+                            <Text style={[styles.dayLabel, d.active && styles.dayLabelActive]}>{d.day}</Text>
                           </View>
-                          <View style={[styles.dayBar, d.done ? styles.dayBarDone : styles.dayBarIdle]} />
-                        </View>
-                      ))}
-                    </View>
-
-                    <View style={styles.streakFooter}>
-                      <Text style={styles.streakFooterLeft}>Next reward</Text>
-                      <Text style={styles.streakFooterRight}>Streak Freeze unlock</Text>
+                        ))}
+                      </View>
                     </View>
                   </View>
 
@@ -327,75 +318,55 @@ const styles = StyleSheet.create({
   segmentInactive: { backgroundColor: '#D9CCFF', borderBottomWidth: 4, borderBottomColor: '#9B84E8' },
   segmentText: { color: '#FFF', fontWeight: '900', fontSize: 16 },
 
+  streakCardWrap: { marginBottom: 14, position: 'relative' },
+  streakCardGlow: {
+    position: 'absolute',
+    left: 8,
+    right: 8,
+    top: 14,
+    bottom: -6,
+    borderRadius: 26,
+    backgroundColor: '#DCE2F5',
+    opacity: 0.7,
+  },
   streakCard: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 16,
-    marginBottom: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.14,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 7,
+    shadowColor: '#7C86AA',
+    shadowOpacity: 0.16,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 8,
+    transform: [{ rotate: '-2deg' }],
   },
-  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 },
-  streakTitleRow: { flexDirection: 'row', gap: 10, flex: 1, paddingRight: 8 },
-  streakFlameWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: '#ECE8FF',
+  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 24, flexShrink: 1 },
+  giftBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: '#F15B7A',
+    borderBottomWidth: 3,
+    borderBottomColor: '#D94765',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 2,
+    marginLeft: 8,
   },
-  streakTextBlock: { flex: 1, minWidth: 0 },
-  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 16, flexShrink: 1 },
-  streakSubtitle: { color: '#707781', fontWeight: '700', marginTop: 4, lineHeight: 18, flexShrink: 1, maxWidth: '100%' },
-  runPill: {
-    backgroundColor: '#E4DEFF',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    alignSelf: 'flex-start',
-    flexShrink: 0,
-    marginTop: 2,
-  },
-  runPillText: { color: '#5D4FCB', fontWeight: '900', fontSize: 13 },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14, gap: 6 },
-  dayItem: {
-    flex: 1,
-    minWidth: 40,
-    borderRadius: 14,
-    backgroundColor: '#E9E9E9',
-    alignItems: 'center',
-    paddingVertical: 8,
-    gap: 8,
-  },
-  dayLabel: { color: '#8A90A0', fontWeight: '800', fontSize: 11, textAlign: 'center' },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
+  dayItem: { alignItems: 'center', gap: 6, width: 34 },
+  dayLabel: { color: '#7F869E', fontWeight: '700', fontSize: 10 },
+  dayLabelActive: { color: '#D28A00', fontWeight: '900' },
   dayDot: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
-  dayDotDone: { backgroundColor: '#B39BFF', borderColor: '#8C74DE' },
-  dayDotIdle: { backgroundColor: '#F1F1F1', borderColor: '#D5D5D5' },
-  dayBar: { width: 28, height: 5, borderRadius: 999 },
-  dayBarDone: { backgroundColor: '#A78DFF' },
-  dayBarIdle: { backgroundColor: '#D8DEE7' },
-  streakFooter: {
-    marginTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: '#E3E3E3',
-    paddingTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  streakFooterLeft: { color: '#8A91A2', fontWeight: '700' },
-  streakFooterRight: { color: '#2C2C2C', fontWeight: '900' },
+  dayDotDone: { backgroundColor: '#F7B43A' },
+  dayDotIdle: { backgroundColor: '#F2F3F7', borderWidth: 1, borderColor: '#E4E7EF' },
+  dayDotActive: { borderWidth: 1.5, borderColor: '#E6A52B' },
 
   practiceHeader: { color: '#FFF', fontWeight: '900', fontSize: 16, marginBottom: 8, letterSpacing: 1 },
   practiceSub: { color: 'rgba(255,255,255,0.9)', fontWeight: '700', marginBottom: 12 },
