@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Play, Plus, House, Trophy, GraduationCap, UserCircle2, CircleHelp } from 'lucide-react-native';
+import { Play, Plus, CircleHelp } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -69,7 +69,6 @@ const generateSvgPath = (nodes) => {
 
 export default function HomeMainScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('club');
-  const [activeBottom, setActiveBottom] = useState('home');
   const [selectedPathId, setSelectedPathId] = useState(null);
 
   const mapScrollRef = useRef(null);
@@ -305,34 +304,9 @@ export default function HomeMainScreen({ navigation }) {
           )}
         </ScrollView>
 
-        <View style={styles.bottomNav}>
-          <BottomItem
-            onPress={() => setActiveBottom('home')}
-            icon={<House size={22} color={activeBottom === 'home' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
-          />
-          <BottomItem
-            onPress={() => setActiveBottom('club')}
-            icon={<Trophy size={22} color={activeBottom === 'club' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
-          />
-          <BottomItem
-            onPress={() => setActiveBottom('learn')}
-            icon={<GraduationCap size={22} color={activeBottom === 'learn' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
-          />
-          <BottomItem
-            onPress={() => setActiveBottom('me')}
-            icon={<UserCircle2 size={22} color={activeBottom === 'me' ? '#27A14C' : '#B0B0B0'} strokeWidth={2.8} />}
-          />
-        </View>
+
       </View>
     </SafeAreaView>
-  );
-}
-
-function BottomItem({ icon, onPress }) {
-  return (
-    <TouchableOpacity style={styles.bottomItem} onPress={onPress} activeOpacity={0.8}>
-      {icon}
-    </TouchableOpacity>
   );
 }
 
@@ -578,23 +552,5 @@ const styles = StyleSheet.create({
   },
   watchOrangeText: { color: '#FFF', fontWeight: '900', fontSize: 14 },
 
-  bottomNav: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#FFF',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 14,
-    paddingBottom: 22,
-    shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -4 },
-    elevation: 10,
-  },
-  bottomItem: { width: 52, height: 42, alignItems: 'center', justifyContent: 'center' },
+
 });

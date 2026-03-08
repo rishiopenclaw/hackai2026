@@ -1,12 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Home, Layers3, BarChart3, UserRound } from 'lucide-react-native';
+import { House, Trophy, GraduationCap, UserCircle2 } from 'lucide-react-native';
 import HomeMainScreen from '../screens/main/HomeMainScreen';
 import PracticeStack from './PracticeStack';
-import ProgressMainScreen from '../screens/main/ProgressMainScreen';
 import ProfileMainScreen from '../screens/main/ProfileMainScreen';
-import CardsShowcaseScreen from '../screens/main/CardsShowcaseScreen';
-import CardsTabIcon from '../components/CardsTabIcon';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,32 +12,35 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
+        tabBarShowLabel: false,
         tabBarStyle: {
-          height: 68,
-          paddingTop: 8,
-          paddingBottom: 10,
+          height: 76,
+          paddingTop: 12,
+          paddingBottom: 16,
           backgroundColor: '#FFFFFF',
-          borderTopColor: 'rgba(66,74,140,0.12)',
+          borderTopLeftRadius: 30,
+          borderTopRightRadius: 30,
+          borderTopWidth: 0,
+          position: 'absolute',
         },
-        tabBarActiveTintColor: '#6D5EF8',
-        tabBarInactiveTintColor: '#8A90AE',
-        tabBarLabelStyle: { fontSize: 12, fontWeight: '700' },
-        tabBarIcon: ({ color, size }) => {
-          if (route.name === 'Cards') {
-            return <CardsTabIcon color={color} />;
-          }
-
-          const map = { Home, Practice: Layers3, Progress: BarChart3, Profile: UserRound };
-          const Icon = map[route.name] || Home;
-          return <Icon size={size} color={color} strokeWidth={2.2} />;
+        tabBarActiveTintColor: '#27A14C',
+        tabBarInactiveTintColor: '#B0B0B0',
+        tabBarIcon: ({ color }) => {
+          const map = {
+            Home: House,
+            Club: Trophy,
+            Learn: GraduationCap,
+            Me: UserCircle2,
+          };
+          const Icon = map[route.name] || House;
+          return <Icon size={24} color={color} strokeWidth={2.8} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeMainScreen} />
-      <Tab.Screen name="Cards" component={CardsShowcaseScreen} />
-      <Tab.Screen name="Practice" component={PracticeStack} />
-      <Tab.Screen name="Progress" component={ProgressMainScreen} />
-      <Tab.Screen name="Profile" component={ProfileMainScreen} />
+      <Tab.Screen name="Club" component={HomeMainScreen} />
+      <Tab.Screen name="Learn" component={PracticeStack} />
+      <Tab.Screen name="Me" component={ProfileMainScreen} />
     </Tab.Navigator>
   );
 }
