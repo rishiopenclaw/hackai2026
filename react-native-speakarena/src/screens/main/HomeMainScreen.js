@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Defs, LinearGradient, Stop, Path, Circle } from 'react-native-svg';
-import { Play, Plus, CircleHelp } from 'lucide-react-native';
+import { Play, Plus, CircleHelp, Flame } from 'lucide-react-native';
 import LearningPathNode from '../../components/LearningPathNode';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 
@@ -108,9 +108,9 @@ export default function HomeMainScreen({ navigation }) {
                     <View style={styles.streakTopRow}>
                       <View style={styles.streakTitleRow}>
                         <View style={styles.streakFlameWrap}>
-                          <Text style={styles.streakFlame}>🔥</Text>
+                          <Flame size={16} color="#F29A00" fill="#F29A00" />
                         </View>
-                        <View>
+                        <View style={styles.streakTextBlock}>
                           <Text style={styles.streakTitle}>Consecutive study days</Text>
                           <Text style={styles.streakSubtitle}>Keep the chain alive by finishing one quick lesson each day this week.</Text>
                         </View>
@@ -133,7 +133,7 @@ export default function HomeMainScreen({ navigation }) {
                         <View key={d.day} style={styles.dayItem}>
                           <Text style={styles.dayLabel}>{d.day}</Text>
                           <View style={[styles.dayDot, d.done ? styles.dayDotDone : styles.dayDotIdle]}>
-                            <Text style={styles.dayDotIcon}>🔥</Text>
+                            <Flame size={12} color={d.done ? '#FFFFFF' : '#C5CBD5'} fill={d.done ? '#FFFFFF' : '#C5CBD5'} />
                           </View>
                           <View style={[styles.dayBar, d.done ? styles.dayBarDone : styles.dayBarIdle]} />
                         </View>
@@ -338,8 +338,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 7,
   },
-  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
-  streakTitleRow: { flexDirection: 'row', gap: 10, flex: 1 },
+  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 },
+  streakTitleRow: { flexDirection: 'row', gap: 10, flex: 1, paddingRight: 8 },
   streakFlameWrap: {
     width: 34,
     height: 34,
@@ -349,26 +349,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
-  streakFlame: { fontSize: 15 },
-  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 32/2 },
-  streakSubtitle: { color: '#707781', fontWeight: '700', marginTop: 4, lineHeight: 19 },
+  streakTextBlock: { flex: 1, minWidth: 0 },
+  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 16, flexShrink: 1 },
+  streakSubtitle: { color: '#707781', fontWeight: '700', marginTop: 4, lineHeight: 18, flexShrink: 1, maxWidth: '100%' },
   runPill: {
     backgroundColor: '#F2DFB8',
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,
+    alignSelf: 'flex-start',
+    flexShrink: 0,
+    marginTop: 2,
   },
-  runPillText: { color: '#A16B00', fontWeight: '900' },
-  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 },
+  runPillText: { color: '#A16B00', fontWeight: '900', fontSize: 13 },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14, gap: 6 },
   dayItem: {
-    width: 42,
-    borderRadius: 18,
+    flex: 1,
+    minWidth: 40,
+    borderRadius: 14,
     backgroundColor: '#E9E9E9',
     alignItems: 'center',
     paddingVertical: 8,
     gap: 8,
   },
-  dayLabel: { color: '#8A90A0', fontWeight: '800', fontSize: 11 },
+  dayLabel: { color: '#8A90A0', fontWeight: '800', fontSize: 11, textAlign: 'center' },
   dayDot: {
     width: 28,
     height: 28,
@@ -379,7 +383,6 @@ const styles = StyleSheet.create({
   },
   dayDotDone: { backgroundColor: '#FDB628', borderColor: '#F0A500' },
   dayDotIdle: { backgroundColor: '#F1F1F1', borderColor: '#D5D5D5' },
-  dayDotIcon: { fontSize: 11, opacity: 0.9 },
   dayBar: { width: 28, height: 5, borderRadius: 999 },
   dayBarDone: { backgroundColor: '#F2A816' },
   dayBarIdle: { backgroundColor: '#D8DEE7' },
