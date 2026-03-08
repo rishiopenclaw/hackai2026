@@ -2,5 +2,9 @@
 react-native-speakarena/node_modules/
 react-native-speakarena/.expo/
 
+# Node Backend
+backend/node_modules/
+backend/.env
+
 # macOS
 .DS_Store
