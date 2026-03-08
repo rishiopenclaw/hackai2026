@@ -29,7 +29,7 @@ export default function WelcomeScreen({ navigation }) {
       <LinearGradient colors={[palette.bg, palette.bg2]} style={StyleSheet.absoluteFill} />
       <View style={styles.heroBlob} />
       <View style={styles.content}>
-        <View style={styles.badge}><MessageCircleHeart size={14} color={palette.accent2} /><Text style={styles.badgeText}>SpeakLab</Text></View>
+        <View style={styles.badge}><MessageCircleHeart size={14} color={palette.accent2} /><Text style={styles.badgeText}>Vocalyze</Text></View>
         <Text style={styles.title}>Learn to speak{`\n`}with confidence.</Text>
         <Text style={styles.sub}>Daily speaking practice with clear feedback and real-world scenarios.</Text>
 

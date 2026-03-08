@@ -15,7 +15,7 @@ import Bouncy3DButton from '../../components/Bouncy3DButton';
 
 const rooms = [
   { id: '1', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 18', subtitle: 'Duet: Guess the word' },
-  { id: '2', status: 'Waiting', statusColor: '#F7A928', title: 'Room 29', subtitle: '3/6 players • Starts in 12s' },
+  { id: '2', status: 'Waiting', statusColor: '#8C6BFF', title: 'Room 29', subtitle: '3/6 players • Starts in 12s' },
   { id: '3', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 77', subtitle: 'Debate: AI in schools' },
 ];
 
@@ -108,7 +108,7 @@ export default function HomeMainScreen({ navigation }) {
                     <View style={styles.streakTopRow}>
                       <View style={styles.streakTitleRow}>
                         <View style={styles.streakFlameWrap}>
-                          <Flame size={16} color="#F29A00" fill="#F29A00" />
+                          <Flame size={16} color="#8A76E8" fill="#8A76E8" />
                         </View>
                         <View style={styles.streakTextBlock}>
                           <Text style={styles.streakTitle}>Consecutive study days</Text>
@@ -189,13 +189,13 @@ export default function HomeMainScreen({ navigation }) {
                           <Stop offset="100%" stopColor="#D5C7FF" />
                         </LinearGradient>
                         <LinearGradient id="trail" x1="0" y1="0" x2="1" y2="1">
-                          <Stop offset="0%" stopColor="#FFF7DD" />
-                          <Stop offset="100%" stopColor="#F1E0B2" />
+                          <Stop offset="0%" stopColor="#F5F3FF" />
+                          <Stop offset="100%" stopColor="#E8E4FA" />
                         </LinearGradient>
                       </Defs>
 
                       <Path d={`M0 0 H${MAP_WIDTH} V${CONTENT_HEIGHT} H0 Z`} fill="url(#grassBase)" />
-                      <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
+                      <Path d={pathD} stroke="#CFC7F4" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
                       <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                       <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#FCE9D2',
+    backgroundColor: '#ECE8FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 2,
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 16, flexShrink: 1 },
   streakSubtitle: { color: '#707781', fontWeight: '700', marginTop: 4, lineHeight: 18, flexShrink: 1, maxWidth: '100%' },
   runPill: {
-    backgroundColor: '#F2DFB8',
+    backgroundColor: '#E4DEFF',
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     marginTop: 2,
   },
-  runPillText: { color: '#A16B00', fontWeight: '900', fontSize: 13 },
+  runPillText: { color: '#5D4FCB', fontWeight: '900', fontSize: 13 },
   weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14, gap: 6 },
   dayItem: {
     flex: 1,
@@ -381,10 +381,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
   },
-  dayDotDone: { backgroundColor: '#FDB628', borderColor: '#F0A500' },
+  dayDotDone: { backgroundColor: '#B39BFF', borderColor: '#8C74DE' },
   dayDotIdle: { backgroundColor: '#F1F1F1', borderColor: '#D5D5D5' },
   dayBar: { width: 28, height: 5, borderRadius: 999 },
-  dayBarDone: { backgroundColor: '#F2A816' },
+  dayBarDone: { backgroundColor: '#A78DFF' },
   dayBarIdle: { backgroundColor: '#D8DEE7' },
   streakFooter: {
     marginTop: 14,
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
 
   heroCard: {
     height: 180,
-    backgroundColor: '#FFD13B',
+    backgroundColor: '#EEF0FF',
     borderRadius: 24,
     padding: 16,
     overflow: 'hidden',
@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
   },
   liveTagText: { color: '#FFF', fontWeight: '900', fontSize: 11 },
   heroTitle: { color: '#1D1D1D', fontSize: 28, fontWeight: '900' },
-  heroSub: { color: '#6F5B30', fontSize: 13, fontWeight: '700', marginTop: 4, lineHeight: 18 },
+  heroSub: { color: '#5C617A', fontSize: 13, fontWeight: '700', marginTop: 4, lineHeight: 18 },
   watchGreenBtn: {
     marginTop: 12,
     alignSelf: 'flex-start',
@@ -546,9 +546,9 @@ const styles = StyleSheet.create({
   roomSub: { color: '#949494', fontSize: 12, fontWeight: '700', marginTop: 2 },
   roomRight: { alignItems: 'flex-end', gap: 8 },
   watchOrangeBtn: {
-    backgroundColor: '#F7A928',
+    backgroundColor: '#8C6BFF',
     borderBottomWidth: 4,
-    borderBottomColor: '#D88700',
+    borderBottomColor: '#6E52DE',
     borderRadius: 999,
     paddingHorizontal: 18,
     paddingVertical: 8,
