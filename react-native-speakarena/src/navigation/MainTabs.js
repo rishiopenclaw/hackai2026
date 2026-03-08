@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import { Home, Mic2, UserRound } from 'lucide-react-native';
 import HomeMainScreen from '../screens/main/HomeMainScreen';
 import PracticeScreen from '../screens/main/PracticeScreen';
 import ProfileMainScreen from '../screens/main/ProfileMainScreen';
@@ -12,12 +12,24 @@ export default function MainTabs() {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: { backgroundColor: '#0B0C11', borderTopColor: '#1E2230' },
+        tabBarStyle: {
+          backgroundColor: '#0B0D13',
+          borderTopColor: '#1E2230',
+          height: 64,
+          paddingTop: 6,
+          paddingBottom: 8,
+        },
+        tabBarLabelStyle: { fontWeight: '600', fontSize: 12 },
         tabBarActiveTintColor: '#FFFFFF',
         tabBarInactiveTintColor: '#778093',
         tabBarIcon: ({ color, size }) => {
-          const map = { Home: 'home-outline', Practice: 'mic-outline', Profile: 'person-outline' };
-          return <Ionicons name={map[route.name]} size={size} color={color} />;
+          const map = {
+            Home: Home,
+            Practice: Mic2,
+            Profile: UserRound,
+          };
+          const Icon = map[route.name];
+          return <Icon color={color} size={size} strokeWidth={2.2} />;
         },
       })}
     >

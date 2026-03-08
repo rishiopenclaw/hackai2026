@@ -1,5 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Trophy, Target, TrendingUp } from 'lucide-react-native';
 import AppleCard from '../../components/AppleCard';
 
 export default function ProfileMainScreen() {
@@ -7,10 +8,26 @@ export default function ProfileMainScreen() {
     <SafeAreaView style={styles.root}>
       <View style={styles.content}>
         <Text style={styles.title}>Profile</Text>
+
         <AppleCard style={{ marginTop: 10 }}>
-          <Text style={styles.cardTitle}>Level 8 • 1240 XP</Text>
-          <Text style={styles.cardSub}>13-day streak • Contender</Text>
+          <Text style={styles.cardTitle}>Rishi · Level 8</Text>
+          <Text style={styles.cardSub}>Contender · 1240 XP · 13-day streak</Text>
         </AppleCard>
+
+        <View style={styles.grid}>
+          <AppleCard style={{ flex: 1 }}>
+            <View style={styles.iconRow}><Trophy size={16} color="#FFB25B" /><Text style={styles.metric}>12</Text></View>
+            <Text style={styles.metricLabel}>Wins</Text>
+          </AppleCard>
+          <AppleCard style={{ flex: 1 }}>
+            <View style={styles.iconRow}><Target size={16} color="#8FA2FF" /><Text style={styles.metric}>89%</Text></View>
+            <Text style={styles.metricLabel}>Clarity</Text>
+          </AppleCard>
+          <AppleCard style={{ flex: 1 }}>
+            <View style={styles.iconRow}><TrendingUp size={16} color="#63D58A" /><Text style={styles.metric}>+16%</Text></View>
+            <Text style={styles.metricLabel}>Growth</Text>
+          </AppleCard>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -19,7 +36,11 @@ export default function ProfileMainScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#09090C' },
   content: { flex: 1, paddingHorizontal: 18, paddingTop: 16 },
-  title: { color: '#fff', fontSize: 32, fontWeight: '700' },
-  cardTitle: { color: '#fff', fontWeight: '600', fontSize: 18 },
+  title: { color: '#fff', fontSize: 32, fontWeight: '800', letterSpacing: -0.3 },
+  cardTitle: { color: '#fff', fontWeight: '700', fontSize: 18 },
   cardSub: { color: '#A3AAB7', marginTop: 4 },
+  grid: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metric: { color: '#fff', fontWeight: '700', fontSize: 18 },
+  metricLabel: { color: '#9AA3B6', marginTop: 4, fontSize: 12 },
 });
