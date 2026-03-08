@@ -1,0 +1,6 @@
+# React Native / Expo
+react-native-speakarena/node_modules/
+react-native-speakarena/.expo/
+
+# macOS
+.DS_Store
