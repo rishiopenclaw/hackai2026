@@ -46,8 +46,8 @@ export default function SessionLiveScreen({ route, navigation }) {
         <ActionRow
           primaryTitle="Stop and reflect"
           onPrimary={() => navigation.navigate('SessionReflect', { trackId })}
-          secondaryTitle="Restart"
-          onSecondary={() => navigation.navigate('SessionPreflight', { trackId })}
+          secondaryTitle="Settings"
+          onSecondary={() => navigation.navigate('SessionSettings')}
         />
       </CleanCard>
     </CleanShell>

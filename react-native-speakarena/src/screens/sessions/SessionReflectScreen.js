@@ -26,8 +26,8 @@ export default function SessionReflectScreen({ route, navigation }) {
         <ActionRow
           primaryTitle="Retry with this change"
           onPrimary={() => navigation.navigate('SessionRetry', { trackId })}
-          secondaryTitle="Finish"
-          onSecondary={() => navigation.navigate('SessionComplete', { trackId })}
+          secondaryTitle="Coach hints"
+          onSecondary={() => navigation.navigate('CoachHints')}
         />
       </CleanCard>
     </CleanShell>

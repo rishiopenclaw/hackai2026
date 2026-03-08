@@ -26,8 +26,8 @@ export default function SessionPreflightScreen({ route, navigation }) {
         <ActionRow
           primaryTitle="Start speaking"
           onPrimary={() => navigation.navigate('SessionLive', { trackId })}
-          secondaryTitle="Back"
-          onSecondary={() => navigation.goBack()}
+          secondaryTitle="Change prompt"
+          onSecondary={() => navigation.navigate('PromptPicker')}
         />
       </CleanCard>
     </CleanShell>

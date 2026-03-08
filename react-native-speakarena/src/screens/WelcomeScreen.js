@@ -15,7 +15,7 @@ export default function WelcomeScreen({ navigation }) {
         <Text style={styles.title}>Learn to speak{`\n`}with confidence.</Text>
         <Text style={styles.sub}>Daily speaking practice with clear feedback and real-world scenarios.</Text>
 
-        <PrimaryPill title="Create account" onPress={() => navigation.navigate('SignUp')} style={{ marginTop: 16 }} />
+        <PrimaryPill title="Create account" onPress={() => navigation.navigate('OnboardingQuiz')} style={{ marginTop: 16 }} />
         <TextAction title="I already have an account" onPress={() => navigation.navigate('Login')} style={{ marginTop: 8 }} />
       </View>
     </SafeAreaView>
