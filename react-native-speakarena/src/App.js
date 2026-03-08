@@ -15,7 +15,15 @@ export default function App() {
     <SafeAreaProvider>
       <NavigationContainer>
         <StatusBar style="light" />
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            animationDuration: 280,
+            contentStyle: { backgroundColor: '#09090C' },
+          }}
+          initialRouteName="Welcome"
+        >
           <Stack.Screen name="Welcome" component={WelcomeScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />

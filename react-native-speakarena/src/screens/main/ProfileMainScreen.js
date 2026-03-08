@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { Trophy, Target, TrendingUp } from 'lucide-react-native';
+import { Target, TrendingUp, Clock3 } from 'lucide-react-native';
 import AppleCard from '../../components/AppleCard';
 
 export default function ProfileMainScreen() {
@@ -10,22 +10,22 @@ export default function ProfileMainScreen() {
         <Text style={styles.title}>Profile</Text>
 
         <AppleCard style={{ marginTop: 10 }}>
-          <Text style={styles.cardTitle}>Rishi · Level 8</Text>
-          <Text style={styles.cardSub}>Contender · 1240 XP · 13-day streak</Text>
+          <Text style={styles.cardTitle}>Rishi</Text>
+          <Text style={styles.cardSub}>Skill-first speaking practice</Text>
         </AppleCard>
 
         <View style={styles.grid}>
-          <AppleCard style={{ flex: 1 }}>
-            <View style={styles.iconRow}><Trophy size={16} color="#FFB25B" /><Text style={styles.metric}>12</Text></View>
-            <Text style={styles.metricLabel}>Wins</Text>
-          </AppleCard>
           <AppleCard style={{ flex: 1 }}>
             <View style={styles.iconRow}><Target size={16} color="#8FA2FF" /><Text style={styles.metric}>89%</Text></View>
             <Text style={styles.metricLabel}>Clarity</Text>
           </AppleCard>
           <AppleCard style={{ flex: 1 }}>
             <View style={styles.iconRow}><TrendingUp size={16} color="#63D58A" /><Text style={styles.metric}>+16%</Text></View>
-            <Text style={styles.metricLabel}>Growth</Text>
+            <Text style={styles.metricLabel}>This week</Text>
+          </AppleCard>
+          <AppleCard style={{ flex: 1 }}>
+            <View style={styles.iconRow}><Clock3 size={16} color="#FFB25B" /><Text style={styles.metric}>42m</Text></View>
+            <Text style={styles.metricLabel}>Practice</Text>
           </AppleCard>
         </View>
       </View>

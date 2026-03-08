@@ -11,7 +11,7 @@ export default function WelcomeScreen({ navigation }) {
       <View style={styles.bottom}>
         <View style={styles.badge}><Sparkles size={14} color="#FFB25B" /><Text style={styles.badgeText}>AI Speech Coach</Text></View>
         <Text style={styles.title}>Find your{`\n`}voice, daily.</Text>
-        <Text style={styles.subtitle}>Apple-clean. Duolingo-fun. Daily streaks, guided drills, and debate confidence.</Text>
+        <Text style={styles.subtitle}>Apple-clean speaking practice. Short guided sessions for clarity, confidence, and better communication.</Text>
         <AppleButton title="Create account" onPress={() => navigation.navigate('SignUp')} style={{ marginTop: 12 }} />
         <AppleButton title="I already have an account" secondary onPress={() => navigation.navigate('Login')} style={{ marginTop: 10 }} />
       </View>

@@ -22,8 +22,15 @@ export default function AppleButton({ title, onPress, secondary = false, style }
 
 const styles = StyleSheet.create({
   wrap: { borderRadius: 999, overflow: 'hidden' },
-  primary: { minHeight: 50, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
-  primaryText: { color: '#16130F', fontSize: 17, fontWeight: '600' },
+  primary: {
+    minHeight: 52,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.20)',
+  },
+  primaryText: { color: '#16130F', fontSize: 16, fontWeight: '700', letterSpacing: 0.2 },
   secondary: {
     minHeight: 50,
     borderRadius: 999,

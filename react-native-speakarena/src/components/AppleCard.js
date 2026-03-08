@@ -16,9 +16,14 @@ const styles = StyleSheet.create({
   outer: {
     borderRadius: 22,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: 'rgba(255,255,255,0.14)',
     overflow: 'hidden',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: 'rgba(255,255,255,0.045)',
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 5,
   },
   blur: { overflow: 'hidden' },
   inner: {
