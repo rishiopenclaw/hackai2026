@@ -8,11 +8,11 @@ export default function ProfileMainScreen() {
   return (
     <CleanShell>
       <Text style={styles.title}>Profile</Text>
-      <Text style={styles.sub}>Skill-first speaking development.</Text>
+      <Text style={styles.sub}>Your communication growth.</Text>
 
       <CleanCard style={{ marginTop: 14 }}>
         <Text style={styles.cardTitle}>Rishi</Text>
-        <Text style={styles.cardSub}>You’re strongest in clarity and structured responses.</Text>
+        <Text style={styles.cardSub}>Focused speaking practice, daily.</Text>
       </CleanCard>
 
       <View style={styles.grid}>
@@ -22,7 +22,7 @@ export default function ProfileMainScreen() {
         </CleanCard>
         <CleanCard style={{ flex: 1 }}>
           <Text style={styles.metric}>42m</Text>
-          <Text style={styles.metricLabel}>This week</Text>
+          <Text style={styles.metricLabel}>Week</Text>
         </CleanCard>
       </View>
     </CleanShell>
@@ -31,10 +31,10 @@ export default function ProfileMainScreen() {
 
 const styles = StyleSheet.create({
   title: { color: palette.text, ...type.display },
-  sub: { color: palette.subtext, marginTop: 6, ...type.body, maxWidth: 340 },
-  cardTitle: { color: palette.text, fontWeight: '700', fontSize: 18 },
-  cardSub: { color: palette.subtext, marginTop: 5, lineHeight: 19 },
-  grid: { flexDirection: 'row', gap: 8, marginTop: 10 },
+  sub: { color: palette.subtext, marginTop: 4, ...type.body },
+  cardTitle: { color: palette.text, ...type.heading },
+  cardSub: { color: palette.subtext, marginTop: 4, ...type.body },
+  grid: { flexDirection: 'row', gap: 10, marginTop: 10 },
   metric: { color: palette.text, fontWeight: '800', fontSize: 24 },
-  metricLabel: { color: '#9AA3B6', marginTop: 2, fontSize: 12 },
+  metricLabel: { color: palette.subtext, marginTop: 2, ...type.label },
 });

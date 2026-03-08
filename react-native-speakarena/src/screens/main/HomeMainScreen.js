@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Sparkles, Play, Clock3 } from 'lucide-react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
 import ActionRow from '../../components/ActionRow';
@@ -8,39 +9,45 @@ import { palette, type } from '../../theme/design';
 export default function HomeMainScreen({ navigation }) {
   return (
     <CleanShell>
-      <Text style={styles.eyebrow}>TODAY</Text>
-      <Text style={styles.title}>Start a focused session.</Text>
-      <Text style={styles.sub}>One clear action now. One suggested follow-up after.</Text>
+      <Text style={styles.title}>Hi Rishi 👋</Text>
+      <Text style={styles.sub}>Let’s make your speaking 1% better today.</Text>
 
       <CleanCard style={{ marginTop: 14 }}>
-        <Text style={styles.cardTitle}>Resume: Speak Persuasive</Text>
-        <Text style={styles.cardSub}>Last stopped at reflection step. ~4 minutes remaining.</Text>
+        <View style={styles.rowTop}>
+          <View style={[styles.badge, { backgroundColor: '#EEE9FF' }]}><Sparkles size={14} color={palette.accent2} /></View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.cardTitle}>Daily warmup</Text>
+            <Text style={styles.cardSub}>8-minute guided speaking session</Text>
+          </View>
+        </View>
         <ActionRow
-          primaryTitle="Resume"
+          primaryTitle="Start"
           onPrimary={() => navigation.navigate('Practice', { screen: 'DebateArena' })}
-          secondaryTitle="Start fresh"
-          onSecondary={() => navigation.navigate('Practice', { screen: 'DebateArena' })}
-        />
-      </CleanCard>
-
-      <CleanCard style={{ marginTop: 10 }}>
-        <Text style={styles.cardTitle}>Suggested next: Think Fast</Text>
-        <Text style={styles.cardSub}>Short on-the-spot interview response drill.</Text>
-        <ActionRow
-          primaryTitle="Try"
-          onPrimary={() => navigation.navigate('Practice', { screen: 'HotSeatInterview' })}
-          secondaryTitle="Browse all"
+          secondaryTitle="Preview"
           onSecondary={() => navigation.navigate('Practice')}
         />
       </CleanCard>
+
+      <View style={styles.quickRow}>
+        <CleanCard style={{ flex: 1 }}>
+          <View style={styles.mini}><Play size={14} color={palette.sky} /><Text style={styles.miniText}>Quick rep</Text></View>
+        </CleanCard>
+        <CleanCard style={{ flex: 1 }}>
+          <View style={styles.mini}><Clock3 size={14} color={palette.peach} /><Text style={styles.miniText}>3 min</Text></View>
+        </CleanCard>
+      </View>
     </CleanShell>
   );
 }
 
 const styles = StyleSheet.create({
-  eyebrow: { color: '#8E97AC', fontSize: 11, letterSpacing: 1.6, fontWeight: '700', marginTop: 2 },
-  title: { color: palette.text, ...type.display, marginTop: 4 },
-  sub: { color: palette.subtext, marginTop: 6, ...type.body, maxWidth: 340 },
-  cardTitle: { color: palette.text, fontSize: 18, fontWeight: '700' },
-  cardSub: { color: palette.subtext, marginTop: 5, lineHeight: 19 },
+  title: { color: palette.text, ...type.display },
+  sub: { color: palette.subtext, marginTop: 4, ...type.body },
+  rowTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  badge: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  cardTitle: { color: palette.text, ...type.heading },
+  cardSub: { color: palette.subtext, marginTop: 4, ...type.body },
+  quickRow: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  mini: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  miniText: { color: palette.text, fontWeight: '700' },
 });

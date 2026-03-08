@@ -1,32 +1,34 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
-import HeroBackground from '../components/HeroBackground';
-import AppleButton from '../components/AppleButton';
-import AppleCard from '../components/AppleCard';
+import CleanCard from '../components/CleanCard';
+import { PrimaryPill, TextAction } from '../components/CleanCTA';
+import { palette, type } from '../theme/design';
 
 export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.root}>
-      <View style={styles.hero}><HeroBackground /></View>
-      <View style={styles.bottom}>
+      <View style={styles.content}>
         <Text style={styles.title}>Welcome back</Text>
-        <AppleCard>
-          <TextInput placeholder="Email" placeholderTextColor="#7E8592" style={styles.input} />
+        <Text style={styles.sub}>Continue your practice.</Text>
+
+        <CleanCard style={{ marginTop: 14 }}>
+          <TextInput placeholder="Email" placeholderTextColor="#8D93AE" style={styles.input} />
           <View style={styles.sep} />
-          <TextInput placeholder="Password" placeholderTextColor="#7E8592" secureTextEntry style={styles.input} />
-        </AppleCard>
-        <AppleButton title="Continue" onPress={() => navigation.replace('MainTabs')} style={{ marginTop: 10 }} />
-        <AppleButton title="Create account" secondary onPress={() => navigation.navigate('SignUp')} style={{ marginTop: 10 }} />
+          <TextInput placeholder="Password" placeholderTextColor="#8D93AE" secureTextEntry style={styles.input} />
+        </CleanCard>
+
+        <PrimaryPill title="Continue" onPress={() => navigation.replace('MainTabs')} style={{ marginTop: 14 }} />
+        <TextAction title="Create account" onPress={() => navigation.navigate('SignUp')} style={{ marginTop: 8 }} />
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#09090C' },
-  hero: { flex: 0.62 },
-  bottom: { flex: 0.38, paddingHorizontal: 22, paddingTop: 14, backgroundColor: '#07080D' },
-  title: { color: '#fff', fontSize: 34, fontWeight: '700', marginBottom: 12 },
-  input: { color: '#fff', fontSize: 16, paddingVertical: 10 },
-  sep: { height: 1, backgroundColor: 'rgba(255,255,255,0.08)' },
+  root: { flex: 1, backgroundColor: palette.bg },
+  content: { flex: 1, paddingHorizontal: 24, justifyContent: 'center' },
+  title: { color: palette.text, ...type.display },
+  sub: { color: palette.subtext, marginTop: 4, ...type.body },
+  input: { color: palette.text, fontSize: 16, paddingVertical: 10 },
+  sep: { height: 1, backgroundColor: 'rgba(66,74,140,0.12)' },
 });

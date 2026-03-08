@@ -1,13 +1,13 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { palette } from '../theme/design';
+import { palette, radius } from '../theme/design';
 
 export function PrimaryPill({ title, onPress, style }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.pillWrap, pressed && styles.pressed, style]}>
-      <LinearGradient colors={[palette.accent2, palette.accent]} start={{ x: 0, y: 0.5 }} end={{ x: 1, y: 0.5 }} style={styles.pill}>
-        <Text style={styles.pillText}>{title}</Text>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.wrap, pressed && styles.pressed, style]}>
+      <LinearGradient colors={[palette.accent, palette.accent2]} style={styles.primary}>
+        <Text style={styles.primaryText}>{title}</Text>
       </LinearGradient>
     </Pressable>
   );
@@ -15,23 +15,23 @@ export function PrimaryPill({ title, onPress, style }) {
 
 export function TextAction({ title, onPress, style }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.textWrap, pressed && styles.pressed, style]}>
-      <Text style={styles.textAction}>{title}</Text>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.linkWrap, pressed && styles.pressed, style]}>
+      <Text style={styles.link}>{title}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  pillWrap: { borderRadius: 999, overflow: 'hidden', alignSelf: 'flex-start' },
-  pill: {
-    minHeight: 38,
-    borderRadius: 999,
+  wrap: { borderRadius: 999, overflow: 'hidden', alignSelf: 'flex-start' },
+  primary: {
+    minHeight: 40,
     paddingHorizontal: 16,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pillText: { color: '#17120D', fontSize: 14, fontWeight: '700', letterSpacing: 0.2 },
-  textWrap: { alignSelf: 'flex-start', paddingVertical: 4 },
-  textAction: { color: '#C9D2E4', fontSize: 14, fontWeight: '600' },
-  pressed: { opacity: 0.85 },
+  primaryText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+  linkWrap: { alignSelf: 'flex-start', paddingVertical: 6 },
+  link: { color: palette.accent2, fontSize: 14, fontWeight: '700' },
+  pressed: { opacity: 0.86, transform: [{ scale: 0.985 }] },
 });
