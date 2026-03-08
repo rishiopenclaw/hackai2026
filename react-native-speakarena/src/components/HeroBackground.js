@@ -8,68 +8,55 @@ export default function HeroBackground() {
     <View style={styles.container}>
       <Svg style={StyleSheet.absoluteFillObject} viewBox="0 0 400 800">
         <Defs>
-          {/* Layer 1: The Master Light - Expanded to reach further down */}
+          {/* Stronger light sweep (closer to target) */}
           <SvgLinearGradient id="masterGlow" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#FFE0B2" stopOpacity="1" />
-            {/* Intense white-hot core */}
-            <Stop offset="20%" stopColor="#FF7A00" stopOpacity="0.9" />
-            {/* Vibrant orange */}
-            <Stop offset="55%" stopColor="#8A2C00" stopOpacity="0.8" />
-            {/* Rich amber pushed lower */}
-            <Stop offset="90%" stopColor="#09090B" stopOpacity="0.4" />
-            {/* Slowly dies out */}
+            <Stop offset="0%" stopColor="#FFE6BC" stopOpacity="1" />
+            <Stop offset="16%" stopColor="#FF8A10" stopOpacity="0.98" />
+            <Stop offset="46%" stopColor="#A64000" stopOpacity="0.92" />
+            <Stop offset="88%" stopColor="#110B0A" stopOpacity="0.72" />
           </SvgLinearGradient>
 
-          {/* Layer 2: The Glass Surface Glare */}
+          {/* Subtle top-left glass sheen */}
           <SvgLinearGradient id="glassSurface" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.15" />
-            {/* Brighter screen glare */}
-            <Stop offset="30%" stopColor="#FFFFFF" stopOpacity="0.03" />
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.12" />
+            <Stop offset="24%" stopColor="#FFFFFF" stopOpacity="0.015" />
             <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </SvgLinearGradient>
 
-          {/* Layer 3: The 3D Glass Edge (The Secret to the "Pop") */}
+          {/* High-contrast panel edge so joints read darker/crisper */}
           <SvgLinearGradient id="glassEdge" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
-            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.5" />
-            {/* Harsh bright reflection on top-left edges */}
-            <Stop offset="40%" stopColor="#FFFFFF" stopOpacity="0.05" />
-            <Stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-            {/* Shadow on bottom-right edges */}
+            <Stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.24" />
+            <Stop offset="28%" stopColor="#000000" stopOpacity="0.55" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0.72" />
           </SvgLinearGradient>
         </Defs>
 
-        {/* The Glass Panels - Rendered with 3 passes for extreme 3D depth */}
+        {/* Keep geometry, boost readability */}
         <G rotation="-18" origin="150, 300">
-          {/* Top Left Panel */}
           <Rect x="-200" y="-200" width="294" height="344" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="-200" width="294" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="-200" y="-200" width="294" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
 
-          {/* Top Right Panel */}
           <Rect x="100" y="-200" width="350" height="344" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="-200" width="350" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="100" y="-200" width="350" height="344" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
 
-          {/* Middle Left Panel */}
           <Rect x="-200" y="150" width="294" height="244" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="150" width="294" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="-200" y="150" width="294" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
 
-          {/* Middle Right Panel */}
           <Rect x="100" y="150" width="350" height="244" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="150" width="350" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="100" y="150" width="350" height="244" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
 
-          {/* Bottom Left Panel */}
           <Rect x="-200" y="400" width="294" height="400" rx="24" fill="url(#masterGlow)" />
-          <Rect x="-200" y="400" width="294" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="-200" y="400" width="294" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
 
-          {/* Bottom Right Panel */}
           <Rect x="100" y="400" width="350" height="400" rx="24" fill="url(#masterGlow)" />
-          <Rect x="100" y="400" width="350" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.5" />
+          <Rect x="100" y="400" width="350" height="400" rx="24" fill="url(#glassSurface)" stroke="url(#glassEdge)" strokeWidth="1.8" />
         </G>
       </Svg>
 
-      {/* The Bottom Fade - Pushed WAY down the screen to let the light breathe */}
+      {/* Lower fade starts later to preserve orange field */}
       <ExpoLinearGradient
-        colors={['transparent', 'rgba(9,9,11,0.2)', 'rgba(9,9,11,0.85)', '#09090B']}
-        locations={[0.55, 0.75, 0.95, 1]}
+        colors={['transparent', 'rgba(9,9,11,0.12)', 'rgba(9,9,11,0.78)', '#09090B']}
+        locations={[0.62, 0.8, 0.95, 1]}
         style={StyleSheet.absoluteFillObject}
         pointerEvents="none"
       />
