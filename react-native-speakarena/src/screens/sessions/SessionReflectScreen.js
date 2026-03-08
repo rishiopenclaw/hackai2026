@@ -1,9 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
-import CleanShell from '../../components/CleanShell';
-import CleanCard from '../../components/CleanCard';
-import ActionRow from '../../components/ActionRow';
-import { palette, type } from '../../theme/design';
+import { StyleSheet, Text, View } from 'react-native';
+import Bouncy3DButton from '../../components/Bouncy3DButton';
 import { TRACKS } from '../../data/tracks';
 
 export default function SessionReflectScreen({ route, navigation }) {
@@ -11,32 +8,26 @@ export default function SessionReflectScreen({ route, navigation }) {
   const track = TRACKS[trackId] || TRACKS.persuasive;
 
   return (
-    <CleanShell>
-      <Text style={styles.title}>{track.title}</Text>
-      <Text style={styles.sub}>Reflection</Text>
+    <View style={styles.root}>
+      <View style={styles.card}>
+        <Text style={styles.title}>REFLECT</Text>
+        <Text style={styles.good}>✅ What improved</Text>
+        <Text style={styles.text}>Your structure was clear and easy to follow.</Text>
 
-      <CleanCard style={{ marginTop: 14 }}>
-        <Text style={styles.label}>What improved</Text>
-        <Text style={styles.prompt}>Your structure was clear and easy to follow.</Text>
-      </CleanCard>
+        <Text style={[styles.good, { marginTop: 12 }]}>🎯 Next focus</Text>
+        <Text style={styles.text}>{track.reflection}</Text>
 
-      <CleanCard style={{ marginTop: 10 }}>
-        <Text style={styles.label}>What next</Text>
-        <Text style={styles.prompt}>{track.reflection}</Text>
-        <ActionRow
-          primaryTitle="Retry with this change"
-          onPrimary={() => navigation.navigate('SessionRetry', { trackId })}
-          secondaryTitle="Coach hints"
-          onSecondary={() => navigation.navigate('CoachHints')}
-        />
-      </CleanCard>
-    </CleanShell>
+        <Bouncy3DButton title="Retry with this change" variant="green" onPress={() => navigation.navigate('SessionRetry', { trackId })} style={{ marginTop: 16 }} />
+        <Bouncy3DButton title="Coach hints" variant="white" onPress={() => navigation.navigate('CoachHints')} style={{ marginTop: 10 }} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { color: palette.text, ...type.display },
-  sub: { color: palette.subtext, marginTop: 4, ...type.body },
-  label: { color: '#8E97AC', ...type.label, textTransform: 'uppercase', letterSpacing: 1 },
-  prompt: { color: palette.text, marginTop: 7, ...type.heading, lineHeight: 24 },
+  root: { flex: 1, backgroundColor: '#F4F9F6', padding: 20, justifyContent: 'center' },
+  card: { backgroundColor: '#fff', borderRadius: 24, padding: 18, borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)' },
+  title: { color: '#4B4B4B', fontSize: 22, fontWeight: '900' },
+  good: { color: '#4B4B4B', fontWeight: '900', marginTop: 10 },
+  text: { color: '#6F76A1', marginTop: 4, fontWeight: '700', lineHeight: 20 },
 });

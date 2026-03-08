@@ -1,39 +1,29 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { ChevronRight } from 'lucide-react-native';
-import CleanShell from '../../components/CleanShell';
-import CleanCard from '../../components/CleanCard';
-import { palette, type } from '../../theme/design';
-import { TRACK_LIST } from '../../data/tracks';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Bouncy3DButton from '../../components/Bouncy3DButton';
 
 export default function PracticeScreen({ navigation }) {
   return (
-    <CleanShell>
-      <Text style={styles.title}>Practice tracks</Text>
-      <Text style={styles.sub}>Choose one. Then run Prompt → Speak → Reflect → Retry.</Text>
+    <View style={styles.root}>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.title}>PRACTICE</Text>
+        <Text style={styles.sub}>Pick a speaking mode</Text>
 
-      <View style={{ marginTop: 14, gap: 10 }}>
-        {TRACK_LIST.map((t, i) => (
-          <Pressable key={t.id} onPress={() => navigation.navigate('SessionPreflight', { trackId: t.id })}>
-            <CleanCard style={[styles.rowCard, i === 0 && styles.firstCard]}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.cardTitle}>{t.title}</Text>
-                <Text style={styles.cardSub}>{t.subtitle}</Text>
-              </View>
-              <ChevronRight size={16} color="#8E95B3" />
-            </CleanCard>
-          </Pressable>
-        ))}
-      </View>
-    </CleanShell>
+        <View style={styles.stack}>
+          <Bouncy3DButton title="Speak Persuasive" variant="green" onPress={() => navigation.navigate('SessionPreflight', { trackId: 'persuasive' })} />
+          <Bouncy3DButton title="Think Fast" variant="blue" onPress={() => navigation.navigate('SessionPreflight', { trackId: 'fast' })} />
+          <Bouncy3DButton title="Pressure Clarity" variant="orange" onPress={() => navigation.navigate('SessionPreflight', { trackId: 'pressure' })} />
+          <Bouncy3DButton title="Speak Human" variant="green" onPress={() => navigation.navigate('SessionPreflight', { trackId: 'human' })} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { color: palette.text, ...type.display },
-  sub: { color: palette.subtext, marginTop: 4, ...type.body },
-  rowCard: { flexDirection: 'row', alignItems: 'center' },
-  firstCard: { borderColor: 'rgba(141,123,255,0.24)' },
-  cardTitle: { color: palette.text, fontSize: 16, fontWeight: '700' },
-  cardSub: { color: palette.subtext, marginTop: 3, fontSize: 13 },
+  root: { flex: 1, backgroundColor: '#F4F9F6' },
+  content: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 },
+  title: { color: '#4B4B4B', fontSize: 30, fontWeight: '900' },
+  sub: { color: '#AFAFAF', fontSize: 14, marginTop: 4, fontWeight: '700' },
+  stack: { marginTop: 16, gap: 12 },
 });

@@ -1,37 +1,25 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
-import CleanShell from '../../components/CleanShell';
-import CleanCard from '../../components/CleanCard';
-import ActionRow from '../../components/ActionRow';
-import { palette, type } from '../../theme/design';
-import { TRACKS } from '../../data/tracks';
+import { StyleSheet, Text, View } from 'react-native';
+import Bouncy3DButton from '../../components/Bouncy3DButton';
 
-export default function SessionCompleteScreen({ route, navigation }) {
-  const trackId = route.params?.trackId || 'persuasive';
-  const track = TRACKS[trackId] || TRACKS.persuasive;
-
+export default function SessionCompleteScreen({ navigation }) {
   return (
-    <CleanShell>
-      <Text style={styles.title}>Session complete</Text>
-      <Text style={styles.sub}>{track.title}</Text>
+    <View style={styles.root}>
+      <View style={styles.card}>
+        <Text style={styles.emoji}>🎉</Text>
+        <Text style={styles.title}>SESSION COMPLETE</Text>
+        <Text style={styles.sub}>Nice work. You completed a focused speaking loop.</Text>
 
-      <CleanCard style={{ marginTop: 14 }}>
-        <Text style={styles.label}>Summary</Text>
-        <Text style={styles.prompt}>You completed one focused speaking loop with reflection and retry guidance.</Text>
-        <ActionRow
-          primaryTitle="Back to tracks"
-          onPrimary={() => navigation.navigate('PracticeHome')}
-          secondaryTitle="Home"
-          onSecondary={() => navigation.navigate('PracticeHome')}
-        />
-      </CleanCard>
-    </CleanShell>
+        <Bouncy3DButton title="Back to tracks" variant="green" onPress={() => navigation.navigate('PracticeHome')} style={{ marginTop: 16 }} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { color: palette.text, ...type.display },
-  sub: { color: palette.subtext, marginTop: 4, ...type.body },
-  label: { color: '#8E97AC', ...type.label, textTransform: 'uppercase', letterSpacing: 1 },
-  prompt: { color: palette.text, marginTop: 7, ...type.heading, lineHeight: 24 },
+  root: { flex: 1, backgroundColor: '#F4F9F6', padding: 20, justifyContent: 'center' },
+  card: { backgroundColor: '#fff', borderRadius: 24, padding: 18, borderWidth: 1, borderColor: 'rgba(0,0,0,0.07)' },
+  emoji: { fontSize: 42, textAlign: 'center' },
+  title: { color: '#4B4B4B', fontSize: 22, fontWeight: '900', textAlign: 'center', marginTop: 8 },
+  sub: { color: '#6F76A1', marginTop: 8, textAlign: 'center', fontWeight: '700', lineHeight: 20 },
 });
