@@ -111,6 +111,48 @@ export default function HomeMainScreen({ navigation }) {
             <>
               {!selectedPathId ? (
                 <>
+                  <View style={styles.streakCard}>
+                    <View style={styles.streakTopRow}>
+                      <View style={styles.streakTitleRow}>
+                        <View style={styles.streakFlameWrap}>
+                          <Text style={styles.streakFlame}>🔥</Text>
+                        </View>
+                        <View>
+                          <Text style={styles.streakTitle}>Consecutive study days</Text>
+                          <Text style={styles.streakSubtitle}>Keep the chain alive by finishing one quick lesson each day this week.</Text>
+                        </View>
+                      </View>
+                      <View style={styles.runPill}>
+                        <Text style={styles.runPillText}>4 day run</Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.weekRow}>
+                      {[
+                        { day: 'Mon', done: true },
+                        { day: 'Tue', done: true },
+                        { day: 'Wed', done: true },
+                        { day: 'Thu', done: true },
+                        { day: 'Fri', done: false },
+                        { day: 'Sat', done: false },
+                        { day: 'Sun', done: false },
+                      ].map((d) => (
+                        <View key={d.day} style={styles.dayItem}>
+                          <Text style={styles.dayLabel}>{d.day}</Text>
+                          <View style={[styles.dayDot, d.done ? styles.dayDotDone : styles.dayDotIdle]}>
+                            <Text style={styles.dayDotIcon}>🔥</Text>
+                          </View>
+                          <View style={[styles.dayBar, d.done ? styles.dayBarDone : styles.dayBarIdle]} />
+                        </View>
+                      ))}
+                    </View>
+
+                    <View style={styles.streakFooter}>
+                      <Text style={styles.streakFooterLeft}>Next reward</Text>
+                      <Text style={styles.streakFooterRight}>Streak Freeze unlock</Text>
+                    </View>
+                  </View>
+
                   <Text style={styles.practiceHeader}>PRACTICE PATHS</Text>
                   <Text style={styles.practiceSub}>Pick a path card to open the full node map.</Text>
 
@@ -316,6 +358,73 @@ const styles = StyleSheet.create({
   segmentActive: { backgroundColor: '#27A14C', borderBottomWidth: 0, transform: [{ translateY: 2 }] },
   segmentInactive: { backgroundColor: '#37C25E', borderBottomWidth: 4, borderBottomColor: '#1C7A35' },
   segmentText: { color: '#FFF', fontWeight: '900', fontSize: 16 },
+
+  streakCard: {
+    backgroundColor: '#F2F2F2',
+    borderRadius: 24,
+    padding: 16,
+    marginBottom: 14,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 7,
+  },
+  streakTopRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 },
+  streakTitleRow: { flexDirection: 'row', gap: 10, flex: 1 },
+  streakFlameWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#FCE9D2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  streakFlame: { fontSize: 15 },
+  streakTitle: { color: '#1F1F1F', fontWeight: '900', fontSize: 32/2 },
+  streakSubtitle: { color: '#707781', fontWeight: '700', marginTop: 4, lineHeight: 19 },
+  runPill: {
+    backgroundColor: '#F2DFB8',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
+  runPillText: { color: '#A16B00', fontWeight: '900' },
+  weekRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 14 },
+  dayItem: {
+    width: 42,
+    borderRadius: 18,
+    backgroundColor: '#E9E9E9',
+    alignItems: 'center',
+    paddingVertical: 8,
+    gap: 8,
+  },
+  dayLabel: { color: '#8A90A0', fontWeight: '800', fontSize: 11 },
+  dayDot: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  dayDotDone: { backgroundColor: '#FDB628', borderColor: '#F0A500' },
+  dayDotIdle: { backgroundColor: '#F1F1F1', borderColor: '#D5D5D5' },
+  dayDotIcon: { fontSize: 11, opacity: 0.9 },
+  dayBar: { width: 28, height: 5, borderRadius: 999 },
+  dayBarDone: { backgroundColor: '#F2A816' },
+  dayBarIdle: { backgroundColor: '#D8DEE7' },
+  streakFooter: {
+    marginTop: 14,
+    borderTopWidth: 1,
+    borderTopColor: '#E3E3E3',
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  streakFooterLeft: { color: '#8A91A2', fontWeight: '700' },
+  streakFooterRight: { color: '#2C2C2C', fontWeight: '900' },
 
   practiceHeader: { color: '#FFF', fontWeight: '900', fontSize: 16, marginBottom: 8, letterSpacing: 1 },
   practiceSub: { color: 'rgba(255,255,255,0.9)', fontWeight: '700', marginBottom: 12 },
