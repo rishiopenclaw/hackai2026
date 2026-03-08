@@ -21,6 +21,7 @@ export default function LearningPathNode({ active, locked, icon, number, onPress
         style={styles.nodeBtn}
         circle
         size={68}
+        textStyle={icon ? styles.iconText : styles.numberText}
       />
     </View>
   );
@@ -49,4 +50,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(0,0,0,0.08)',
   },
+  numberText: { fontSize: 22, fontWeight: '900' },
+  iconText: { fontSize: 30, fontWeight: '900', lineHeight: 30 },
 });
