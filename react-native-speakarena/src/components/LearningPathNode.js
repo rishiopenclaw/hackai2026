@@ -19,14 +19,16 @@ export default function LearningPathNode({ active, locked, icon, number, onPress
         variant={variant}
         onPress={onPress}
         style={styles.nodeBtn}
+        circle
+        size={68}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', width: 75, height: 75, justifyContent: 'center' },
-  nodeBtn: { width: 75 },
+  wrap: { alignItems: 'center', width: 68, height: 68, justifyContent: 'center' },
+  nodeBtn: { width: 68 },
   tipWrap: { position: 'absolute', alignItems: 'center', top: -42, zIndex: 4 },
   tip: {
     borderRadius: 14,

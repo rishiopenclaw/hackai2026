@@ -9,7 +9,7 @@ const PALETTE = {
   white: { fill: '#FFFFFF', lip: '#E5E5E5', text: '#4B4B4B' },
 };
 
-export default function Bouncy3DButton({ title, variant = 'green', onPress, style }) {
+export default function Bouncy3DButton({ title, variant = 'green', onPress, style, circle = false, size = 54 }) {
   const p = PALETTE[variant] || PALETTE.green;
   const press = useRef(new Animated.Value(0)).current;
   const [lip, setLip] = useState(6);
@@ -29,6 +29,7 @@ export default function Bouncy3DButton({ title, variant = 'green', onPress, styl
       <Animated.View
         style={[
           styles.base,
+          circle && { width: size, minHeight: size, height: size, borderRadius: size / 2, paddingHorizontal: 0 },
           {
             backgroundColor: p.fill,
             borderBottomColor: p.lip,

@@ -103,7 +103,7 @@ export default function HomeMainScreen({ navigation }) {
           <MapArtwork />
 
           {/* Nodes pinned to trail waypoints */}
-          <View style={[styles.nodePos, { top: 54, left: 228 }]}>
+          <View style={[styles.nodePos, { top: 70, left: 214 }]}>
             <LearningPathNode
               active
               number={1}
@@ -111,21 +111,21 @@ export default function HomeMainScreen({ navigation }) {
             />
           </View>
 
-          <View style={[styles.nodePos, { top: 212, left: 76 }]}>
+          <View style={[styles.nodePos, { top: 232, left: 102 }]}>
             <LearningPathNode
               number={2}
               onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'fast' } })}
             />
           </View>
 
-          <View style={[styles.nodePos, { top: 372, left: 164 }]}>
+          <View style={[styles.nodePos, { top: 392, left: 176 }]}>
             <LearningPathNode
               number={3}
               onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })}
             />
           </View>
 
-          <View style={[styles.nodePos, { top: 536, left: 84 }]}>
+          <View style={[styles.nodePos, { top: 560, left: 116 }]}>
             <LearningPathNode locked icon="🔒" />
           </View>
         </View>
