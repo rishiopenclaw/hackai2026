@@ -1,7 +1,3 @@
-# Node/Express Backend
-backend/node_modules/
-backend/.env
-
 # React Native / Expo
 react-native-speakarena/node_modules/
 react-native-speakarena/.expo/
