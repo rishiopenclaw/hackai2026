@@ -1,60 +1,49 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Defs, LinearGradient as SvgGradient, Stop, Rect, G } from 'react-native-svg';
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient as ExpoLinearGradient } from 'expo-linear-gradient';
 
 export default function HeroBackground() {
   return (
-    <View style={styles.container} pointerEvents="none">
-      <Svg width="100%" height="100%" style={StyleSheet.absoluteFillObject}>
+    <View style={styles.container}>
+      <Svg style={StyleSheet.absoluteFillObject} viewBox="0 0 400 800">
         <Defs>
-          <SvgGradient id="ambientGlow" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor="#FF7A00" stopOpacity="0.8" />
-            <Stop offset="40%" stopColor="#8A3800" stopOpacity="0.5" />
-            <Stop offset="100%" stopColor="#09090B" stopOpacity="1" />
+          {/* The Master Continuous Light Source */}
+          <SvgGradient id="masterGlow" x1="0%" y1="0%" x2="100%" y2="100%" gradientUnits="userSpaceOnUse">
+            <Stop offset="0%" stopColor="#FFD18C" />
+            {/* Bright glowing top-left */}
+            <Stop offset="15%" stopColor="#FF6B00" />
+            {/* Vibrant orange */}
+            <Stop offset="45%" stopColor="#5C2200" />
+            {/* Deep burnt shadow */}
+            <Stop offset="80%" stopColor="#09090B" />
+            {/* Pitch black */}
           </SvgGradient>
         </Defs>
 
-        <Rect width="100%" height="100%" fill="url(#ambientGlow)" />
-
-        <G rotation="-18" origin="200, 300">
-          <Rect
-            x="-100"
-            y="-100"
-            width="350"
-            height="700"
-            rx="54"
-            fill="none"
-            stroke="rgba(0,0,0,0.6)"
-            strokeWidth="3"
-          />
-          <Rect
-            x="150"
-            y="100"
-            width="400"
-            height="800"
-            rx="54"
-            fill="none"
-            stroke="rgba(0,0,0,0.6)"
-            strokeWidth="3"
-          />
-          <Rect
-            x="-200"
-            y="450"
-            width="550"
-            height="600"
-            rx="54"
-            fill="none"
-            stroke="rgba(0,0,0,0.6)"
-            strokeWidth="3"
-          />
+        {/* The Glass Panels
+        - Center intersection is precisely at X=150, Y=250.
+        - 6px mathematical gaps between all panels reveal the black background.
+        - rx=42 creates beautiful filleted intersections.
+        */}
+        <G rotation="-16" origin="200, 300">
+          {/* Top Left */}
+          <Rect x="-200" y="-200" width="347" height="447" rx="42" fill="url(#masterGlow)" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" />
+          {/* Top Right */}
+          <Rect x="153" y="-200" width="400" height="447" rx="42" fill="url(#masterGlow)" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" />
+          {/* Bottom Left */}
+          <Rect x="-200" y="253" width="347" height="600" rx="42" fill="url(#masterGlow)" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" />
+          {/* Bottom Right */}
+          <Rect x="153" y="253" width="400" height="600" rx="42" fill="url(#masterGlow)" stroke="rgba(0,0,0,0.6)" strokeWidth="1.5" />
         </G>
       </Svg>
 
-      <LinearGradient
-        colors={['transparent', 'rgba(9,9,11,0.5)', '#09090B', '#09090B']}
-        locations={[0.4, 0.7, 0.9, 1]}
+      {/* The Smooth Bottom Fade */}
+      <ExpoLinearGradient
+        colors={['transparent', 'rgba(9,9,11,0.6)', '#09090B', '#09090B']}
+        locations={[0.4, 0.75, 0.95, 1]}
         style={StyleSheet.absoluteFillObject}
+        pointerEvents="none"
       />
     </View>
   );
@@ -62,8 +51,7 @@ export default function HeroBackground() {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#09090B',
-    overflow: 'hidden',
+    flex: 1,
+    backgroundColor: '#09090B', // The dark gap color that bleeds through
   },
 });
