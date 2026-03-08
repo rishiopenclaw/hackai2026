@@ -23,7 +23,7 @@ export default function MainTabs() {
           borderTopWidth: 0,
           position: 'absolute',
         },
-        tabBarActiveTintColor: '#C0BEDA',
+        tabBarActiveTintColor: '#BFA9FF',
         tabBarInactiveTintColor: '#B0B0B0',
         tabBarIcon: ({ color }) => {
           const map = {
