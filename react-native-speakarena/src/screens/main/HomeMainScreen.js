@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -77,6 +77,14 @@ export default function HomeMainScreen({ navigation }) {
   const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
   const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
   const selectedPath = PATHS.find((p) => p.id === selectedPathId) || PATHS[0];
+
+  useEffect(() => {
+    if (!selectedPathId) return;
+    const t = setTimeout(() => {
+      mapScrollRef.current?.scrollToEnd({ animated: false });
+    }, 0);
+    return () => clearTimeout(t);
+  }, [selectedPathId]);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -176,7 +184,10 @@ export default function HomeMainScreen({ navigation }) {
                     style={styles.mapViewport}
                     contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
                     showsVerticalScrollIndicator={false}
-                    onContentSizeChange={() => mapScrollRef.current?.scrollToEnd({ animated: false })}
+                    nestedScrollEnabled
+                    directionalLockEnabled
+                    bounces
+                    scrollEnabled
                   >
                     <Svg width={MAP_WIDTH} height={CONTENT_HEIGHT} style={styles.svgLayer}>
                       <Defs>
@@ -202,8 +213,7 @@ export default function HomeMainScreen({ navigation }) {
 
                     {nodes.map((node, idx) => {
                       const isFlagNode = idx === 0;
-                      const numberFromBottom = nodes.length - idx;
-                      const shownNumber = isFlagNode ? undefined : numberFromBottom;
+                      const shownNumber = isFlagNode ? undefined : idx;
 
                       return (
                         <View
