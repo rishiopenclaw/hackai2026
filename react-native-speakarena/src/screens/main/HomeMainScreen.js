@@ -103,7 +103,7 @@ export default function HomeMainScreen({ navigation }) {
           <MapArtwork />
 
           {/* Nodes pinned to trail waypoints */}
-          <View style={[styles.nodePos, { top: 66, left: 210 }]}>
+          <View style={[styles.nodePos, { top: 58, left: 206 }]}>
             <LearningPathNode
               active
               number={1}
