@@ -37,7 +37,7 @@ export default function HomeMainScreen({ navigation }) {
   const [open, setOpen] = useState(false);
   const MAP_WIDTH = SCREEN_WIDTH - 40; // same as map viewport width (marginHorizontal: 20)
 
-  const nodes = useMemo(() => generatePathData(10, MAP_WIDTH), [MAP_WIDTH]);
+  const nodes = useMemo(() => generatePathData(11, MAP_WIDTH), [MAP_WIDTH]);
   const pathD = useMemo(() => generateSvgPath(nodes), [nodes]);
   const CONTENT_HEIGHT = useMemo(() => (nodes.length + 1) * Y_SPACING, [nodes]);
 
@@ -82,29 +82,33 @@ export default function HomeMainScreen({ navigation }) {
         </Svg>
 
         {/* Layer 2: Nodes aligned to same coordinates */}
-        {nodes.map((node, idx) => (
-          <View
-            key={node.id}
-            style={{
-              position: 'absolute',
-              left: node.centerX - NODE_SIZE / 2,
-              top: node.centerY - NODE_SIZE / 2,
-              width: NODE_SIZE,
-              height: NODE_SIZE,
-            }}
-          >
-            <LearningPathNode
-              number={node.id}
-              active={idx === nodes.length - 1}
-              onPress={() =>
-                navigation.navigate('Practice', {
-                  screen: 'SessionPreflight',
-                  params: { trackId: 'persuasive' },
-                })
-              }
-            />
-          </View>
-        ))}
+        {nodes.map((node, idx) => {
+          const isFlagNode = idx === nodes.length - 1;
+          return (
+            <View
+              key={node.id}
+              style={{
+                position: 'absolute',
+                left: node.centerX - NODE_SIZE / 2,
+                top: node.centerY - NODE_SIZE / 2,
+                width: NODE_SIZE,
+                height: NODE_SIZE,
+              }}
+            >
+              <LearningPathNode
+                number={isFlagNode ? undefined : node.id}
+                icon={isFlagNode ? '⚑' : undefined}
+                active={isFlagNode}
+                onPress={() =>
+                  navigation.navigate('Practice', {
+                    screen: 'SessionPreflight',
+                    params: { trackId: 'persuasive' },
+                  })
+                }
+              />
+            </View>
+          );
+        })}
       </ScrollView>
 
       <View style={styles.bottomCta}>
