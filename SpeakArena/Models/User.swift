@@ -2,6 +2,7 @@ import Foundation
 
 struct User: Identifiable, Codable, Hashable {
     let id: UUID
+    var username: String
     var displayName: String
     var avatarURL: URL?
 
