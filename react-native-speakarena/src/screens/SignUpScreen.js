@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import HeroBackground from '../components/HeroBackground';
 
 function Mark() {
   return (
@@ -22,29 +23,9 @@ export default function SignUpScreen() {
       <LinearGradient colors={['#2A1A10', '#0D0B0B']} style={StyleSheet.absoluteFill} />
 
       <View style={[styles.phoneShell, { width: shellWidth, height: shellHeight }]}>
-        <LinearGradient colors={['#C98334', '#8E5423', '#211817']} style={styles.hero}>
-          <LinearGradient
-            colors={['rgba(255,209,126,0.42)', 'rgba(255,151,53,0.14)', 'rgba(0,0,0,0)']}
-            start={{ x: 0.05, y: 0 }}
-            end={{ x: 0.9, y: 1 }}
-            style={StyleSheet.absoluteFill}
-          />
-
-          <View style={styles.panelTop} />
-          <View style={styles.panelLeft} />
-          <View style={styles.panelRight} />
-
-          <View style={styles.seamA} />
-          <View style={styles.seamB} />
-
-          <LinearGradient
-            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.90)']}
-            start={{ x: 0.5, y: 0.50 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.heroFade}
-          />
-
-        </LinearGradient>
+        <View style={styles.hero}>
+          <HeroBackground />
+        </View>
 
         <View style={styles.bottomPane}>
           <Mark />
@@ -99,64 +80,6 @@ const styles = StyleSheet.create({
   hero: {
     flex: 1,
     position: 'relative',
-  },
-  heroFade: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    height: 210,
-  },
-
-  panelTop: {
-    position: 'absolute',
-    top: -64,
-    left: -30,
-    width: 320,
-    height: 120,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 206, 126, 0.20)',
-    transform: [{ rotate: '-18deg' }],
-  },
-  panelLeft: {
-    position: 'absolute',
-    top: 72,
-    left: -6,
-    width: 170,
-    height: 360,
-    borderRadius: 34,
-    backgroundColor: 'rgba(80, 45, 20, 0.34)',
-    transform: [{ rotate: '-24deg' }],
-  },
-  panelRight: {
-    position: 'absolute',
-    top: 18,
-    right: -54,
-    width: 190,
-    height: 360,
-    borderRadius: 36,
-    backgroundColor: 'rgba(58, 33, 22, 0.32)',
-    transform: [{ rotate: '24deg' }],
-  },
-  seamA: {
-    position: 'absolute',
-    top: 34,
-    left: -40,
-    width: 320,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: 'rgba(65, 37, 24, 0.35)',
-    transform: [{ rotate: '-24deg' }],
-  },
-  seamB: {
-    position: 'absolute',
-    top: 116,
-    left: 86,
-    width: 10,
-    height: 280,
-    borderRadius: 5,
-    backgroundColor: 'rgba(62, 34, 23, 0.45)',
-    transform: [{ rotate: '-24deg' }],
   },
 
   bottomPane: {
