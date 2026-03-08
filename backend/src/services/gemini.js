@@ -47,7 +47,8 @@ function validateResumeProfile(data) {
     isStringArray(data.goals) &&
     typeof data.industry === "string" &&
     isStringArray(data.strengths) &&
-    isStringArray(data.weaknesses)
+    isStringArray(data.weaknesses) &&
+    (data.name === undefined || typeof data.name === "string")
   );
 }
 
@@ -156,6 +157,7 @@ Analyze this resume and extract a structured profile.
 
 Return STRICT JSON:
 {
+  "name": "string - full name of the person (from header/contact)",
   "role": "string - their current role or target role",
   "experience": ["string - each major experience"],
   "skills": ["string - key skills"],

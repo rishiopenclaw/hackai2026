@@ -4,7 +4,7 @@ import { useConversation } from '@elevenlabs/react-native';
 import Bouncy3DButton from '../../components/Bouncy3DButton';
 import { apiJson } from '../../lib/api';
 import { startRecording, stopRecording, cancelRecording, requestMicPermission } from '../../lib/voice';
-import { getCoachSessionConfig } from '../../lib/voice/elevenlabs';
+import { getCoachSessionConfig, getModeratorSessionConfig } from '../../lib/voice/elevenlabs';
 
 export default function SessionLiveScreen({ route, navigation }) {
   const trackId = route.params?.trackId || 'persuasive';
@@ -22,6 +22,8 @@ export default function SessionLiveScreen({ route, navigation }) {
   const isCoachMode = mode === 'coach-practice';
 
   const pulse = useMemo(() => new Animated.Value(1), []);
+  const [debateStarted, setDebateStarted] = React.useState(false);
+  const [debateComplete, setDebateComplete] = React.useState(false);
   const [secondsLeft, setSecondsLeft] = React.useState(isDebateMode ? 15 : (route.params?.durationSeconds || 20));
   const [turnIndex, setTurnIndex] = React.useState(0);
   const [pendingJudgeCount, setPendingJudgeCount] = React.useState(0);
@@ -32,23 +34,72 @@ export default function SessionLiveScreen({ route, navigation }) {
   const [transcriptInput, setTranscriptInput] = React.useState('');
   const [coachStatus, setCoachStatus] = React.useState('idle');
   const [coachSpeaking, setCoachSpeaking] = React.useState(false);
+  const [moderatorPhase, setModeratorPhase] = React.useState('idle');
+  const [turnTransition, setTurnTransition] = React.useState(false);
 
   const pendingSubmissionsRef = React.useRef([]);
   const actionLockRef = React.useRef(false);
   const recordingStartedRef = React.useRef(false);
+  const turnIndexRef = React.useRef(0);
+  const recordingLockRef = React.useRef(false);
+  const activeAgentRef = React.useRef(null); // 'coach' | 'moderator'
 
   const conversation = useConversation({
-    onConnect: () => setCoachStatus('connected'),
-    onDisconnect: () => setCoachStatus('disconnected'),
-    onError: (message) => {
-      console.error('Coach conversation error:', message);
-      setCoachStatus('error');
+    onConnect: ({ conversationId }) => {
+      console.info('[11labs] onConnect', { agent: activeAgentRef.current, conversationId });
+      if (activeAgentRef.current === 'coach') setCoachStatus('connected');
+      else if (activeAgentRef.current === 'moderator') setModeratorPhase('connected');
+    },
+    onDisconnect: (details) => {
+      console.info('[11labs] onDisconnect', { agent: activeAgentRef.current, details });
+      if (activeAgentRef.current === 'coach') setCoachStatus('disconnected');
+      else if (activeAgentRef.current === 'moderator') setModeratorPhase('disconnected');
+    },
+    onError: (message, context) => {
+      console.error('[11labs] onError', { agent: activeAgentRef.current, message, context });
+      if (activeAgentRef.current === 'coach') setCoachStatus('error');
+      else if (activeAgentRef.current === 'moderator') setModeratorPhase('error');
     },
     onModeChange: ({ mode: m }) => {
-      setCoachSpeaking(m === 'speaking');
+      console.info('[11labs] onModeChange', { agent: activeAgentRef.current, mode: m });
+      if (activeAgentRef.current === 'coach') {
+        const isSpeaking = m === 'speaking';
+        setCoachSpeaking(isSpeaking);
+      } else if (activeAgentRef.current === 'moderator') {
+        if (m === 'speaking') {
+          setModeratorPhase('speaking');
+        } else if (m === 'listening') {
+          setModeratorPhase((prev) => (prev === 'speaking' ? 'done_speaking' : prev));
+        }
+      }
     },
-    onStatusChange: ({ status }) => setCoachStatus(status),
+    onStatusChange: ({ status }) => {
+      console.info('[11labs] onStatusChange', { agent: activeAgentRef.current, status });
+      if (activeAgentRef.current === 'coach') setCoachStatus(status);
+      else if (activeAgentRef.current === 'moderator' && status === 'connected') setModeratorPhase('connected');
+    },
+    onMessage: ({ message, source }) => {
+      console.info('[11labs] onMessage', { agent: activeAgentRef.current, source, message });
+    },
   });
+
+  // When moderator finishes speaking, end its session and start the turn
+  React.useEffect(() => {
+    if (moderatorPhase !== 'done_speaking') return;
+    if (activeAgentRef.current !== 'moderator') return;
+    let active = true;
+    (async () => {
+      try {
+        activeAgentRef.current = null;
+        await conversation.endSession();
+      } catch {}
+      if (!active) return;
+      setModeratorPhase('idle');
+      setTurnTransition(false);
+      await safeStartRecording();
+    })();
+    return () => { active = false; };
+  }, [moderatorPhase]);
 
   // Pulse animation
   React.useEffect(() => {
@@ -62,9 +113,68 @@ export default function SessionLiveScreen({ route, navigation }) {
     return () => loop.stop();
   }, [pulse]);
 
-  // Auto-start mic for debate or non-coach practice on mount
+  const safeStartRecording = useCallback(async () => {
+    if (recordingLockRef.current) return;
+    recordingLockRef.current = true;
+    try {
+      await cancelRecording().catch(() => {});
+      await startRecording();
+      setMicActive(true);
+      recordingStartedRef.current = true;
+    } catch (err) {
+      console.error('Failed to start recording:', err);
+      setMicError('Could not start microphone. Use text input as fallback.');
+    } finally {
+      recordingLockRef.current = false;
+    }
+  }, []);
+
+  const launchModerator = useCallback(async () => {
+    try {
+      activeAgentRef.current = 'moderator';
+      setModeratorPhase('connecting');
+      const modConfig = getModeratorSessionConfig({
+        topic,
+        playerAName: 'Player A',
+        playerBName: localFriend ? 'Player B (Friend)' : 'Player B',
+      });
+      await conversation.startSession(modConfig);
+    } catch (err) {
+      console.error('Moderator launch failed:', err);
+      setModeratorPhase('error');
+    }
+  }, [topic, localFriend, conversation]);
+
+  const startDebateSession = useCallback(async () => {
+    const granted = await requestMicPermission();
+    if (!granted) {
+      setMicError('Microphone permission denied. Please enable it in Settings.');
+      return;
+    }
+
+    setDebateStarted(true);
+    setTurnTransition(true);
+
+    await launchModerator();
+
+    // Fallback: if the moderator doesn't speak within 8s, start the turn anyway
+    setTimeout(() => {
+      setModeratorPhase((current) => {
+        if (current !== 'idle' && current !== 'error' && current !== 'disconnected') {
+          activeAgentRef.current = null;
+          conversation.endSession().catch(() => {});
+          setTurnTransition(false);
+          safeStartRecording();
+          return 'idle';
+        }
+        return current;
+      });
+    }, 8000);
+  }, [launchModerator, conversation, safeStartRecording]);
+
+  // Auto-start mic for non-coach, non-debate practice on mount
   React.useEffect(() => {
-    if (isCoachMode) return;
+    if (isCoachMode || isDebateMode) return;
     let cancelled = false;
     (async () => {
       const granted = await requestMicPermission();
@@ -88,35 +198,42 @@ export default function SessionLiveScreen({ route, navigation }) {
       cancelled = true;
       cancelRecording().catch(() => {});
     };
-  }, [isCoachMode]);
+  }, [isCoachMode, isDebateMode]);
 
   // Auto-start coach session on mount
   React.useEffect(() => {
     if (!isCoachMode) return;
     let cancelled = false;
+    console.info('[11labs] coach effect MOUNT, starting session');
     (async () => {
       try {
+        activeAgentRef.current = 'coach';
         setCoachStatus('connecting');
         const config = getCoachSessionConfig({
           exerciseType,
           prompt: prompt || topic,
           profile: coachProfile,
         });
+        console.info('[11labs] coach startSession config:', JSON.stringify(config));
         await conversation.startSession(config);
+        console.info('[11labs] coach startSession resolved OK');
       } catch (err) {
-        console.error('Failed to start coach session:', err);
+        console.error('[11labs] coach startSession FAILED:', err);
         if (!cancelled) setCoachStatus('error');
       }
     })();
     return () => {
+      console.info('[11labs] coach effect CLEANUP, cancelled=', cancelled);
       cancelled = true;
+      activeAgentRef.current = null;
       conversation.endSession().catch(() => {});
     };
   }, [isCoachMode]);
 
-  // Timer for debate and non-coach practice modes
+  // Timer: paused during moderator speech, transitions, and after debate ends
   React.useEffect(() => {
     if (isCoachMode) return;
+    if (isDebateMode && (!debateStarted || turnTransition || debateComplete)) return;
     if (finishing) return;
     if (secondsLeft <= 0) {
       if (isDebateMode) {
@@ -128,13 +245,16 @@ export default function SessionLiveScreen({ route, navigation }) {
     }
     const timer = setTimeout(() => setSecondsLeft((prev) => prev - 1), 1000);
     return () => clearTimeout(timer);
-  }, [secondsLeft, finishing, isCoachMode]);
+  }, [secondsLeft, finishing, isCoachMode, isDebateMode, debateStarted, turnTransition, debateComplete]);
 
   const currentSpeaker = turnIndex % 2 === 0 ? 'A' : 'B';
 
   const handleDebateTurnSubmit = useCallback(async () => {
-    if (actionLockRef.current || finishing) return;
+    if (actionLockRef.current || finishing || debateComplete) return;
     actionLockRef.current = true;
+
+    const currentTurn = turnIndexRef.current;
+    const speaker = currentTurn % 2 === 0 ? 'A' : 'B';
 
     let audioPayload = null;
     if (recordingStartedRef.current) {
@@ -152,8 +272,8 @@ export default function SessionLiveScreen({ route, navigation }) {
 
     const body = {
       debateId,
-      speaker: currentSpeaker,
-      turnIndex,
+      speaker,
+      turnIndex: currentTurn,
     };
     if (audioPayload?.audioBase64) {
       body.audioBase64 = audioPayload.audioBase64;
@@ -173,22 +293,24 @@ export default function SessionLiveScreen({ route, navigation }) {
     const trackedPromise = submitPromise.finally(() => setPendingJudgeCount((prev) => Math.max(0, prev - 1)));
     pendingSubmissionsRef.current.push(trackedPromise);
 
-    if (turnIndex < 3) {
-      setTurnIndex((prev) => prev + 1);
+    if (currentTurn < 3) {
+      const nextTurn = currentTurn + 1;
+      turnIndexRef.current = nextTurn;
+      setTurnIndex(nextTurn);
       setSecondsLeft(15);
       actionLockRef.current = false;
-      // Start recording for next turn
-      try {
-        await startRecording();
-        setMicActive(true);
-        recordingStartedRef.current = true;
-      } catch (err) {
-        console.error('Failed to restart recording:', err);
-        setMicError('Mic restart failed — use text fallback.');
-      }
+
+      // Transition: show "Switching to Player X" for 3s then start recording
+      setTurnTransition(true);
+      setTimeout(async () => {
+        setTurnTransition(false);
+        await safeStartRecording();
+      }, 3000);
       return;
     }
 
+    // Final turn — finish the debate
+    setDebateComplete(true);
     setFinishing(true);
     try {
       await Promise.allSettled(pendingSubmissionsRef.current);
@@ -203,7 +325,7 @@ export default function SessionLiveScreen({ route, navigation }) {
       actionLockRef.current = false;
       setFinishing(false);
     }
-  }, [finishing, debateId, currentSpeaker, turnIndex, transcriptInput]);
+  }, [finishing, debateComplete, debateId, transcriptInput, safeStartRecording]);
 
   const handlePracticeStop = useCallback(async () => {
     if (actionLockRef.current || finishing) return;
@@ -283,7 +405,7 @@ export default function SessionLiveScreen({ route, navigation }) {
 
   const renderCoachUI = () => (
     <View style={styles.topicWrap}>
-      <Text style={styles.roomName}>Live Coach Session</Text>
+      <Text style={styles.roomName}>Voice Coach</Text>
       <Text style={styles.topicText}>{prompt || topic || 'Your coach is ready.'}</Text>
       {!!instructions && <Text style={styles.topicLabel}>{instructions}</Text>}
       <View style={styles.coachStatusRow}>
@@ -294,7 +416,9 @@ export default function SessionLiveScreen({ route, navigation }) {
         }]} />
         <Text style={styles.topicLabel}>
           {coachStatus === 'connected'
-            ? (coachSpeaking ? 'Coach is speaking...' : 'Coach is listening...')
+            ? (coachSpeaking
+              ? 'Coach is speaking — listen...'
+              : 'Coach is listening...')
             : coachStatus === 'connecting' ? 'Connecting to coach...'
             : coachStatus === 'error' ? 'Connection error'
             : 'Disconnected'}
@@ -302,6 +426,46 @@ export default function SessionLiveScreen({ route, navigation }) {
       </View>
     </View>
   );
+
+  // Pre-debate start screen
+  if (isDebateMode && !debateStarted) {
+    return (
+      <ScrollView contentContainerStyle={styles.root}>
+        <View style={styles.card}>
+          <Text style={styles.title}>DEBATE READY</Text>
+          <View style={styles.topicWrap}>
+            <Text style={styles.roomName}>{roomTitle || 'Debate Room'}</Text>
+            <Text style={styles.topicLabel}>{localFriend ? 'Mode: Friend Nearby' : 'Mode: Online Lobby'}</Text>
+            <Text style={styles.topicText}>{topic}</Text>
+            <Text style={styles.topicLabel}>4 turns • 15 seconds each • alternating speakers</Text>
+          </View>
+
+          <View style={styles.preDebateInfo}>
+            <Text style={styles.preDebateStep}>1. Player A speaks for 15s</Text>
+            <Text style={styles.preDebateStep}>2. Player B speaks for 15s</Text>
+            <Text style={styles.preDebateStep}>3. Player A rebuts for 15s</Text>
+            <Text style={styles.preDebateStep}>4. Player B rebuts for 15s</Text>
+            <Text style={styles.preDebateNote}>Pass the phone between speakers after each turn.</Text>
+          </View>
+
+          {!!micError && <Text style={styles.errorText}>{micError}</Text>}
+
+          <Bouncy3DButton
+            title="Start Debate"
+            variant="green"
+            onPress={startDebateSession}
+            style={{ marginTop: 20 }}
+          />
+          <Bouncy3DButton
+            title="Back"
+            variant="white"
+            onPress={() => navigation.goBack()}
+            style={{ marginTop: 10 }}
+          />
+        </View>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.root}>
@@ -315,7 +479,20 @@ export default function SessionLiveScreen({ route, navigation }) {
             <Text style={styles.roomName}>{roomTitle || 'Debate Room'}</Text>
             <Text style={styles.topicLabel}>{localFriend ? 'Mode: Friend Nearby' : 'Mode: Online Lobby'}</Text>
             <Text style={styles.topicText}>{topic}</Text>
-            <Text style={styles.topicLabel}>Turn {turnIndex + 1}/4 • Speaker {currentSpeaker} • {secondsLeft}s left</Text>
+            {turnTransition ? (
+              <View style={styles.moderatorBanner}>
+                <Text style={styles.moderatorBannerText}>
+                  {moderatorPhase === 'speaking' || moderatorPhase === 'connecting' || moderatorPhase === 'connected'
+                    ? 'Moderator is speaking — listen...'
+                    : `Switching to Player ${turnIndex % 2 === 0 ? 'A' : 'B'}...`}
+                </Text>
+                <ActivityIndicator size="small" color="#8C6BFF" style={{ marginTop: 6 }} />
+              </View>
+            ) : (
+              !debateComplete && (
+                <Text style={styles.topicLabel}>Turn {turnIndex + 1}/4 • Speaker {currentSpeaker} • {secondsLeft}s left</Text>
+              )
+            )}
             {!!pendingJudgeCount && <Text style={styles.topicLabel}>Judging previous turn(s): {pendingJudgeCount}</Text>}
           </View>
         )}
@@ -335,14 +512,19 @@ export default function SessionLiveScreen({ route, navigation }) {
           styles.micWrap,
           { transform: [{ scale: pulse }] },
           micActive && styles.micWrapActive,
-          isCoachMode && coachStatus === 'connected' && styles.micWrapActive,
+          isCoachMode && coachStatus === 'connected' && !coachSpeaking && styles.micWrapActive,
         ]}>
-          <Text style={styles.mic}>{micActive || (isCoachMode && coachStatus === 'connected') ? '🎙️' : '🔇'}</Text>
+          <Text style={styles.mic}>
+            {micActive || (isCoachMode && coachStatus === 'connected' && !coachSpeaking) ? '🎙️' : '🔇'}
+          </Text>
         </Animated.View>
+
+        {isCoachMode && coachSpeaking && (
+          <Text style={styles.listeningLabel}>Agent speaking — please listen</Text>
+        )}
 
         {!!micError && <Text style={styles.errorText}>{micError}</Text>}
 
-        {/* Text fallback for when mic fails (debate + generic practice) */}
         {!isCoachMode && !!micError && (
           <TextInput
             value={transcriptInput}
@@ -361,7 +543,7 @@ export default function SessionLiveScreen({ route, navigation }) {
 
         {!!result && renderDebateResult()}
 
-        {!result && !isCoachMode && (
+        {!result && !isCoachMode && !debateComplete && (
           <Bouncy3DButton
             title={isDebateMode ? (turnIndex < 3 ? 'Submit turn and switch speaker' : 'Submit final turn') : 'Stop and reflect'}
             variant="green"
@@ -372,8 +554,8 @@ export default function SessionLiveScreen({ route, navigation }) {
 
         {isCoachMode && coachStatus === 'connected' && (
           <Bouncy3DButton
-            title="End coach session"
-            variant="green"
+            title="End session & reflect"
+            variant="white"
             onPress={handleCoachEnd}
             style={{ marginTop: 16 }}
           />
@@ -421,6 +603,9 @@ const styles = StyleSheet.create({
   recordingLabel: {
     textAlign: 'center', color: '#EF4444', fontWeight: '800', fontSize: 12, marginTop: 6,
   },
+  listeningLabel: {
+    textAlign: 'center', color: '#8C6BFF', fontWeight: '800', fontSize: 12, marginTop: 6,
+  },
   input: {
     marginTop: 14,
     borderWidth: 1,
@@ -440,6 +625,55 @@ const styles = StyleSheet.create({
   },
   statusDot: {
     width: 10, height: 10, borderRadius: 5,
+  },
+  coachTimerBar: {
+    marginTop: 10,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+    overflow: 'hidden',
+  },
+  coachTimerFill: {
+    height: '100%',
+    borderRadius: 3,
+    backgroundColor: '#58CC02',
+  },
+  moderatorBanner: {
+    marginTop: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: 'rgba(140, 107, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(140, 107, 255, 0.25)',
+    alignItems: 'center',
+  },
+  moderatorBannerText: {
+    color: '#8C6BFF',
+    fontWeight: '800',
+    fontSize: 14,
+  },
+  preDebateInfo: {
+    marginTop: 14,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: '#F0FFF4',
+    borderWidth: 1,
+    borderColor: 'rgba(88,204,2,0.2)',
+  },
+  preDebateStep: {
+    color: '#2A3150',
+    fontWeight: '700',
+    fontSize: 13,
+    marginTop: 4,
+    lineHeight: 20,
+  },
+  preDebateNote: {
+    color: '#7A84A3',
+    fontWeight: '700',
+    fontSize: 11,
+    marginTop: 10,
+    fontStyle: 'italic',
   },
   resultWrap: {
     marginTop: 12,

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Pressable, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
-import { Flame, Trophy, Activity, Target } from 'lucide-react-native';
+import { Flame, Trophy, Activity, Target, Upload, Trash2 } from 'lucide-react-native';
 import CleanShell from '../../components/CleanShell';
 import CleanCard from '../../components/CleanCard';
 import { PrimaryPill } from '../../components/CleanCTA';
@@ -37,12 +37,16 @@ export default function ProfileMainScreen({ navigation }) {
           apiJson(`/api/profiles/${userId}`).catch(() => null),
         ]);
 
+        const profileUser = profileData?.user || null;
+        setProfile(profileUser);
         const nextUserStats = meData || bootstrap.user || cachedData || null;
-        if (nextUserStats) {
-          setUserStats(nextUserStats);
-          await AsyncStorage.setItem('userData', JSON.stringify(nextUserStats));
+        const mergedStats = nextUserStats
+          ? { ...nextUserStats, displayName: profileUser?.displayName || nextUserStats.displayName }
+          : null;
+        if (mergedStats) {
+          setUserStats(mergedStats);
+          await AsyncStorage.setItem('userData', JSON.stringify(mergedStats));
         }
-        setProfile(profileData?.user || null);
       } catch (e) {
         console.error('Failed to load profile data', e);
       } finally {
@@ -87,7 +91,15 @@ export default function ProfileMainScreen({ navigation }) {
         }),
       });
 
-      setProfile(parsed?.user || null);
+      const updatedUser = parsed?.user || null;
+      setProfile(updatedUser);
+      if (updatedUser?.displayName) {
+        setUserStats((prev) => (prev ? { ...prev, displayName: updatedUser.displayName } : updatedUser));
+        const cached = await AsyncStorage.getItem('userData').then((r) => (r ? JSON.parse(r) : null));
+        if (cached) {
+          await AsyncStorage.setItem('userData', JSON.stringify({ ...cached, displayName: updatedUser.displayName }));
+        }
+      }
       setUploadStatus(`Resume parsed successfully (${parsed?.extractedTextLength || 0} chars).`);
     } catch (err) {
       console.error('Resume upload failed:', err);
@@ -97,10 +109,53 @@ export default function ProfileMainScreen({ navigation }) {
     }
   };
 
+  const handleClearMemory = () => {
+    Alert.alert(
+      'Clear Resume Data',
+      'This will erase all parsed resume fields so you can re-upload. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            if (!demoUserId) return;
+            try {
+              setUploading(true);
+              setUploadStatus('');
+              const result = await apiJson(`/api/profiles/${demoUserId}/resume`, {
+                method: 'DELETE',
+              });
+              setProfile(result?.user || null);
+              setUploadStatus('Resume data cleared. You can upload a new one.');
+            } catch (err) {
+              console.error('Clear memory failed:', err);
+              setUploadStatus(err?.message || 'Failed to clear resume data.');
+            } finally {
+              setUploading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const handleLogout = async () => {
+    if (demoUserId) {
+      try {
+        await apiJson(`/api/profiles/${demoUserId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ displayName: 'Guest User' }),
+        });
+      } catch (e) {
+        console.warn('Reset displayName on logout:', e?.message);
+      }
+    }
     await AsyncStorage.removeItem('userToken');
     await AsyncStorage.removeItem('userData');
     await AsyncStorage.removeItem('demoUserId');
+    setUserStats((prev) => (prev ? { ...prev, displayName: 'Guest User' } : null));
+    setProfile((prev) => (prev ? { ...prev, displayName: 'Guest User' } : null));
     navigation.reset({ index: 0, routes: [{ name: 'Welcome' }] });
   };
 
@@ -130,7 +185,7 @@ export default function ProfileMainScreen({ navigation }) {
   return (
     <CleanShell>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-        <Text style={styles.title}>{userStats.displayName || 'Guest User'}</Text>
+        <Text style={styles.title}>{profile?.displayName || userStats?.displayName || 'Guest User'}</Text>
         <Text style={styles.sub}>Rank: {(userStats.skillLevel || 'rookie').toUpperCase()}</Text>
 
         <View style={styles.grid}>
@@ -174,6 +229,18 @@ export default function ProfileMainScreen({ navigation }) {
           <Text style={styles.cardSub}>Keep practicing to reach the next milestone.</Text>
         </CleanCard>
 
+        <Pressable
+          style={[styles.uploadHeroBtn, uploading && styles.uploadBtnDisabled]}
+          onPress={handleUploadResume}
+          disabled={uploading}
+        >
+          <Upload color="#FFFFFF" size={20} />
+          <Text style={styles.uploadHeroBtnText}>
+            {uploading ? 'Uploading...' : profile?.headlineRole ? 'Re-upload Resume (PDF)' : 'Upload Your Resume (PDF)'}
+          </Text>
+        </Pressable>
+        {!!uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
+
         <CleanCard style={{ marginTop: 14 }}>
           <Text style={styles.cardTitle}>Profile</Text>
           <Text style={styles.fieldLabel}>Role</Text>
@@ -188,13 +255,14 @@ export default function ProfileMainScreen({ navigation }) {
           <Text style={styles.fieldText}>{goals}</Text>
           <Text style={styles.fieldLabel}>Speaking weaknesses</Text>
           <Text style={styles.fieldText}>{weaknesses}</Text>
-          <Pressable style={[styles.uploadBtn, uploading && styles.uploadBtnDisabled]} onPress={handleUploadResume}>
-            <Text style={styles.uploadBtnText}>{uploading ? 'Uploading resume...' : 'Upload Resume (PDF)'}</Text>
-          </Pressable>
-          {!!uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
         </CleanCard>
 
-        <View style={{ marginTop: 40 }}>
+        <Pressable style={styles.clearMemoryBtn} onPress={handleClearMemory}>
+          <Trash2 color="#EF4444" size={16} />
+          <Text style={styles.clearMemoryText}>Clear Resume Data</Text>
+        </Pressable>
+
+        <View style={{ marginTop: 30 }}>
           <PrimaryPill title="Log Out" onPress={handleLogout} />
         </View>
       </ScrollView>
@@ -213,15 +281,38 @@ const styles = StyleSheet.create({
   metricLabel: { color: palette.subtext, marginTop: 6, ...type.label },
   fieldLabel: { color: palette.subtext, marginTop: 10, ...type.label },
   fieldText: { color: palette.text, marginTop: 2, ...type.body, fontWeight: '700' },
-  uploadBtn: {
-    marginTop: 14,
-    backgroundColor: palette.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
+  uploadHeroBtn: {
+    marginTop: 16,
+    backgroundColor: '#8C6BFF',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    borderBottomWidth: 4,
+    borderBottomColor: '#6E52DE',
+    shadowColor: '#8C6BFF',
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
-  uploadBtnDisabled: { opacity: 0.7 },
-  uploadBtnText: { color: '#fff', fontWeight: '800' },
-  uploadStatus: { color: palette.subtext, marginTop: 8, ...type.body },
+  uploadHeroBtnText: { color: '#FFFFFF', fontWeight: '900', fontSize: 16 },
+  uploadBtnDisabled: { opacity: 0.6 },
+  uploadStatus: { color: palette.subtext, marginTop: 10, textAlign: 'center', ...type.body },
+  clearMemoryBtn: {
+    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: 'rgba(239, 68, 68, 0.06)',
+  },
+  clearMemoryText: { color: '#EF4444', fontWeight: '800', fontSize: 14 },
 });

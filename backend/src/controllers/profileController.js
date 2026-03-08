@@ -6,7 +6,7 @@ import { User } from '../models/User.js';
 import { analyzeResume } from '../services/gemini.js';
 
 function mapResumeToUserFields(profile = {}) {
-  return {
+  const fields = {
     headlineRole: profile.role || '',
     industry: profile.industry || '',
     experience: Array.isArray(profile.experience) ? profile.experience : [],
@@ -15,6 +15,9 @@ function mapResumeToUserFields(profile = {}) {
     speakingStrengths: Array.isArray(profile.strengths) ? profile.strengths : [],
     speakingWeaknesses: Array.isArray(profile.weaknesses) ? profile.weaknesses : [],
   };
+  const name = typeof profile.name === 'string' ? profile.name.trim() : '';
+  if (name) fields.displayName = name;
+  return fields;
 }
 
 function validateObjectId(id, label = 'id') {
@@ -213,6 +216,35 @@ export async function parseResumePdfIntoProfile(req, res, next) {
   }
 }
 
+export async function clearProfileResume(req, res, next) {
+  try {
+    const { userId } = req.params;
+    validateObjectId(userId, 'userId');
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          resumeRawText: '',
+          headlineRole: '',
+          industry: '',
+          experience: [],
+          skills: [],
+          goals: [],
+          speakingStrengths: [],
+          speakingWeaknesses: [],
+        },
+      },
+      { new: true, runValidators: true }
+    );
+    if (!user) return res.status(404).json({ error: 'User not found.' });
+
+    res.json({ ok: true, user });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export async function bootstrapDemoUser(req, res, next) {
   try {
     const { displayName, email } = req.body || {};
@@ -226,10 +258,27 @@ export async function bootstrapDemoUser(req, res, next) {
         displayName: safeDisplayName,
         email: normalizedEmail,
         passwordHash,
+        streakDays: 3,
+        maxStreakDays: 7,
+        loginCount: 19,
+        xp: 50,
+        level: 1,
       });
-    } else if (safeDisplayName && user.displayName !== safeDisplayName) {
-      user.displayName = safeDisplayName;
-      await user.save();
+    } else {
+      let needsSave = false;
+      const isGuestName = !user.displayName || user.displayName.trim() === 'Guest User';
+      if (safeDisplayName && isGuestName && user.displayName !== safeDisplayName) {
+        user.displayName = safeDisplayName;
+        needsSave = true;
+      }
+      if (user.streakDays === 0 && user.xp === 0) {
+        user.streakDays = 3;
+        user.maxStreakDays = 7;
+        user.loginCount = 19;
+        user.xp = 50;
+        needsSave = true;
+      }
+      if (needsSave) await user.save();
     }
 
     return res.json({
@@ -241,6 +290,9 @@ export async function bootstrapDemoUser(req, res, next) {
         skillLevel: user.skillLevel,
         xp: user.xp,
         level: user.level,
+        streakDays: user.streakDays,
+        maxStreakDays: user.maxStreakDays,
+        loginCount: user.loginCount,
       },
       token: generateToken(user._id),
     });

@@ -1,4 +1,4 @@
-import { COACH_AGENT_ID, DEBRIEF_AGENT_ID } from '../../data/constants';
+import { COACH_AGENT_ID, MODERATOR_AGENT_ID, DEBRIEF_AGENT_ID } from '../../data/constants';
 
 export function getCoachSessionConfig({ exerciseType, prompt, profile } = {}) {
   const dynamicVariables = {};
@@ -16,6 +16,18 @@ export function getCoachSessionConfig({ exerciseType, prompt, profile } = {}) {
 
   return {
     agentId: COACH_AGENT_ID,
+    dynamicVariables,
+  };
+}
+
+export function getModeratorSessionConfig({ topic, playerAName, playerBName } = {}) {
+  const dynamicVariables = {};
+  if (topic) dynamicVariables.debate_topic = topic;
+  if (playerAName) dynamicVariables.player_a = playerAName;
+  if (playerBName) dynamicVariables.player_b = playerBName;
+
+  return {
+    agentId: MODERATOR_AGENT_ID,
     dynamicVariables,
   };
 }

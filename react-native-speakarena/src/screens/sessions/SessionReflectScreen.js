@@ -33,19 +33,24 @@ export default function SessionReflectScreen({ route, navigation }) {
   React.useEffect(() => {
     if (!debateResult || debriefStartedRef.current) return;
     debriefStartedRef.current = true;
+    let cancelled = false;
 
     (async () => {
       try {
+        // Allow any previous session cleanup from the prior screen to settle
+        await new Promise((r) => setTimeout(r, 500));
+        if (cancelled) return;
         setDebriefStatus('connecting');
         const config = getDebriefSessionConfig({ debateResult, topic });
         await conversation.startSession(config);
       } catch (err) {
         console.error('Failed to start debrief:', err);
-        setDebriefStatus('error');
+        if (!cancelled) setDebriefStatus('error');
       }
     })();
 
     return () => {
+      cancelled = true;
       conversation.endSession().catch(() => {});
     };
   }, [debateResult]);

@@ -244,7 +244,7 @@ export default function HomeMainScreen({ navigation }) {
               onPress={() => setActiveTab('practice')}
               activeOpacity={0.9}
             >
-              <Text style={styles.segmentText}>Practise</Text>
+              <Text style={styles.segmentText}>Practice</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
