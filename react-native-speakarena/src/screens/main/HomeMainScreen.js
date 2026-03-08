@@ -15,8 +15,8 @@ const rooms = [
   { id: '3', status: 'Fighting', statusColor: '#EC4C7B', title: 'Room 77', subtitle: 'Debate: AI in schools' },
 ];
 
-export default function HomeMainScreen() {
-  const [activeTab, setActiveTab] = useState('practice');
+export default function HomeMainScreen({ navigation }) {
+  const [activeTab, setActiveTab] = useState('club');
   const [activeBottom, setActiveBottom] = useState('home');
 
   return (
@@ -26,7 +26,10 @@ export default function HomeMainScreen() {
           <View style={styles.segmentWrap}>
             <TouchableOpacity
               style={[styles.segmentBtn, activeTab === 'practice' ? styles.segmentActive : styles.segmentInactive]}
-              onPress={() => setActiveTab('practice')}
+              onPress={() => {
+                setActiveTab('practice');
+                navigation.navigate('Practice');
+              }}
               activeOpacity={0.9}
             >
               <Text style={styles.segmentText}>Practise</Text>
