@@ -51,7 +51,7 @@ function MapArtwork() {
            C235 430, 252 492, 210 548
            C184 584, 132 612, 96 632"
         stroke="#D9C894"
-        strokeWidth="34"
+        strokeWidth="42"
         strokeLinecap="round"
         strokeLinejoin="round"
         opacity="0.55"
@@ -66,7 +66,7 @@ function MapArtwork() {
            C235 422, 252 484, 210 540
            C184 576, 132 604, 96 624"
         stroke="url(#trailFill)"
-        strokeWidth="30"
+        strokeWidth="38"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
@@ -80,7 +80,7 @@ function MapArtwork() {
            C241 412, 260 474, 219 530
            C194 564, 145 592, 110 611"
         stroke="rgba(255,255,255,0.42)"
-        strokeWidth="7"
+        strokeWidth="9"
         strokeLinecap="round"
         strokeLinejoin="round"
         fill="none"
