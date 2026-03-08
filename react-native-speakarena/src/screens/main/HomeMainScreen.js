@@ -118,14 +118,14 @@ export default function HomeMainScreen({ navigation }) {
             />
           </View>
 
-          <View style={[styles.nodePos, { top: 392, left: 176 }]}>
+          <View style={[styles.nodePos, { top: 392, left: 164 }]}>
             <LearningPathNode
               number={3}
               onPress={() => navigation.navigate('Practice', { screen: 'SessionPreflight', params: { trackId: 'pressure' } })}
             />
           </View>
 
-          <View style={[styles.nodePos, { top: 560, left: 116 }]}>
+          <View style={[styles.nodePos, { top: 552, left: 100 }]}>
             <LearningPathNode locked icon="🔒" />
           </View>
         </View>
