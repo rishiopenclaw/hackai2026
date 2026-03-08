@@ -185,9 +185,9 @@ export default function HomeMainScreen({ navigation }) {
 
                   <ScrollView
                     ref={mapScrollRef}
-                    style={styles.mapViewport}
+                    style={[styles.mapViewport, { height: Math.min(620, Math.max(520, SCREEN_WIDTH * 1.45)) }]}
                     contentContainerStyle={[styles.mapContent, { height: CONTENT_HEIGHT }]}
-                    showsVerticalScrollIndicator={false}
+                    showsVerticalScrollIndicator
                     nestedScrollEnabled
                     directionalLockEnabled
                     bounces
