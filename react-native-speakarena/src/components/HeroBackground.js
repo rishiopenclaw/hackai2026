@@ -64,16 +64,14 @@ export default function HeroBackground() {
       <ExpoLinearGradient
         colors={['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.015)', 'transparent']}
         locations={[0, 0.22, 0.52]}
-        style={StyleSheet.absoluteFillObject}
-        pointerEvents="none"
+        style={[StyleSheet.absoluteFillObject, styles.noPointer]}
       />
 
       {/* Readability fade for lower content */}
       <ExpoLinearGradient
         colors={['transparent', 'rgba(9,9,12,0.30)', 'rgba(9,9,12,0.88)', '#09090C']}
         locations={[0.62, 0.80, 0.95, 1]}
-        style={StyleSheet.absoluteFillObject}
-        pointerEvents="none"
+        style={[StyleSheet.absoluteFillObject, styles.noPointer]}
       />
     </View>
   );
@@ -83,5 +81,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#09090C',
+  },
+  noPointer: {
+    pointerEvents: 'none',
   },
 });
