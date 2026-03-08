@@ -82,6 +82,11 @@ export default function HomeMainScreen({ navigation }) {
           <Path d={pathD} stroke="#DDBF78" strokeWidth="44" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.6" />
           <Path d={pathD} stroke="url(#trail)" strokeWidth="32" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           <Path d={pathD} stroke="rgba(255,255,255,0.45)" strokeWidth="7" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+
+          {/* mask trail under nodes so path doesn't show through node circles */}
+          {nodes.map((n) => (
+            <Circle key={`mask-${n.id}`} cx={n.centerX} cy={n.centerY} r={37} fill="#89E256" />
+          ))}
         </Svg>
 
         {/* Layer 2: Nodes aligned to same coordinates */}
